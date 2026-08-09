@@ -1,0 +1,46 @@
+.busca-titulo { font-size: 40px; margin-bottom: 12px; }
+.busca-texto { max-width: 600px; margin-bottom: 32px; }
+
+.busca-formulario label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+
+.busca-linha { display: flex; gap: 12px; max-width: 640px; }
+.busca-linha .campo { flex: 1; }
+
+.busca-subtitulo {
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  margin: 36px 0 16px;
+}
+
+.busca-resultados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.busca-vazio {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-medio);
+  padding: 24px;
+  max-width: 640px;
+}
+
+@media (max-width: 860px) {
+  .busca-titulo { font-size: 30px; }
+  .busca-resultados { grid-template-columns: 1fr; }
+  .busca-linha { flex-direction: column; }
+}

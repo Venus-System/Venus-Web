@@ -1,0 +1,37 @@
+.card-produto {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-medio);
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.card-imagem {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--raio-pequeno);
+  background: linear-gradient(140deg, var(--lavanda), var(--lilas));
+  flex: none;
+}
+
+.card-nome {
+  font-size: 17px;
+  margin-bottom: 2px;
+}
+
+.card-nome a {
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.card-nome a:hover {
+  text-decoration: underline;
+}
+
+.card-marca {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin: 0 0 10px;
+}

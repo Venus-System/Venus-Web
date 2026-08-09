@@ -1,0 +1,13 @@
+.erro {
+  background: var(--evitar-fundo);
+  border: 1px solid rgba(181, 52, 28, 0.2);
+  border-radius: var(--raio-medio);
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.erro-texto {
+  color: var(--evitar);
+  font-size: 14.5px;
+  margin: 0 0 16px;
+}

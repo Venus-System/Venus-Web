@@ -1,0 +1,35 @@
+:root {
+  --roxo: #580BA5;
+  --roxo-claro: #7B2FCF;
+  --roxo-profundo: #321B5D;
+  --lavanda: #B491D6;
+  --crimson: #A1145F;
+
+  --branco: #FFFFFF;
+  --fundo: #F8F4FE;
+  --card: #FBF8FF;
+  --lilas: #F2ECF8;
+  --borda: #CAB1E4;
+
+  --tinta: #1A0A2E;
+  --texto: #4A3A6B;
+  --texto-suave: #7E738C;
+  --sobre-roxo: #FFFFFF;
+
+  --seguro: #1A6B3A;
+  --seguro-fundo: #E5EFE9;
+  --atencao: #A86B10;
+  --atencao-fundo: #F7EFE3;
+  --evitar: #B5341C;
+  --evitar-fundo: #FDF0EE;
+  --sem-dados: #6B7280;
+  --sem-dados-fundo: #F3F4F6;
+
+  --fonte-titulo: 'Poppins', Georgia, serif;
+  --fonte-corpo: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --raio-pequeno: 12px;
+  --raio-medio: 24px;
+  --raio-grande: 32px;
+  --raio-pilula: 999px;
+}

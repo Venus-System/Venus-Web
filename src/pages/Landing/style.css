@@ -1,0 +1,26 @@
+.landing-capa { text-align: center; padding: 56px 0 72px; }
+.landing-olho {
+  font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 700; color: var(--crimson); margin-bottom: 16px;
+}
+.landing-titulo { font-size: 50px; margin-bottom: 18px; }
+.landing-texto { max-width: 560px; margin: 0 auto 32px; font-size: 16.5px; }
+.landing-acoes { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.landing-acoes a { text-decoration: none; }
+
+.landing-dimensoes h2 { font-size: 28px; margin-bottom: 24px; }
+.dimensoes-lista {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+}
+.dimensoes-lista li {
+  background: var(--card); border: 1px solid var(--borda);
+  border-radius: var(--raio-grande); padding: 26px;
+}
+.dimensoes-lista h3 { font-size: 19px; margin-bottom: 8px; }
+.dimensoes-lista p { font-size: 14px; margin: 0; }
+
+@media (max-width: 860px) {
+  .landing-titulo { font-size: 34px; }
+  .dimensoes-lista { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,12 @@
+.selo {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--raio-pilula);
+}
+
+.selo-seguro { color: var(--seguro); background: var(--seguro-fundo); }
+.selo-atencao { color: var(--atencao); background: var(--atencao-fundo); }
+.selo-evitar { color: var(--evitar); background: var(--evitar-fundo); }
+.selo-sem_dados { color: var(--sem-dados); background: var(--sem-dados-fundo); }

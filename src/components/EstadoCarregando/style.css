@@ -1,0 +1,21 @@
+.carregando {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0;
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+.carregando-roda {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--lilas);
+  border-top-color: var(--roxo);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
