@@ -27,6 +27,12 @@
 - [ ] I manually tested what changed and described how to reproduce it above
 - [ ] I left no `console.log` or commented-out code
 - [ ] I did not commit any key, password, or private URL
+- [ ] All new code in `src/` is `.ts` or `.tsx` and free of `any` types.
+- [ ] API calls are isolated in `src/services/` (no direct fetch in components).
+- [ ] `useEffect` dependency arrays are explicit and correct.
+- [ ] Dynamic lists use unique data identifiers as `key` (no `key={index}`).
+- [ ] Async operations have visual UI feedback (loading, success, error).
+- [ ] Basic accessibility is met (semantic `<button>`, `<label>`, image `alt`, and keyboard navigation works).
 - [ ] I updated the documentation, if needed
 
 ## Notes for the reviewer
