@@ -1,6 +1,6 @@
 function Inicio() {
   return (
-    <main className="conteudo">
+    <main>
       <h1>Venus</h1>
 
       <p>A aplicação está em construção.</p>
