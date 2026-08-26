@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and test
+        run: npm run build
+
+      - name: No 'any' types in src
+        run: |
+          if grep -rn ": any\|as any\|<any>" src/; then
+            echo "::error::'any' is not allowed in src/"
+            exit 1
+          fi
+
+      - name: No .js or .jsx files in src
+        run: |
+          found=$(find src -name "*.js" -o -name "*.jsx")
+          if [ -n "$found" ]; then
+            echo "$found"
+            echo "::error::only .ts and .tsx are allowed in src/"
+            exit 1
+          fi
+
+      - name: No fetch outside services
+        run: |
+          if grep -rn "fetch(" src/pages src/components 2>/dev/null; then
+            echo "::error::API calls belong in src/services/"
+            exit 1
+          fi
+
+      - name: No index as list key
+        run: |
+          if grep -rn "key={index}\|key={i}" src/; then
+            echo "::error::use a unique data identifier as key"
+            exit 1
+          fi
+
+      - name: No direct navigation
+        run: |
+          if grep -rn "window.location.href" src/; then
+            echo "::error::navigate with <Link> or useNavigate"
+            exit 1
+          fi
+
+      - name: No leftover console.log
+        run: |
+          if grep -rn "console\.log" src/; then
+            echo "::error::remove console.log before merging"
+            exit 1
+          fi
