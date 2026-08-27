@@ -20,8 +20,8 @@
   --sem-dados: #4b4459;
   --sem-dados-fundo: #eeeff3;
 
-  --fonte-titulo: 'Poppins', 'Segoe UI', sans-serif;
-  --fonte-corpo: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --fonte-titulo: "Poppins", "Segoe UI", sans-serif;
+  --fonte-corpo: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 
   --tamanho-pequeno: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
   --tamanho-base: clamp(1rem, 0.97rem + 0.15vw, 1.125rem);
