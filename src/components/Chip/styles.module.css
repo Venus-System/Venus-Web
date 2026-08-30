@@ -1,0 +1,57 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-pilula);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  line-height: 1.6;
+}
+
+.neutral {
+  background-color: var(--lavanda-clara);
+  color: var(--violeta);
+}
+
+.safe {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}
+
+.warning {
+  background-color: var(--warning-fundo);
+  color: var(--warning);
+}
+
+.avoid {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.no-data {
+  background-color: var(--no-data-fundo);
+  color: var(--no-data);
+}
+
+.removeIcon {
+  width: 1em;
+  height: 1em;
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  margin-right: calc(var(--espaco-1) * -1);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-pilula);
+  color: inherit;
+  font-size: inherit;
+  line-height: 1;
+  cursor: pointer;
+}

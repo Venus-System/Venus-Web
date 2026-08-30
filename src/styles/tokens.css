@@ -1,13 +1,15 @@
 :root {
-  --roxo: #580ba5;
+  --roxo: #321b5d;
+  --violeta: #580ba5;
   --lavanda: #cdb6e4;
   --crimson: #a1145f;
+  --crimson-escuro: #3e0825;
   --prata: #dbe0e7;
   --violeta-escuro: #1a0a2e;
 
   --fundo: #f7f5fa;
   --card: #ffffff;
-  --borda: var(--prata);
+  --borda: #e1d3ef;
   --texto: var(--violeta-escuro);
   --texto-suave: #544c63;
 
@@ -23,23 +25,50 @@
   --fonte-titulo: "Poppins", "Segoe UI", sans-serif;
   --fonte-corpo: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 
+  --peso-titulo: 400;
+  --peso-forte: 600;
+
   --tamanho-pequeno: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
   --tamanho-base: clamp(1rem, 0.97rem + 0.15vw, 1.125rem);
   --tamanho-medio: clamp(1.125rem, 1.05rem + 0.38vw, 1.375rem);
   --tamanho-grande: clamp(1.5rem, 1.29rem + 1.04vw, 2.125rem);
   --tamanho-enorme: clamp(2rem, 1.58rem + 2.08vw, 3.25rem);
+  --tamanho-marca: clamp(4rem, 18vw, 14rem);
 
   --espaco-1: 0.25rem;
   --espaco-2: 0.5rem;
   --espaco-3: 1rem;
   --espaco-4: 1.5rem;
   --espaco-5: 2.5rem;
+  --espaco-titulo: 1.3125rem;
 
   --raio-pequeno: 0.5rem;
   --raio-medio: 0.75rem;
   --raio-grande: 1rem;
+  --raio-pilula: 999px;
 
-  --foco-cor: var(--crimson);
+  --foco-cor: var(--violeta);
   --foco-largura: 3px;
   --foco-offset: 2px;
+
+  --superficie-suave: #f2ecfa;
+  --lavanda-clara: #efe7f9;
+  --lavanda-media: #e7daf7;
+  --texto-invertido: #ffffff;
+  --borda-forte: #8b79a6;
+  --borda-largura: 2px;
+  --alvo-toque: 1.5rem;
+
+  --gradiente-primario: linear-gradient(
+    90deg,
+    var(--crimson),
+    var(--crimson-escuro)
+  );
+  --gradiente-marca: linear-gradient(90deg, var(--violeta), var(--crimson));
+  --sombra-cartao: 0 1px 2px rgba(26, 10, 46, 0.08);
+
+  --saude: #238043;
+  --ambiental: #b31e6d;
+  --etica: #7437b6;
+  --trilha: #f2ecf8;
 }
