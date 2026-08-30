@@ -1,20 +1,20 @@
-export type NivelRisco = "seguro" | "atencao" | "evitar" | "sem-dados";
+export type RiskLevel = "safe" | "warning" | "avoid" | "no-data";
 
 export interface Ingrediente {
-  nomeInci: string;
-  nomeComum: string;
-  funcaoResumo: string;
-  resumoSeguranca: string;
-  biodegradabilidade: number;
-  riscoIrritacao: number;
-  comedogenicidade: number;
-  riscoAmbiental: number;
-  confiancaCientifica: number;
+  inciName: string;
+  commonName: string;
+  functionSummary: string;
+  safetySummary: string;
+  biodegradability: number;
+  irritationRiskLevel: number;
+  comedogenicityScore: number;
+  environmentalRiskLevel: number;
+  scientificConfidence: number;
 }
 
 export interface IngredienteAvaliado {
-  nomeInci: string;
-  posicao: number;
-  nivel: NivelRisco;
-  ingrediente: Ingrediente | null;
+  inciName: string;
+  position: number;
+  level: RiskLevel;
+  ingredient: Ingrediente | null;
 }

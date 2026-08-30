@@ -25,9 +25,9 @@ function filtrarPorTermo(produtos: Produto[], termo?: string): Produto[] {
 
   return produtos.filter(
     (produto) =>
-      produto.nome.toLowerCase().includes(busca) ||
-      produto.marca.nome.toLowerCase().includes(busca) ||
-      produto.categoria.toLowerCase().includes(busca),
+      produto.name.toLowerCase().includes(busca) ||
+      produto.brand.name.toLowerCase().includes(busca) ||
+      produto.category.toLowerCase().includes(busca),
   );
 }
 

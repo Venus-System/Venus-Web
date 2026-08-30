@@ -18,7 +18,7 @@ export async function buscarAnalisePublica(
         throw new ErroProdutoNaoEncontrado(slug);
       }
 
-      return { ...encontrada, personalizada: null };
+      return { ...encontrada, personalized: null };
     }
 
     const resposta = await fetch(
@@ -34,7 +34,7 @@ export async function buscarAnalisePublica(
     }
 
     const analise: AnaliseExibicao = await resposta.json();
-    return { ...analise, personalizada: null };
+    return { ...analise, personalized: null };
   } catch (erro) {
     if (erro instanceof ErroProdutoNaoEncontrado) {
       throw erro;

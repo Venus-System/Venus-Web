@@ -1,4 +1,4 @@
-import { NivelRiscoPessoal } from "./analise";
+import type { PersonalRiskLevel } from "./analise";
 
 export type TipoPele =
   | "normal"
@@ -42,35 +42,35 @@ export type Genero =
 export type TipoAlergia = "ingredient" | "material" | "condition" | "other";
 
 export interface Alergia {
-  nome: string;
-  tipo: TipoAlergia;
-  severidade: NivelRiscoPessoal;
+  name: string;
+  type: TipoAlergia;
+  severity: PersonalRiskLevel;
 }
 
 export interface PreferenciasPerfil {
-  crueltyFree: boolean;
-  vegano: boolean;
-  sustentavel: boolean;
-  semFragrancia: boolean;
-  semParabenos: boolean;
-  semSulfatos: boolean;
-  semSilicones: boolean;
+  preferCrueltyFree: boolean;
+  preferVegan: boolean;
+  preferSustainable: boolean;
+  preferFragranceFree: boolean;
+  preferParabenFree: boolean;
+  preferSulfateFree: boolean;
+  preferSiliconeFree: boolean;
 }
 
 export interface Perfil {
-  tipoPele: TipoPele;
-  fototipo: Fototipo;
-  tipoCabelo: TipoCabelo;
-  tipoCouroCabeludo: TipoCouroCabeludo;
-  sensibilidadePele: NivelSensibilidade;
-  tendenciaAcne: boolean;
-  faixaEtaria: FaixaEtaria;
-  genero: Genero;
-  gestante: boolean;
-  temHiperpigmentacao: boolean;
-  temMelasma: boolean;
-  temRosacea: boolean;
-  temEczema: boolean;
-  preferencias: PreferenciasPerfil;
-  alergias: Alergia[];
+  skinType: TipoPele;
+  skinPhototype: Fototipo;
+  hairType: TipoCabelo;
+  scalpType: TipoCouroCabeludo;
+  skinSensitivity: NivelSensibilidade;
+  acneProne: boolean;
+  ageRange: FaixaEtaria;
+  gender: Genero;
+  isPregnant: boolean;
+  hasHyperpigmentation: boolean;
+  hasMelasma: boolean;
+  hasRosacea: boolean;
+  hasEczema: boolean;
+  preferences: PreferenciasPerfil;
+  allergies: Alergia[];
 }

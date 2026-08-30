@@ -1,7 +1,7 @@
 import type { IngredienteAvaliado } from "./ingrediente";
 import type { Produto } from "./produto";
 
-export type NivelRiscoPessoal = "low" | "medium" | "high" | "critical";
+export type PersonalRiskLevel = "low" | "medium" | "high" | "critical";
 
 export type NivelRecomendacao =
   | "ideal"
@@ -11,22 +11,22 @@ export type NivelRecomendacao =
   | "contraindicated";
 
 export interface AlertaPersonalizado {
-  nomeInci: string;
-  explicacao: string;
-  deltaFinal: number;
+  inciName: string;
+  explanation: string;
+  finalDelta: number;
 }
 
 export interface AnalisePersonalizada {
-  notaFinal: number;
-  compatibilidade: number;
-  nivelRisco: NivelRiscoPessoal;
-  nivelRecomendacao: NivelRecomendacao;
-  resumo: string;
-  alertas: AlertaPersonalizado[];
+  finalScore: number;
+  compatibilityPercentage: number;
+  riskLevel: PersonalRiskLevel;
+  recommendationLevel: NivelRecomendacao;
+  summary: string;
+  alerts: AlertaPersonalizado[];
 }
 
 export interface AnaliseExibicao {
-  produto: Produto;
-  ingredientes: IngredienteAvaliado[];
-  personalizada: AnalisePersonalizada | null;
+  product: Produto;
+  ingredients: IngredienteAvaliado[];
+  personalized: AnalisePersonalizada | null;
 }
