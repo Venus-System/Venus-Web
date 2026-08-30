@@ -1,147 +1,147 @@
 import type { Marca, Produto } from "../../types/produto";
 
 const floraNativa: Marca = {
-  nome: "Flora Nativa",
-  pais: "Brasil",
-  site: "https://exemplo.floranativa.com.br",
-  temSeloCrueltyFree: true,
-  temSeloVegano: true,
-  ehBrasileira: true,
+  name: "Flora Nativa",
+  country: "Brasil",
+  website: "https://exemplo.floranativa.com.br",
+  hasCrueltyFreeClaim: true,
+  hasVeganClaim: true,
+  isBrazilian: true,
 };
 
 const dermalis: Marca = {
-  nome: "Dermalis",
-  pais: "França",
-  site: "https://exemplo.dermalis.com",
-  temSeloCrueltyFree: true,
-  temSeloVegano: false,
-  ehBrasileira: false,
+  name: "Dermalis",
+  country: "França",
+  website: "https://exemplo.dermalis.com",
+  hasCrueltyFreeClaim: true,
+  hasVeganClaim: false,
+  isBrazilian: false,
 };
 
 const purebase: Marca = {
-  nome: "Purebase",
-  pais: "Estados Unidos",
-  site: null,
-  temSeloCrueltyFree: false,
-  temSeloVegano: false,
-  ehBrasileira: false,
+  name: "Purebase",
+  country: "Estados Unidos",
+  website: null,
+  hasCrueltyFreeClaim: false,
+  hasVeganClaim: false,
+  isBrazilian: false,
 };
 
 const lumine: Marca = {
-  nome: "Lumine",
-  pais: "Brasil",
-  site: "https://exemplo.lumine.com.br",
-  temSeloCrueltyFree: true,
-  temSeloVegano: true,
-  ehBrasileira: true,
+  name: "Lumine",
+  country: "Brasil",
+  website: "https://exemplo.lumine.com.br",
+  hasCrueltyFreeClaim: true,
+  hasVeganClaim: true,
+  isBrazilian: true,
 };
 
 const raizViva: Marca = {
-  nome: "Raiz Viva",
-  pais: null,
-  site: null,
-  temSeloCrueltyFree: false,
-  temSeloVegano: false,
-  ehBrasileira: false,
+  name: "Raiz Viva",
+  country: null,
+  website: null,
+  hasCrueltyFreeClaim: false,
+  hasVeganClaim: false,
+  isBrazilian: false,
 };
 
 export const serumCalmanteAveia: Produto = {
   slug: "serum-calmante-aveia",
-  nome: "Sérum Calmante de Aveia",
-  descricao:
+  name: "Sérum Calmante de Aveia",
+  description:
     "Sérum leve para peles sensíveis, com aveia coloidal e niacinamida, sem fragrância adicionada.",
-  categoria: "Sérum facial",
-  marca: floraNativa,
-  imagemUrl: null,
-  nivel: "seguro",
-  notas: {
-    geral: 88,
-    saude: 92,
-    ambiental: 84,
-    etica: 90,
-    desempenho: 82,
-    transparencia: 86,
-    confianca: 91,
+  category: "Sérum facial",
+  brand: floraNativa,
+  imageUrl: null,
+  level: "safe",
+  scores: {
+    overallScore: 88,
+    healthScore: 92,
+    environmentalScore: 84,
+    ethicalScore: 90,
+    performanceScore: 82,
+    transparencyScore: 86,
+    confidenceScore: 91,
   },
 };
 
 export const hidratanteCeramidas: Produto = {
   slug: "hidratante-facial-ceramidas",
-  nome: "Hidratante Facial com Ceramidas",
-  descricao:
+  name: "Hidratante Facial com Ceramidas",
+  description:
     "Creme de uso diário com ceramidas e glicerina, indicado para restaurar a barreira da pele.",
-  categoria: "Hidratante facial",
-  marca: dermalis,
-  imagemUrl: null,
-  nivel: "seguro",
-  notas: {
-    geral: 81,
-    saude: 87,
-    ambiental: 72,
-    etica: null,
-    desempenho: 85,
-    transparencia: 79,
-    confianca: 88,
+  category: "Hidratante facial",
+  brand: dermalis,
+  imageUrl: null,
+  level: "safe",
+  scores: {
+    overallScore: 81,
+    healthScore: 87,
+    environmentalScore: 72,
+    ethicalScore: null,
+    performanceScore: 85,
+    transparencyScore: 79,
+    confidenceScore: 88,
   },
 };
 
 export const gelLimpezaPurificante: Produto = {
   slug: "gel-de-limpeza-purificante",
-  nome: "Gel de Limpeza Purificante",
-  descricao:
+  name: "Gel de Limpeza Purificante",
+  description:
     "Gel de limpeza com tensoativos sulfatados e fragrância, voltado para pele oleosa.",
-  categoria: "Limpeza facial",
-  marca: purebase,
-  imagemUrl: null,
-  nivel: "atencao",
-  notas: {
-    geral: 58,
-    saude: 54,
-    ambiental: 49,
-    etica: 45,
-    desempenho: 76,
-    transparencia: 52,
-    confianca: 80,
+  category: "Limpeza facial",
+  brand: purebase,
+  imageUrl: null,
+  level: "warning",
+  scores: {
+    overallScore: 58,
+    healthScore: 54,
+    environmentalScore: 49,
+    ethicalScore: 45,
+    performanceScore: 76,
+    transparencyScore: 52,
+    confidenceScore: 80,
   },
 };
 
 export const locaoClareadoraNoturna: Produto = {
   slug: "locao-clareadora-noturna",
-  nome: "Loção Clareadora Noturna",
-  descricao:
+  name: "Loção Clareadora Noturna",
+  description:
     "Loção noturna com retinol e álcool na base da fórmula, com fragrância adicionada.",
-  categoria: "Tratamento facial",
-  marca: lumine,
-  imagemUrl: null,
-  nivel: "evitar",
-  notas: {
-    geral: 31,
-    saude: 22,
-    ambiental: 61,
-    etica: 78,
-    desempenho: 70,
-    transparencia: 64,
-    confianca: 83,
+  category: "Tratamento facial",
+  brand: lumine,
+  imageUrl: null,
+  level: "avoid",
+  scores: {
+    overallScore: 31,
+    healthScore: 22,
+    environmentalScore: 61,
+    ethicalScore: 78,
+    performanceScore: 70,
+    transparencyScore: 64,
+    confidenceScore: 83,
   },
 };
 
 export const oleoCapilarReparador: Produto = {
   slug: "oleo-capilar-reparador",
-  nome: "Óleo Capilar Reparador",
-  descricao:
+  name: "Óleo Capilar Reparador",
+  description:
     "Óleo de finalização de fórmula ainda não verificada pela curadoria da Venus.",
-  categoria: "Tratamento capilar",
-  marca: raizViva,
-  imagemUrl: null,
-  nivel: "sem-dados",
-  notas: {
-    geral: null,
-    saude: null,
-    ambiental: null,
-    etica: null,
-    desempenho: null,
-    transparencia: 24,
-    confianca: 12,
+  category: "Tratamento capilar",
+  brand: raizViva,
+  imageUrl: null,
+  level: "no-data",
+  scores: {
+    overallScore: null,
+    healthScore: null,
+    environmentalScore: null,
+    ethicalScore: null,
+    performanceScore: null,
+    transparencyScore: 24,
+    confidenceScore: 12,
   },
 };
 

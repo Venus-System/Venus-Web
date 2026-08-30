@@ -1,31 +1,31 @@
-import type { NivelRisco } from "./ingrediente";
+import type { RiskLevel } from "./ingrediente";
 
 export interface Marca {
-  nome: string;
-  pais: string | null;
-  site: string | null;
-  temSeloCrueltyFree: boolean;
-  temSeloVegano: boolean;
-  ehBrasileira: boolean;
+  name: string;
+  country: string | null;
+  website: string | null;
+  hasCrueltyFreeClaim: boolean;
+  hasVeganClaim: boolean;
+  isBrazilian: boolean;
 }
 
 export interface NotasProduto {
-  geral: number | null;
-  saude: number | null;
-  ambiental: number | null;
-  etica: number | null;
-  desempenho: number | null;
-  transparencia: number | null;
-  confianca: number | null;
+  overallScore: number | null;
+  healthScore: number | null;
+  environmentalScore: number | null;
+  ethicalScore: number | null;
+  performanceScore: number | null;
+  transparencyScore: number | null;
+  confidenceScore: number | null;
 }
 
 export interface Produto {
   slug: string;
-  nome: string;
-  descricao: string;
-  categoria: string;
-  marca: Marca;
-  imagemUrl: string | null;
-  nivel: NivelRisco;
-  notas: NotasProduto;
+  name: string;
+  description: string;
+  category: string;
+  brand: Marca;
+  imageUrl: string | null;
+  level: RiskLevel;
+  scores: NotasProduto;
 }
