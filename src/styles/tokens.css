@@ -11,17 +11,17 @@
   --texto: var(--violeta-escuro);
   --texto-suave: #544c63;
 
-  --seguro: #0f6b3f;
-  --seguro-fundo: #e4f4ea;
-  --atencao: #7a4708;
-  --atencao-fundo: #fbeed6;
-  --evitar: #a1145f;
-  --evitar-fundo: #fce7f0;
-  --sem-dados: #4b4459;
-  --sem-dados-fundo: #eeeff3;
+  --safe: #0f6b3f;
+  --safe-fundo: #e4f4ea;
+  --warning: #7a4708;
+  --warning-fundo: #fbeed6;
+  --avoid: #a1145f;
+  --avoid-fundo: #fce7f0;
+  --no-data: #4b4459;
+  --no-data-fundo: #eeeff3;
 
-  --fonte-titulo: 'Poppins', 'Segoe UI', sans-serif;
-  --fonte-corpo: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --fonte-titulo: "Poppins", "Segoe UI", sans-serif;
+  --fonte-corpo: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 
   --tamanho-pequeno: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
   --tamanho-base: clamp(1rem, 0.97rem + 0.15vw, 1.125rem);
