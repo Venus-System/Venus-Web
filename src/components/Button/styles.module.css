@@ -1,0 +1,57 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-4);
+  border: var(--borda-largura) solid transparent;
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.primary {
+  background-image: var(--gradiente-primario);
+  color: var(--texto-invertido);
+}
+
+.secondary {
+  background-color: var(--card);
+  border-color: var(--borda-forte);
+  color: var(--texto);
+}
+
+.text {
+  padding-left: var(--espaco-1);
+  padding-right: var(--espaco-1);
+  background-color: transparent;
+  color: var(--violeta);
+  text-decoration: underline;
+}
+
+.primary:hover:not(:disabled) {
+  background-image: none;
+  background-color: var(--crimson-escuro);
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--violeta);
+  color: var(--violeta);
+}
+
+.text:hover:not(:disabled) {
+  color: var(--crimson);
+}
+
+.button:disabled {
+  background-image: none;
+  background-color: var(--prata);
+  border-color: var(--borda-forte);
+  color: var(--texto-suave);
+  text-decoration: none;
+  cursor: not-allowed;
+}
