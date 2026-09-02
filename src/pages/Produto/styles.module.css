@@ -1,0 +1,175 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+  padding-top: var(--espaco-4);
+  padding-bottom: var(--espaco-5);
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  align-items: flex-start;
+  padding-top: var(--espaco-4);
+}
+
+.hero {
+  display: grid;
+  gap: var(--espaco-5);
+  align-items: start;
+}
+
+.frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  background-color: var(--lavanda-clara);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  overflow: hidden;
+}
+
+.image {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.placeholder {
+  color: var(--violeta);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-enorme);
+  font-weight: var(--peso-forte);
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  min-width: 0;
+}
+
+.eyebrow {
+  color: var(--crimson);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.02em;
+}
+
+.title {
+  overflow-wrap: break-word;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.scoreCaption {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  align-items: flex-start;
+  padding: var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-cartao);
+}
+
+.cardTitle {
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}
+
+.cardText {
+  color: var(--texto-suave);
+}
+
+.cardLink {
+  margin-top: var(--espaco-2);
+  font-weight: var(--peso-forte);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.sectionTitle {
+  overflow-wrap: break-word;
+}
+
+.sectionText {
+  max-width: 60ch;
+  color: var(--texto-suave);
+}
+
+.ingredients {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ingredient {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-medio);
+}
+
+.ingredientName {
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+}
+
+.ingredientRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: center;
+}
+
+.ingredientText {
+  flex: 1 1 20rem;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.reviewButton {
+  align-self: flex-start;
+  padding: var(--espaco-2) var(--espaco-4);
+  min-height: var(--alvo-toque);
+  background-color: var(--no-data-fundo);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+  color: var(--no-data);
+  font-weight: var(--peso-forte);
+  cursor: not-allowed;
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  }
+}
