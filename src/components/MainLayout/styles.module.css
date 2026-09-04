@@ -16,7 +16,8 @@
 }
 
 .skipLink {
-  position: absolute;
+  position: fixed;
+  z-index: 10;
   left: var(--espaco-3);
   top: var(--espaco-3);
   padding: var(--espaco-2) var(--espaco-3);

@@ -1,14 +1,22 @@
-import { ErroProdutoNaoEncontrado } from "../produtos";
+import { ErroProdutoNaoEncontrado } from "../erros";
 import type { ProductFullResponse, ProdutoApi } from "./tipos";
 import type { Produto } from "../../types/produto";
 import { paraProduto } from "./tradutores";
 
 const URL_API = import.meta.env.VITE_API_URL ?? "";
 
+const idsPorSlug = new Map<string, number>();
+
 async function buscarIdPorSlug(
   slug: string,
   sinal?: AbortSignal,
 ): Promise<number> {
+  const guardado = idsPorSlug.get(slug);
+
+  if (guardado !== undefined) {
+    return guardado;
+  }
+
   const resposta = await fetch(`${URL_API}/api/products`, { signal: sinal });
 
   if (!resposta.ok) {
@@ -16,13 +24,22 @@ async function buscarIdPorSlug(
   }
 
   const lista: ProdutoApi[] = await resposta.json();
-  const encontrado = lista.find((item) => item.slug === slug);
 
-  if (!encontrado) {
+  if (!Array.isArray(lista)) {
+    throw new Error("A listagem de produtos não veio no formato esperado.");
+  }
+
+  for (const item of lista) {
+    idsPorSlug.set(item.slug, item.id);
+  }
+
+  const encontrado = idsPorSlug.get(slug);
+
+  if (encontrado === undefined) {
     throw new ErroProdutoNaoEncontrado(slug);
   }
 
-  return encontrado.id;
+  return encontrado;
 }
 
 export async function buscarProdutoDaApi(
@@ -35,6 +52,7 @@ export async function buscarProdutoDaApi(
   });
 
   if (resposta.status === 404) {
+    idsPorSlug.clear();
     throw new ErroProdutoNaoEncontrado(slug);
   }
 

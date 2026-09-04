@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ErroProdutoNaoEncontrado } from "../../services/produtos";
+import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
 import type { AnaliseExibicao } from "../../types/analise";
@@ -54,7 +54,7 @@ function Produto() {
               mensagem: "A busca demorou demais. Tente novamente",
             });
           }
-          
+
           return;
         }
 
@@ -108,7 +108,7 @@ function Produto() {
         <div className={styles.state}>
           <h1 className={styles.title}>Produto não encontrado</h1>
           <p role="alert">Não temos nenhum produto com o endereço "{slug}".</p>
-          <Link to="/">Voltar para a busca</Link>
+          <Link to="/">Ir para a página inicial</Link>
         </div>
       </MainLayout>
     );
@@ -171,12 +171,9 @@ function Produto() {
               Esta é a avaliação geral
             </h2>
             <p className={styles.cardText}>
-              Crie seu perfil para ver como este produto se comporta na sua
-              pele.
+              Com um perfil, esta seção mostra como o produto se comporta na sua
+              pele. A criação de perfil entra em uma próxima etapa do projeto.
             </p>
-            <Link className={styles.cardLink} to="/">
-              Criar meu perfil
-            </Link>
           </section>
         ) : (
           <section className={styles.card} aria-labelledby="titulo-perfil">

@@ -1,7 +1,7 @@
 import type { AnaliseExibicao } from "../types/analise";
 import { analisesMock } from "./mocks/analises";
 import { simularLatencia } from "./mocks/atraso";
-import { ErroProdutoNaoEncontrado } from "./produtos";
+import { ErroProdutoNaoEncontrado } from "./erros";
 import { buscarProdutoDaApi } from "./api/produtos";
 
 const USAR_MOCK = import.meta.env.VITE_USAR_MOCK !== "false";
