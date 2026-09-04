@@ -7,13 +7,12 @@
 .columns {
   display: grid;
   flex: 1;
-  gap: var(--espaco-4);
   align-items: start;
-  padding: var(--espaco-3);
 }
 
 .content {
   min-width: 0;
+  padding: var(--espaco-3) var(--espaco-4);
 }
 
 .skipLink {
@@ -40,6 +39,7 @@
 
   .aside {
     position: sticky;
-    top: var(--espaco-3);
+    top: 0;
+    height: 100vh;
   }
 }
