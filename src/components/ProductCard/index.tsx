@@ -7,8 +7,22 @@ interface ProductCardProps {
   produto: Produto;
 }
 
+const TONS = ["tomRoxo", "tomVerde", "tomRosa", "tomAzul"];
+
+function tomDoProduto(slug: string): string {
+  let soma = 0;
+
+  for (const caractere of slug) {
+    soma += caractere.charCodeAt(0);
+  }
+
+  return TONS[soma % TONS.length];
+}
+
 function ProductCard({ produto }: ProductCardProps) {
-  const frameClasses = [styles.frame, styles[produto.level]].join(" ");
+  const frameClasses = [styles.frame, styles[tomDoProduto(produto.slug)]].join(
+    " ",
+  );
 
   return (
     <article className={styles.card}>

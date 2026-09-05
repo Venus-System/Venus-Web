@@ -23,9 +23,27 @@
   justify-content: center;
   aspect-ratio: 4 / 3;
   background-color: var(--card);
-  border: var(--borda-largura) solid var(--borda);
+  border: calc(var(--borda-largura) * 8) solid transparent;
   border-radius: var(--raio-medio);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   overflow: hidden;
+}
+
+.tomRoxo {
+  background-image: linear-gradient(var(--card), var(--card)), var(--tom-roxo);
+}
+
+.tomVerde {
+  background-image: linear-gradient(var(--card), var(--card)), var(--tom-verde);
+}
+
+.tomRosa {
+  background-image: linear-gradient(var(--card), var(--card)), var(--tom-rosa);
+}
+
+.tomAzul {
+  background-image: linear-gradient(var(--card), var(--card)), var(--tom-azul);
 }
 
 .image {
@@ -59,23 +77,12 @@
   font-size: var(--tamanho-pequeno);
 }
 
+.link:focus-visible {
+  outline-offset: calc(var(--foco-largura) * -1);
+}
+
 .link:hover .name {
   color: var(--violeta);
   text-decoration: underline;
 }
 
-.safe {
-  border-color: var(--safe);
-}
-
-.warning {
-  border-color: var(--warning);
-}
-
-.avoid {
-  border-color: var(--avoid);
-}
-
-.no-data {
-  border-color: var(--no-data);
-}
