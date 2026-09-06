@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ErroProdutoNaoEncontrado } from "../../services/produtos";
+import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
+import { temFragrancia } from "../../utils/selos";
 import type { AnaliseExibicao } from "../../types/analise";
-import type { IngredienteAvaliado } from "../../types/ingrediente";
 import MainLayout from "../../components/MainLayout";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
@@ -17,14 +17,6 @@ type EstadoProduto =
   | { situacao: "nao-encontrado" }
   | { situacao: "erro"; mensagem: string };
 
-const NOMES_DE_FRAGRANCIA = ["parfum", "fragrance", "aroma"];
-
-function temFragrancia(ingredientes: IngredienteAvaliado[]): boolean {
-  return ingredientes.some((item) =>
-    NOMES_DE_FRAGRANCIA.includes(item.inciName.toLowerCase()),
-  );
-}
-
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
   const [estado, setEstado] = useState<EstadoProduto>({
@@ -36,15 +28,33 @@ function Produto() {
       return;
     }
 
+    const controle = new AbortController();
+    let expirou = false;
+    const limite = setTimeout(() => {
+      expirou = true;
+      controle.abort();
+    }, 8000);
+
     async function carregar(slugAtual: string) {
       setEstado({ situacao: "carregando" });
 
       try {
-        const analise = await buscarAnalisePublica(slugAtual);
+        const analise = await buscarAnalisePublica(slugAtual, controle.signal);
         setEstado({ situacao: "sucesso", analise });
       } catch (erro) {
         if (erro instanceof ErroProdutoNaoEncontrado) {
           setEstado({ situacao: "nao-encontrado" });
+          return;
+        }
+
+        if (erro instanceof DOMException && erro.name === "AbortError") {
+          if (expirou) {
+            setEstado({
+              situacao: "erro",
+              mensagem: "A busca demorou demais. Tente novamente",
+            });
+          }
+
           return;
         }
 
@@ -56,6 +66,10 @@ function Produto() {
     }
 
     carregar(slug);
+    return () => {
+      clearTimeout(limite);
+      controle.abort();
+    };
   }, [slug]);
 
   if (!slug) {
@@ -94,7 +108,7 @@ function Produto() {
         <div className={styles.state}>
           <h1 className={styles.title}>Produto não encontrado</h1>
           <p role="alert">Não temos nenhum produto com o endereço "{slug}".</p>
-          <Link to="/">Voltar para a busca</Link>
+          <Link to="/">Ir para a página inicial</Link>
         </div>
       </MainLayout>
     );
@@ -157,12 +171,9 @@ function Produto() {
               Esta é a avaliação geral
             </h2>
             <p className={styles.cardText}>
-              Crie seu perfil para ver como este produto se comporta na sua
-              pele.
+              Com um perfil, esta seção mostra como o produto se comporta na sua
+              pele. A criação de perfil entra em uma próxima etapa do projeto.
             </p>
-            <Link className={styles.cardLink} to="/">
-              Criar meu perfil
-            </Link>
           </section>
         ) : (
           <section className={styles.card} aria-labelledby="titulo-perfil">

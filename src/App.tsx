@@ -3,6 +3,7 @@ import Componentes from "./pages/Componentes";
 import Inicio from "./pages/Inicio";
 import Pesquisa from "./pages/Pesquisa";
 import Produto from "./pages/Produto";
+import NaoEncontrado from "./pages/NaoEncontrado";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/componentes" element={<Componentes />} />
       <Route path="/pesquisa" element={<Pesquisa />} />
       <Route path="/produto/:slug" element={<Produto />} />
+      <Route path="*" element={<NaoEncontrado />} />
     </Routes>
   );
 }

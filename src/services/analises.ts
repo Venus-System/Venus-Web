@@ -1,13 +1,14 @@
 import type { AnaliseExibicao } from "../types/analise";
 import { analisesMock } from "./mocks/analises";
 import { simularLatencia } from "./mocks/atraso";
-import { ErroProdutoNaoEncontrado } from "./produtos";
+import { ErroProdutoNaoEncontrado } from "./erros";
+import { buscarProdutoDaApi } from "./api/produtos";
 
 const USAR_MOCK = import.meta.env.VITE_USAR_MOCK !== "false";
-const URL_API = import.meta.env.VITE_API_URL ?? "";
 
 export async function buscarAnalisePublica(
   slug: string,
+  sinal?: AbortSignal,
 ): Promise<AnaliseExibicao> {
   try {
     if (USAR_MOCK) {
@@ -21,22 +22,19 @@ export async function buscarAnalisePublica(
       return { ...encontrada, personalized: null };
     }
 
-    const resposta = await fetch(
-      `${URL_API}/analises/${encodeURIComponent(slug)}/publica`,
-    );
+    const produto = await buscarProdutoDaApi(slug, sinal);
 
-    if (resposta.status === 404) {
-      throw new ErroProdutoNaoEncontrado(slug);
-    }
-
-    if (!resposta.ok) {
-      throw new Error(`A API respondeu ${resposta.status}.`);
-    }
-
-    const analise: AnaliseExibicao = await resposta.json();
-    return { ...analise, personalized: null };
+    return {
+      product: produto,
+      ingredients: [],
+      personalized: null,
+    };
   } catch (erro) {
     if (erro instanceof ErroProdutoNaoEncontrado) {
+      throw erro;
+    }
+
+    if (erro instanceof DOMException && erro.name === "AbortError") {
       throw erro;
     }
 

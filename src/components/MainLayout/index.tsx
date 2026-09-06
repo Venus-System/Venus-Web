@@ -24,7 +24,7 @@ function MainLayout({ children, user = null }: MainLayoutProps) {
           <Sidebar user={user} />
         </div>
 
-        <main id="main-content" className={styles.content}>
+        <main id="main-content" className={styles.content} tabIndex={-1}>
           {children}
         </main>
       </div>
