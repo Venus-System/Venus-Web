@@ -1,0 +1,137 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+  padding-block: var(--espaco-4);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-4);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  max-width: 34rem;
+}
+
+.subtitle {
+  color: var(--texto-suave);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.eyebrow {
+  color: var(--crimson);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.sectionTitle {
+  font-size: var(--tamanho-grande);
+}
+
+.text {
+  max-width: 60ch;
+  color: var(--texto-suave);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  align-items: flex-start;
+  padding: var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.cardTitle {
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}
+
+.cardText {
+  max-width: 75ch;
+  color: var(--texto-suave);
+}
+
+.source {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.sourceLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.notice {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: flex-start;
+  padding: var(--espaco-4);
+  background-color: var(--warning-fundo);
+  border: var(--borda-largura) solid var(--warning);
+  border-radius: var(--raio-grande);
+}
+
+.noticeIcon {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  color: var(--warning);
+  flex-shrink: 0;
+}
+
+.noticeText {
+  max-width: 75ch;
+  color: var(--warning);
+  font-size: var(--tamanho-pequeno);
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  align-items: center;
+  padding: var(--espaco-5) var(--espaco-4);
+  background-color: var(--lavanda-clara);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: var(--tamanho-grande);
+}
+
+.ctaText {
+  max-width: 55ch;
+  margin-bottom: var(--espaco-2);
+  color: var(--texto-suave);
+}
