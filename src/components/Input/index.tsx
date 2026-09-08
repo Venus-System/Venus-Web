@@ -70,7 +70,6 @@ function Input({
             className={styles.action}
             onClick={() => setRevealed((current) => !current)}
             aria-label={revealed ? "Ocultar senha" : "Mostrar senha"}
-            aria-pressed={revealed}
           >
             {revealed ? (
               <EyeOff className={styles.actionIcon} aria-hidden="true" />

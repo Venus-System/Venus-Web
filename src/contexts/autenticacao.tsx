@@ -9,7 +9,11 @@ import {
 interface ValorAutenticacao {
   usuario: Usuario | null;
   carregando: boolean;
-  entrar: (email: string, senha: string) => Promise<void>;
+  entrar: (
+    email: string,
+    senha: string,
+    continuarConectado: boolean,
+  ) => Promise<void>;
   sair: () => void;
 }
 
@@ -38,8 +42,8 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     });
   }, []);
 
-  async function entrar(email: string, senha: string) {
-    const usuario = await entrarNoServico(email, senha, false);
+  async function entrar(email: string, senha: string, continuarConectado: boolean) {
+    const usuario = await entrarNoServico(email, senha, continuarConectado);
     setEstado({ usuario, carregando: false });
   }
 
@@ -52,5 +56,5 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     <ContextoAutenticacao.Provider value={{ ...estado, entrar, sair }}>
       {children}
     </ContextoAutenticacao.Provider>
-  )
+  );
 }

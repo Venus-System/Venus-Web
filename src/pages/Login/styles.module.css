@@ -1,0 +1,147 @@
+.pagina {
+  display: grid;
+  min-height: 100vh;
+}
+
+.painelFormulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  justify-content: flex-start;
+  padding: var(--espaco-4);
+  background-color: var(--card);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  width: 100%;
+  max-width: 26rem;
+  margin: auto;
+}
+
+.titulo {
+  font-size: var(--tamanho-enorme);
+}
+
+.subtitulo {
+  color: var(--texto-suave);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-3);
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lembrar {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  min-height: var(--alvo-toque);
+  color: var(--texto);
+  font-size: var(--tamanho-pequeno);
+  cursor: pointer;
+}
+
+.caixa {
+  width: var(--espaco-3);
+  height: var(--espaco-3);
+  accent-color: var(--violeta);
+  cursor: pointer;
+}
+
+.link {
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.linkDesabilitado {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--no-data);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  cursor: not-allowed;
+}
+
+.aviso {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--avoid-fundo);
+  border: var(--borda-largura) solid var(--avoid);
+  border-radius: var(--raio-medio);
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+}
+
+.rodape {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  text-align: center;
+}
+
+.painelMarca {
+  display: none;
+}
+
+.marcaTopo {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  align-self: flex-start;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.logo {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.nomeMarca {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}
+
+@media (min-width: 60rem) {
+  .pagina {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .painelMarca {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--espaco-5);
+    background-image: var(--gradiente-marca);
+    overflow: hidden;
+  }
+
+  .marca {
+    color: var(--texto-invertido);
+    font-family: var(--fonte-titulo);
+    font-size: var(--tamanho-marca);
+    line-height: 1;
+    opacity: 0.15;
+    user-select: none;
+  }
+}
