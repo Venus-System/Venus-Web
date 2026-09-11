@@ -1,6 +1,12 @@
 import type { NotasProduto, Produto } from "../../types/produto";
-import type { NotasApi, ProductFullResponse } from "./tipos";
 import type { RiskLevel } from "../../types/ingrediente";
+import type {
+  CategoriaApi,
+  MarcaApi,
+  NotasApi,
+  ProdutoApi,
+  ProductFullResponse,
+} from "./tipos";
 
 const NOTAS_VAZIAS: NotasProduto = {
   overallScore: null,
@@ -52,5 +58,22 @@ export function paraProduto(resposta: ProductFullResponse): Produto {
     imageUrl: null,
     level: paraNivel(notas.overallScore),
     scores: notas,
+  };
+}
+
+export function paraProdutoDaListagem(
+  item: ProdutoApi,
+  marca: MarcaApi,
+  categoria: CategoriaApi,
+): Produto {
+  return {
+    slug: item.slug,
+    name: item.name,
+    description: item.description ?? "",
+    category: categoria.name,
+    brand: marca,
+    imageUrl: null,
+    level: "no-data",
+    scores: NOTAS_VAZIAS,
   };
 }

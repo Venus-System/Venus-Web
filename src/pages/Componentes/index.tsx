@@ -30,7 +30,7 @@ function Componentes() {
   }
 
   return (
-    <MainLayout user={{ name: "Jonathan" }}>
+    <MainLayout>
       <h1>Componentes</h1>
 
       <p>

@@ -3,8 +3,7 @@ import { analisesMock } from "./mocks/analises";
 import { simularLatencia } from "./mocks/atraso";
 import { ErroProdutoNaoEncontrado } from "./erros";
 import { buscarProdutoDaApi } from "./api/produtos";
-
-const USAR_MOCK = import.meta.env.VITE_USAR_MOCK !== "false";
+import { USAR_MOCK } from "../config/ambiente";
 
 export async function buscarAnalisePublica(
   slug: string,

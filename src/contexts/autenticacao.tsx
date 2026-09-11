@@ -1,9 +1,11 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import type { Usuario } from "../types/usuario";
 import {
   entrar as entrarNoServico,
   recuperarSessao,
   sair as sairDoServico,
+  criarConta as criarContaNoServico,
 } from "../services/autenticacao";
 
 interface ValorAutenticacao {
@@ -15,6 +17,7 @@ interface ValorAutenticacao {
     continuarConectado: boolean,
   ) => Promise<void>;
   sair: () => void;
+  criarConta: (nome: string, email: string, senha: string) => Promise<void>;
 }
 
 interface EstadoAutenticacao {
@@ -37,12 +40,20 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
   });
 
   useEffect(() => {
-    recuperarSessao().then((usuario) => {
-      setEstado({ usuario, carregando: false });
-    });
+    recuperarSessao()
+      .then((usuario) => {
+        setEstado({ usuario, carregando: false });
+      })
+      .catch(() => {
+        setEstado({ usuario: null, carregando: false });
+      });
   }, []);
 
-  async function entrar(email: string, senha: string, continuarConectado: boolean) {
+  async function entrar(
+    email: string,
+    senha: string,
+    continuarConectado: boolean,
+  ) {
     const usuario = await entrarNoServico(email, senha, continuarConectado);
     setEstado({ usuario, carregando: false });
   }
@@ -52,8 +63,15 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     setEstado({ usuario: null, carregando: false });
   }
 
+  async function criarConta(nome: string, email: string, senha: string) {
+    const usuario = await criarContaNoServico(nome, email, senha);
+    setEstado({ usuario, carregando: false });
+  }
+
   return (
-    <ContextoAutenticacao.Provider value={{ ...estado, entrar, sair }}>
+    <ContextoAutenticacao.Provider
+      value={{ ...estado, entrar, criarConta, sair }}
+    >
       {children}
     </ContextoAutenticacao.Provider>
   );

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
+import MainLayout from "../MainLayout";
 
 interface RotaPrivadaProps {
   children: ReactNode;
@@ -11,14 +12,20 @@ function RotaPrivada({ children }: RotaPrivadaProps) {
   const localizacao = useLocation();
 
   if (carregando) {
-    return <p aria-live="polite">Verificando sua sessão...</p>;
+    return (
+      <MainLayout>
+        <p aria-live="polite">Verificando sua sessão...</p>
+      </MainLayout>
+    );
   }
 
   if (!usuario) {
-    return <Navigate to="/login" state={{ de: localizacao.pathname }} replace />
+    return (
+      <Navigate to="/login" state={{ de: localizacao.pathname }} replace />
+    );
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 export default RotaPrivada;

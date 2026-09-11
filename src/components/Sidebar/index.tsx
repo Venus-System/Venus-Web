@@ -11,17 +11,13 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { FormEvent } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
 import Input from "../Input";
 import styles from "./styles.module.css";
 
-interface SidebarUser {
-  name: string;
-}
-
 interface SidebarProps {
-  user: SidebarUser | null;
   onSearch?: (term: string) => void;
   onScan?: () => void;
 }
@@ -57,7 +53,9 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function Sidebar({ user, onSearch, onScan }: SidebarProps) {
+function Sidebar({ onSearch, onScan }: SidebarProps) {
+  const { usuario } = useAutenticacao();
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -119,14 +117,14 @@ function Sidebar({ user, onSearch, onScan }: SidebarProps) {
         </div>
       ))}
 
-      {user ? (
+      {usuario  ? (
         <Link to="/perfil" className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
-            {user.name.charAt(0)}
+            {usuario.name.charAt(0)}
           </span>
 
           <span className={styles.userInfo}>
-            <span className={styles.userName}>{user.name}</span>
+            <span className={styles.userName}>{usuario .name}</span>
             <span className={styles.userAction}>
               Ver meu perfil
               <ArrowRight className={styles.userIcon} aria-hidden="true" />
