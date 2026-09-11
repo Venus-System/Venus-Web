@@ -6,7 +6,7 @@ import Input from "../../components/Input";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import styles from "./styles.module.css";
 import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
-import logo from "../../assets/Logo.svg";
+import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 
 type EstadoEnvio =
   | { situacao: "parado" }
@@ -93,22 +93,14 @@ function Login() {
   const desabilitado = formulario.envio.situacao === "enviando";
 
   return (
-    <div className={styles.pagina}>
-      <section className={styles.painelFormulario}>
-        <Link className={styles.marcaTopo} to="/">
-          <img className={styles.logo} src={logo} alt="" />
-          <span className={styles.nomeMarca}>Venus</span>
-        </Link>
+    <LayoutAutenticacao>
+      <h1 className={styles.titulo}>Login</h1>
 
-        <div className={styles.conteudo}>
-          <h1 className={styles.titulo}>Login</h1>
+      <p className={styles.subtitulo}>
+        Seu perfil, histórico e favoritos continuam exatamente onde você deixou.
+      </p>
 
-          <p className={styles.subtitulo}>
-            Seu perfil, histórico e favoritos continuam exatamente onde você
-            deixou.
-          </p>
-
-          <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} onSubmit={handleSubmit}>
             <Input
               id="email"
               name="email"
@@ -169,19 +161,13 @@ function Login() {
             </Button>
           </form>
 
-          <p className={styles.rodape}>
-            Ainda não tem conta?{" "}
-            <Link className={styles.link} to="/criar-conta">
-              Criar conta grátis
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      <aside className={styles.painelMarca} aria-hidden="true">
-        <span className={styles.marca}>Venus</span>
-      </aside>
-    </div>
+      <p className={styles.rodape}>
+        Ainda não tem conta?{" "}
+        <Link className={styles.link} to="/criar-conta">
+          Criar conta grátis
+        </Link>
+      </p>
+    </LayoutAutenticacao>
   );
 }
 
