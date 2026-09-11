@@ -13,6 +13,7 @@ import {
   validarNome,
   validarSenha,
 } from "../../utils/validacao";
+import { FIREBASE_ATIVO } from "../../config/firebase";
 
 type EstadoEnvio =
   | { situacao: "parado" }
@@ -53,7 +54,7 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 };
 
 function CriarConta() {
-  const { criarConta } = useAutenticacao();
+  const { criarConta, entrarComGoogle } = useAutenticacao();
   const navegar = useNavigate();
 
   const [formulario, setFormulario] = useState<EstadoFormulario>({
@@ -93,6 +94,28 @@ function CriarConta() {
       ...atual,
       erros: { ...atual.erros, senha: mensagem },
     }));
+  }
+
+  async function handleGoogle() {
+    setFormulario((atual) => ({
+      ...atual,
+      envio: { situacao: "enviando" },
+      erros: SEM_ERROS,
+    }));
+
+    try {
+      await entrarComGoogle(false);
+      navegar(DESTINO_PADRAO, { replace: true });
+    } catch {
+      setFormulario((atual) => ({
+        ...atual,
+        envio: {
+          situacao: "erro",
+          mensagem: "Não foi possível criar a conta com o Google.",
+        },
+        erros: SEM_ERROS,
+      }));
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -158,19 +181,31 @@ function CriarConta() {
         seus valores.
       </p>
 
-      <button
-        type="button"
-        className={styles.botaoSocial}
-        aria-disabled="true"
-        aria-describedby="aviso-google"
-      >
-        Cadastrar com Google
-      </button>
+      {FIREBASE_ATIVO ? (
+        <Button
+          variant="secondary"
+          onClick={handleGoogle}
+          disabled={desabilitado}
+        >
+          Cadastrar com Google
+        </Button>
+      ) : (
+        <button
+          type="button"
+          className={styles.botaoSocial}
+          aria-disabled="true"
+          aria-describedby="aviso-google"
+        >
+          Cadastrar com Google
+        </button>
+      )}
 
-      <p id="aviso-google" className={styles.aviso}>
-        O cadastro com Google entra quando a autenticação externa estiver
-        disponível.
-      </p>
+      {FIREBASE_ATIVO ? null : (
+        <p id="aviso-google" className={styles.aviso}>
+          O cadastro com Google fica disponível quando a configuração do
+          Firebase existir.
+        </p>
+      )}
 
       <p className={styles.divisor}>ou com e-mail</p>
 

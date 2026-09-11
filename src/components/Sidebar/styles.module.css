@@ -1,7 +1,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-3);
+  gap: var(--espaco-2);
   height: 100%;
   overflow-y: auto;
   padding: var(--espaco-3);
@@ -18,8 +18,8 @@
 }
 
 .logo {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
 }
 
 .brandName {
@@ -33,8 +33,11 @@
   margin: 0;
 }
 
-.scan {
+.sidebar .scan {
   width: 100%;
+  padding-inline: var(--espaco-3);
+  font-size: var(--tamanho-pequeno);
+  white-space: nowrap;
 }
 
 .group {
@@ -71,7 +74,7 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-2);
-  padding: var(--espaco-2) var(--espaco-3);
+  padding: var(--espaco-1) var(--espaco-3);
   min-height: var(--alvo-toque);
   border-left: var(--espaco-1) solid transparent;
   border-radius: var(--raio-medio);
@@ -95,7 +98,7 @@
   display: flex;
   align-items: center;
   gap: var(--espaco-2);
-  margin-top: var(--espaco-2);
+  margin-top: auto;
   padding: var(--espaco-2);
   border-top: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-medio);
@@ -111,8 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   background-image: var(--gradiente-primario);
   border-radius: var(--raio-pilula);
   color: var(--texto-invertido);

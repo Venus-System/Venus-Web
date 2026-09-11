@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { confirmarRedefinicao } from "../../services/autenticacao";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
-import { redefinirSenha } from "../../services/autenticacao";
 import {
   forcaDaSenha,
   validarConfirmacaoSenha,
@@ -24,11 +24,6 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
   forte: "Senha forte.",
 };
 
-interface Passe {
-  email: string;
-  codigo: string;
-}
-
 type EstadoEnvio =
   | { situacao: "parado" }
   | { situacao: "enviando" }
@@ -47,27 +42,10 @@ interface EstadoFormulario {
 
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
-function passeDoEstado(state: unknown): Passe | null {
-  if (
-    typeof state === "object" &&
-    state !== null &&
-    "email" in state &&
-    typeof state.email === "string" &&
-    state.email !== "" &&
-    "codigo" in state &&
-    typeof state.codigo === "string" &&
-    state.codigo !== ""
-  ) {
-    return { email: state.email, codigo: state.codigo };
-  }
-
-  return null;
-}
-
 function NovaSenha() {
   const navegar = useNavigate();
-  const localizacao = useLocation();
-  const passe = passeDoEstado(localizacao.state);
+  const [parametros] = useSearchParams();
+  const codigo = parametros.get("oobCode");
 
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
@@ -75,11 +53,11 @@ function NovaSenha() {
     forca: FORCA_INICIAL,
   });
 
-  if (passe === null) {
+  if (codigo === null || codigo === "") {
     return <Navigate to="/esqueci-senha" replace />;
   }
 
-  const passeConfirmado: Passe = passe;
+  const codigoConfirmado: string = codigo;
 
   function handleChangeSenha(event: ChangeEvent<HTMLInputElement>) {
     const forca = forcaDaSenha(event.target.value);
@@ -109,7 +87,11 @@ function NovaSenha() {
     };
 
     if (erros.senha !== null || erros.confirmacao !== null) {
-      setFormulario((atual) => ({ ...atual, envio: { situacao: "parado" }, erros }));
+      setFormulario((atual) => ({
+        ...atual,
+        envio: { situacao: "parado" },
+        erros,
+      }));
       return;
     }
 
@@ -120,11 +102,7 @@ function NovaSenha() {
     }));
 
     try {
-      await redefinirSenha(
-        passeConfirmado.email,
-        passeConfirmado.codigo,
-        senha,
-      );
+      await confirmarRedefinicao(codigoConfirmado, senha);
       navegar("/esqueci-senha/pronto", { replace: true });
     } catch {
       setFormulario((atual) => ({

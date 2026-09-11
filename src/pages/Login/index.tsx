@@ -7,6 +7,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import styles from "./styles.module.css";
 import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
+import { FIREBASE_ATIVO } from "../../config/firebase";
 
 type EstadoEnvio =
   | { situacao: "parado" }
@@ -31,7 +32,12 @@ function destinoDoLogin(state: unknown): string {
   if (typeof state === "object" && state !== null && "de" in state) {
     const de = state.de;
 
-    if (typeof de === "string" && de.startsWith("/")) {
+    if (
+      typeof de === "string" &&
+      de.startsWith("/") &&
+      !de.startsWith("//") &&
+      !de.startsWith("/\\")
+    ) {
       return de;
     }
   }
@@ -40,7 +46,7 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function Login() {
-  const { entrar } = useAutenticacao();
+  const { entrar, entrarComGoogle } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
     erros: SEM_ERROS,
@@ -90,6 +96,23 @@ function Login() {
     }
   }
 
+  async function handleGoogle() {
+    setFormulario({ envio: { situacao: "enviando" }, erros: SEM_ERROS });
+
+    try {
+      await entrarComGoogle(false);
+      navegar(destino, { replace: true });
+    } catch {
+      setFormulario({
+        envio: {
+          situacao: "erro",
+          mensagem: "Não foi possível entrar com o Google",
+        },
+        erros: SEM_ERROS,
+      });
+    }
+  }
+
   const desabilitado = formulario.envio.situacao === "enviando";
 
   return (
@@ -100,19 +123,31 @@ function Login() {
         Seu perfil, histórico e favoritos continuam exatamente onde você deixou.
       </p>
 
-      <button
-        type="button"
-        className={styles.botaoSocial}
-        aria-disabled="true"
-        aria-describedby="aviso-google"
-      >
-        Continuar com Google
-      </button>
+      {FIREBASE_ATIVO ? (
+        <Button
+          variant="secondary"
+          onClick={handleGoogle}
+          disabled={desabilitado}
+        >
+          Continuar com Google
+        </Button>
+      ) : (
+        <button
+          type="button"
+          className={styles.botaoSocial}
+          aria-disabled="true"
+          aria-describedby="aviso-google"
+        >
+          Continuar com Google
+        </button>
+      )}
 
-      <p id="aviso-google" className={styles.aviso}>
-        A entrada com Google entra quando a autenticação externa estiver
-        disponível.
-      </p>
+      {FIREBASE_ATIVO ? null : (
+        <p id="aviso-google" className={styles.aviso}>
+          A entrada com Google fica disponível quando a configuração do Firebase
+          existir.
+        </p>
+      )}
 
       <p className={styles.divisor}>ou com e-mail</p>
 

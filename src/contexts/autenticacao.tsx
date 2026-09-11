@@ -3,10 +3,12 @@ import type { ReactNode } from "react";
 import type { Usuario } from "../types/usuario";
 import {
   entrar as entrarNoServico,
-  recuperarSessao,
+  entrarComGoogle as entrarComGoogleNoServico,
+  observarSessao,
   sair as sairDoServico,
   criarConta as criarContaNoServico,
 } from "../services/autenticacao";
+
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
@@ -16,7 +18,8 @@ interface ValorAutenticacao {
     senha: string,
     continuarConectado: boolean,
   ) => Promise<void>;
-  sair: () => void;
+  sair: () => Promise<void>;
+  entrarComGoogle: (continuarConectado: boolean) => Promise<void>;
   criarConta: (nome: string, email: string, senha: string) => Promise<void>;
 }
 
@@ -40,13 +43,11 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
   });
 
   useEffect(() => {
-    recuperarSessao()
-      .then((usuario) => {
-        setEstado({ usuario, carregando: false });
-      })
-      .catch(() => {
-        setEstado({ usuario: null, carregando: false });
-      });
+    const cancelar = observarSessao((usuario) => {
+      setEstado({ usuario, carregando: false });
+    });
+
+    return cancelar;
   }, []);
 
   async function entrar(
@@ -58,8 +59,13 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     setEstado({ usuario, carregando: false });
   }
 
-  function sair() {
-    sairDoServico();
+  async function entrarComGoogle(continuarConectado: boolean) {
+    const usuario = await entrarComGoogleNoServico(continuarConectado);
+    setEstado({ usuario, carregando: false });
+  }
+
+  async function sair() {
+    await sairDoServico();
     setEstado({ usuario: null, carregando: false });
   }
 
@@ -70,7 +76,7 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
 
   return (
     <ContextoAutenticacao.Provider
-      value={{ ...estado, entrar, criarConta, sair }}
+      value={{ ...estado, entrar, entrarComGoogle, criarConta, sair }}
     >
       {children}
     </ContextoAutenticacao.Provider>

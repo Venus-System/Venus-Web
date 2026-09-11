@@ -1,11 +1,45 @@
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  confirmPasswordReset,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  setPersistence,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  getAdditionalUserInfo,
+  updateProfile,
+} from "firebase/auth";
+import type { User } from "firebase/auth";
+import { autenticacaoFirebase } from "../config/firebase";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
-import {
-  validarEmail,
-  validarNome,
-  validarSenha,
-  validarCodigo,
-} from "../utils/validacao";
+import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
+import { criarUsuarioNaApi } from "./api/usuarios";
+
+function paraUsuario(conta: User): Usuario {
+  const email = conta.email ?? "";
+
+  return {
+    id: conta.uid,
+    name: conta.displayName ?? email.split("@")[0],
+    email,
+  };
+}
+
+async function aplicarPersistencia(continuarConectado: boolean): Promise<void> {
+  if (autenticacaoFirebase === null) {
+    return;
+  }
+
+  await setPersistence(
+    autenticacaoFirebase,
+    continuarConectado ? browserLocalPersistence : browserSessionPersistence,
+  );
+}
 
 const CHAVE_SESSAO = "venus.sessao";
 
@@ -27,6 +61,51 @@ export async function entrar(
   senha: string,
   continuarConectado: boolean,
 ): Promise<Usuario> {
+  if (autenticacaoFirebase === null) {
+    return entrarComMock(email, senha, continuarConectado);
+  }
+
+  await aplicarPersistencia(continuarConectado);
+
+  const credencial = await signInWithEmailAndPassword(
+    autenticacaoFirebase,
+    email,
+    senha,
+  );
+
+  return paraUsuario(credencial.user);
+}
+
+export async function entrarComGoogle(
+  continuarConectado: boolean,
+): Promise<Usuario> {
+  if (autenticacaoFirebase === null) {
+    throw new Error("A entrada com Google não está configurada.");
+  }
+
+  await aplicarPersistencia(continuarConectado);
+
+  const provedor = new GoogleAuthProvider();
+  const credencial = await signInWithPopup(autenticacaoFirebase, provedor);
+  const usuario = paraUsuario(credencial.user);
+  const informacoes = getAdditionalUserInfo(credencial);
+
+  if (informacoes?.isNewUser === true) {
+    try {
+      await criarUsuarioNaApi(usuario);
+    } catch {
+      return usuario;
+    }
+  }
+
+  return usuario;
+}
+
+async function entrarComMock(
+  email: string,
+  senha: string,
+  continuarConectado: boolean,
+): Promise<Usuario> {
   await simularLatencia();
 
   if (validarEmail(email) !== null || senha.length < 8) {
@@ -44,7 +123,16 @@ export async function entrar(
   return usuario;
 }
 
-export function sair(): void {
+export async function sair(): Promise<void> {
+  if (autenticacaoFirebase === null) {
+    sairDoMock();
+    return;
+  }
+
+  await signOut(autenticacaoFirebase);
+}
+
+function sairDoMock(): void {
   try {
     localStorage.removeItem(CHAVE_SESSAO);
     sessionStorage.removeItem(CHAVE_SESSAO);
@@ -53,7 +141,20 @@ export function sair(): void {
   }
 }
 
-export async function recuperarSessao(): Promise<Usuario | null> {
+export function observarSessao(
+  aoMudar: (usuario: Usuario | null) => void,
+): () => void {
+  if (autenticacaoFirebase === null) {
+    recuperarSessaoDoMock().then(aoMudar);
+    return () => {};
+  }
+
+  return onAuthStateChanged(autenticacaoFirebase, (conta) => {
+    aoMudar(conta === null ? null : paraUsuario(conta));
+  });
+}
+
+async function recuperarSessaoDoMock(): Promise<Usuario | null> {
   const salvo = lerDoArmazenamento();
 
   if (salvo === null) {
@@ -68,7 +169,77 @@ export async function recuperarSessao(): Promise<Usuario | null> {
   }
 }
 
+function ehUsuarioInexistente(erro: unknown): boolean {
+  return (
+    typeof erro === "object" &&
+    erro !== null &&
+    "code" in erro &&
+    erro.code === "auth/user-not-found"
+  );
+}
+
+export async function solicitarRedefinicao(email: string): Promise<void> {
+  if (autenticacaoFirebase === null) {
+    await simularLatencia();
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(autenticacaoFirebase, email);
+  } catch (erro) {
+    if (ehUsuarioInexistente(erro)) {
+      return;
+    }
+
+    throw erro;
+  }
+}
+
+export async function confirmarRedefinicao(
+  codigo: string,
+  senha: string,
+): Promise<void> {
+  if (autenticacaoFirebase === null) {
+    await simularLatencia();
+    return;
+  }
+
+  await confirmPasswordReset(autenticacaoFirebase, codigo, senha);
+}
+
 export async function criarConta(
+  nome: string,
+  email: string,
+  senha: string,
+): Promise<Usuario> {
+  if (autenticacaoFirebase === null) {
+    return criarContaComMock(nome, email, senha);
+  }
+
+  const credencial = await createUserWithEmailAndPassword(
+    autenticacaoFirebase,
+    email,
+    senha,
+  );
+
+  await updateProfile(credencial.user, { displayName: nome.trim() });
+  await aplicarPersistencia(false);
+
+  const usuario: Usuario = {
+    ...paraUsuario(credencial.user),
+    name: nome.trim(),
+  };
+
+  try {
+    await criarUsuarioNaApi(usuario);
+  } catch {
+    return usuario;
+  }
+
+  return usuario;
+}
+
+async function criarContaComMock(
   nome: string,
   email: string,
   senha: string,
@@ -89,7 +260,7 @@ export async function criarConta(
     email,
   };
 
-  sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(usuario));
+  gravarSessao(usuario, false);
 
   return usuario;
 }
@@ -111,47 +282,5 @@ function gravarSessao(usuario: Usuario, persistente: boolean): void {
     destino.setItem(CHAVE_SESSAO, JSON.stringify(usuario));
   } catch {
     return;
-  }
-}
-
-export async function solicitarCodigo(email: string): Promise<void> {
-  await simularLatencia();
-
-  if (validarEmail(email) !== null) {
-    throw new Error("Não foi possível enviar o código.");
-  }
-}
-
-const CODIGO_RECUSADO = "000000";
-
-export async function conferirCodigo(
-  email: string,
-  codigo: string,
-): Promise<void> {
-  await simularLatencia();
-
-  if (
-    validarEmail(email) !== null ||
-    validarCodigo(codigo) !== null ||
-    codigo.trim() === CODIGO_RECUSADO
-  ) {
-    throw new Error("Código inválido ou expirado.");
-  }
-}
-
-export async function redefinirSenha(
-  email: string,
-  codigo: string,
-  senha: string,
-): Promise<void> {
-  await simularLatencia();
-
-  if (
-    validarEmail(email) !== null ||
-    validarCodigo(codigo) !== null ||
-    validarSenha(senha) !== null ||
-    codigo.trim() === CODIGO_RECUSADO
-  ) {
-    throw new Error("Não foi possível redefinir a senha.");
   }
 }

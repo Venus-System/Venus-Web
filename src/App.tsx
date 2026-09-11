@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import Componentes from "./pages/Componentes";
-import CodigoRecuperacao from "./pages/CodigoRecuperacao";
 import CriarConta from "./pages/CriarConta";
 import EsqueciSenha from "./pages/EsqueciSenha";
 import Fontes from "./pages/Fontes";
@@ -24,7 +23,6 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
-      <Route path="/esqueci-senha/codigo" element={<CodigoRecuperacao />} />
       <Route path="/esqueci-senha/nova" element={<NovaSenha />} />
       <Route path="/esqueci-senha/pronto" element={<SenhaAlterada />} />
       <Route path="/pesquisa" element={<Pesquisa />} />
@@ -32,7 +30,6 @@ function App() {
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/metodologia" element={<Metodologia />} />
       <Route path="/fontes" element={<Fontes />} />
-      <Route path="*" element={<NaoEncontrado />} />
       <Route
         path="/dashboard"
         element={
@@ -41,6 +38,7 @@ function App() {
           </RotaPrivada>
         }
       />
+      <Route path="*" element={<NaoEncontrado />} />
     </Routes>
   );
 }
