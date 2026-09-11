@@ -1,0 +1,55 @@
+.titulo {
+  font-size: var(--tamanho-enorme);
+}
+
+.destaque {
+  color: var(--violeta);
+}
+
+.subtitulo {
+  color: var(--texto-suave);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-3);
+}
+
+
+.reenvio {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.botaoTexto {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--violeta);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.botaoTexto:disabled {
+  color: var(--texto-suave);
+  cursor: progress;
+}
+
+.aviso {
+  color: var(--safe);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--avoid-fundo);
+  border: var(--borda-largura) solid var(--avoid);
+  border-radius: var(--raio-medio);
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+}

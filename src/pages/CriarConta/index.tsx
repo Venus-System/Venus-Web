@@ -46,7 +46,8 @@ const DESTINO_PADRAO = "/dashboard";
 const SEGMENTOS = [1, 2, 3, 4];
 
 const TEXTO_FORCA: Record<FaixaSenha, string> = {
-  fraca: "Senha fraca. Use 8 ou mais caracteres, com letras, números e símbolos.",
+  fraca:
+    "Senha fraca. Use 8 ou mais caracteres, com letras, números e símbolos.",
   media: "Senha média. Acrescente números ou símbolos para reforçar.",
   forte: "Senha forte.",
 };
@@ -156,6 +157,22 @@ function CriarConta() {
         Com uma conta, cada análise passa a ser sobre a sua pele, sua saúde e
         seus valores.
       </p>
+
+      <button
+        type="button"
+        className={styles.botaoSocial}
+        aria-disabled="true"
+        aria-describedby="aviso-google"
+      >
+        Cadastrar com Google
+      </button>
+
+      <p id="aviso-google" className={styles.aviso}>
+        O cadastro com Google entra quando a autenticação externa estiver
+        disponível.
+      </p>
+
+      <p className={styles.divisor}>ou com e-mail</p>
 
       <form className={styles.formulario} onSubmit={handleSubmit}>
         <Input

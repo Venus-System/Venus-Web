@@ -1,0 +1,42 @@
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.rotulo {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.caixas {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.caixa,
+.caixaInvalida {
+  width: 3rem;
+  height: 3.5rem;
+  padding: 0;
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+  text-align: center;
+}
+
+.caixaInvalida {
+  border-color: var(--avoid);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+}

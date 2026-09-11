@@ -10,6 +10,45 @@
   color: var(--texto-suave);
 }
 
+.botaoSocial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-2) var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+  color: var(--no-data);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+  cursor: not-allowed;
+}
+
+.aviso {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.divisor {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: center;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.divisor::before,
+.divisor::after {
+  content: "";
+  flex: 1;
+  height: var(--borda-largura);
+  background-color: var(--borda);
+}
+
 .formulario {
   display: flex;
   flex-direction: column;

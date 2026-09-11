@@ -75,3 +75,22 @@ export function forcaDaSenha(senha: string): ForcaSenha {
 
   return { pontos, faixa: "forte" };
 }
+
+export function validarCodigo(codigo: string): string | null {
+  if (!/^[0-9]{6}$/.test(codigo.trim())) {
+    return "O código tem 6 dígitos numéricos.";
+  }
+
+  return null;
+}
+
+export function validarConfirmacaoSenha(
+  senha: string,
+  confirmacao: string,
+): string | null {
+  if (confirmacao !== senha) {
+    return "As senhas não são iguais.";
+  }
+
+  return null;
+}

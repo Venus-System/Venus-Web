@@ -1,6 +1,11 @@
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
-import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
+import {
+  validarEmail,
+  validarNome,
+  validarSenha,
+  validarCodigo,
+} from "../utils/validacao";
 
 const CHAVE_SESSAO = "venus.sessao";
 
@@ -106,5 +111,47 @@ function gravarSessao(usuario: Usuario, persistente: boolean): void {
     destino.setItem(CHAVE_SESSAO, JSON.stringify(usuario));
   } catch {
     return;
+  }
+}
+
+export async function solicitarCodigo(email: string): Promise<void> {
+  await simularLatencia();
+
+  if (validarEmail(email) !== null) {
+    throw new Error("Não foi possível enviar o código.");
+  }
+}
+
+const CODIGO_RECUSADO = "000000";
+
+export async function conferirCodigo(
+  email: string,
+  codigo: string,
+): Promise<void> {
+  await simularLatencia();
+
+  if (
+    validarEmail(email) !== null ||
+    validarCodigo(codigo) !== null ||
+    codigo.trim() === CODIGO_RECUSADO
+  ) {
+    throw new Error("Código inválido ou expirado.");
+  }
+}
+
+export async function redefinirSenha(
+  email: string,
+  codigo: string,
+  senha: string,
+): Promise<void> {
+  await simularLatencia();
+
+  if (
+    validarEmail(email) !== null ||
+    validarCodigo(codigo) !== null ||
+    validarSenha(senha) !== null ||
+    codigo.trim() === CODIGO_RECUSADO
+  ) {
+    throw new Error("Não foi possível redefinir a senha.");
   }
 }

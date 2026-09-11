@@ -1,10 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import Componentes from "./pages/Componentes";
+import CodigoRecuperacao from "./pages/CodigoRecuperacao";
 import CriarConta from "./pages/CriarConta";
+import EsqueciSenha from "./pages/EsqueciSenha";
 import Fontes from "./pages/Fontes";
 import Login from "./pages/Login";
 import Inicio from "./pages/Inicio";
 import Metodologia from "./pages/Metodologia";
+import NovaSenha from "./pages/NovaSenha";
+import SenhaAlterada from "./pages/SenhaAlterada";
 import Pesquisa from "./pages/Pesquisa";
 import Produto from "./pages/Produto";
 import Sobre from "./pages/Sobre";
@@ -19,6 +23,10 @@ function App() {
       <Route path="/componentes" element={<Componentes />} />
       <Route path="/login" element={<Login />} />
       <Route path="/criar-conta" element={<CriarConta />} />
+      <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+      <Route path="/esqueci-senha/codigo" element={<CodigoRecuperacao />} />
+      <Route path="/esqueci-senha/nova" element={<NovaSenha />} />
+      <Route path="/esqueci-senha/pronto" element={<SenhaAlterada />} />
       <Route path="/pesquisa" element={<Pesquisa />} />
       <Route path="/produto/:slug" element={<Produto />} />
       <Route path="/sobre" element={<Sobre />} />
