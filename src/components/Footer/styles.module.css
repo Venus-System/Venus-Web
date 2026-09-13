@@ -1,0 +1,114 @@
+.footer {
+  padding: var(--espaco-5) var(--espaco-3) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-top: var(--borda-largura) solid var(--borda);
+  overflow: hidden;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-5);
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  max-width: 22rem;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-5);
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.logo {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.brandName {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+  color: var(--roxo);
+}
+
+.tagline {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.columnTitle {
+  color: var(--violeta);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+}
+
+.list,
+.legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding-left: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  color: var(--texto);
+  font-size: var(--tamanho-pequeno);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--violeta);
+  text-decoration: underline;
+}
+
+.watermark {
+  color: var(--lavanda);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-marca);
+  font-weight: var(--peso-titulo);
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--espaco-3);
+  border-top: var(--borda-largura) solid var(--borda);
+  color: var(--texto-suave);
+}
+
+.legal {
+  flex-direction: row;
+  gap: var(--espaco-3);
+}

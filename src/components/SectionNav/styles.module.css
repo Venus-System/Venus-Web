@@ -1,0 +1,39 @@
+.nav {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+  margin: 0;
+  padding: var(--espaco-1);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-pilula);
+  list-style: none;
+}
+
+.link,
+.linkActive {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-pilula);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--violeta);
+}
+
+.linkActive {
+  background-color: var(--card);
+  box-shadow: var(--sombra-cartao);
+  color: var(--violeta);
+}

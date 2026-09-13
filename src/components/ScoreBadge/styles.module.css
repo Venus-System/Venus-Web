@@ -1,0 +1,43 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+  line-height: 1;
+}
+
+.description {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.safe {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}
+
+.warning {
+  background-color: var(--warning-fundo);
+  color: var(--warning);
+}
+
+.avoid {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.no-data {
+  background-color: var(--no-data-fundo);
+  color: var(--no-data);
+}

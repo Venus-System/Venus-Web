@@ -1,0 +1,98 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.label {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field {
+  width: 100%;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+  font-size: var(--tamanho-base);
+}
+
+.fieldWithIcon {
+  padding-left: var(--espaco-5);
+}
+
+.fieldWithAction {
+  padding-right: var(--espaco-5);
+}
+
+.field::placeholder {
+  color: var(--texto-suave);
+}
+
+.fieldInvalid {
+  border-color: var(--avoid);
+}
+
+.icon,
+.action {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-suave);
+}
+
+.icon {
+  left: var(--espaco-2);
+  pointer-events: none;
+}
+
+.action {
+  right: var(--espaco-2);
+  padding: var(--espaco-1);
+  background: none;
+  border: none;
+  border-radius: var(--raio-pequeno);
+  cursor: pointer;
+}
+
+.action:hover {
+  color: var(--violeta);
+}
+
+.icon svg,
+.actionIcon {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}

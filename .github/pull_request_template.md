@@ -1,41 +1,41 @@
 <!--
-  Fill in the sections below. Delete anything that does not apply.
-  PR title: follow the same convention as the commits, for example:
-  feat: add product page
-  fix: correct keyboard focus in modal
+  Preencha as seções abaixo. Apague o que não se aplicar.
+  Título do PR: siga a mesma convenção dos commits, por exemplo:
+  feat: adiciona página de produto
+  fix: corrige foco do teclado no modal
 -->
 
-## What this PR does
+## O que este PR faz
 
-<!-- One or two sentences explaining the change, in plain language. -->
+<!-- Uma ou duas frases explicando a mudança, em linguagem simples. -->
 
-## Type of change
+## Tipo de mudança
 
-- [ ] `feat` new feature
-- [ ] `fix` bug fix
-- [ ] `refactor` internal change, no behavior difference
-- [ ] `docs` documentation
+- [ ] `feat` funcionalidade nova
+- [ ] `fix` correção de defeito
+- [ ] `refactor` mudança interna, sem diferença de comportamento
+- [ ] `docs` documentação
 
-## Evidence
+## Evidência
 
-<!-- Screenshot, screen recording, or link to the deployed environment.
-     Required whenever the change affects something visible. -->
+<!-- Captura de tela, gravação de tela ou link do ambiente publicado.
+     Obrigatório sempre que a mudança afetar algo visível. -->
 
-## Author checklist
+## Checklist do autor
 
-- [ ] The title follows the conventional commits convention
-- [ ] I manually tested what changed and described how to reproduce it above
-- [ ] I left no `console.log` or commented-out code
-- [ ] I did not commit any key, password, or private URL
-- [ ] All new code in `src/` is `.ts` or `.tsx` and free of `any` types.
-- [ ] API calls are isolated in `src/services/` (no direct fetch in components).
-- [ ] `useEffect` dependency arrays are explicit and correct.
-- [ ] Dynamic lists use unique data identifiers as `key` (no `key={index}`).
-- [ ] Async operations have visual UI feedback (loading, success, error).
-- [ ] Basic accessibility is met (semantic `<button>`, `<label>`, image `alt`, and keyboard navigation works).
-- [ ] I updated the documentation, if needed
+- [ ] O título segue a convenção de commits convencionais
+- [ ] Testei manualmente o que mudou e descrevi acima como reproduzir
+- [ ] Não deixei nenhum `console.log` nem código comentado
+- [ ] Não commitei nenhuma chave, senha ou URL privada
+- [ ] Todo código novo em `src/` é `.ts` ou `.tsx` e não usa `any`.
+- [ ] As chamadas de API estão isoladas em `src/services/` (sem `fetch` direto em componente).
+- [ ] Os arrays de dependência de `useEffect` estão explícitos e corretos.
+- [ ] Listas dinâmicas usam identificador único do dado como `key` (sem `key={index}`).
+- [ ] Operações assíncronas têm retorno visual na interface (carregando, sucesso, erro).
+- [ ] A acessibilidade básica está atendida (`<button>` semântico, `<label>`, `alt` em imagem, e a navegação por teclado funciona).
+- [ ] Atualizei a documentação, se foi necessário
 
-## Notes for the reviewer
+## Observações para quem revisa
 
-<!-- Anything that deserves special attention, an open question,
-     or a decision you would like to discuss. -->
+<!-- Algo que mereça atenção especial, uma dúvida em aberto
+     ou uma decisão que você queira discutir. -->

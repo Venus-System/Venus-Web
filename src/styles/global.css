@@ -35,7 +35,9 @@ h4,
 h5,
 h6 {
   font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 h1 {
@@ -60,8 +62,17 @@ p + ol {
   margin-top: var(--espaco-3);
 }
 
+h1 + p,
+h2 + p,
+h3 + p,
+h4 + p,
+h5 + p,
+h6 + p {
+  margin-top: var(--espaco-titulo);
+}
+
 a {
-  color: var(--roxo);
+  color: var(--violeta);
 }
 
 a:hover {

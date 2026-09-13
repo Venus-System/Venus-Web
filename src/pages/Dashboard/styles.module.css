@@ -1,0 +1,11 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding-block: var(--espaco-4);
+}
+
+.texto {
+  max-width: 60ch;
+  color: var(--texto-suave);
+}
