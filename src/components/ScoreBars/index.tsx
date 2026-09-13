@@ -17,6 +17,10 @@ const DIMENSIONS = [
   { key: "ethicalScore", label: "Ético", fill: "ethics", tone: "toneEthics" },
 ] as const;
 
+function limitar(valor: number): number {
+  return Math.min(100, Math.max(0, valor));
+}
+
 function ScoreBars({ notas }: ScoreBarsProps) {
   const baseId = useId();
 
@@ -49,7 +53,7 @@ function ScoreBars({ notas }: ScoreBarsProps) {
             <div className={trackClasses}>
               <div
                 className={[styles.fill, styles[dimension.fill]].join(" ")}
-                style={{ width: `${value ?? 0}%` }}
+                style={{ width: `${value === null ? 0 : limitar(value)}%` }}
                 role="progressbar"
                 aria-labelledby={labelId}
                 aria-valuemin={0}

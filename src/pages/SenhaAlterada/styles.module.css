@@ -1,0 +1,19 @@
+.icone {
+  width: 6rem;
+  height: 6rem;
+  color: var(--safe);
+  stroke-width: 1.5;
+}
+
+.titulo {
+  font-size: var(--tamanho-enorme);
+}
+
+.destaque {
+  color: var(--violeta);
+}
+
+.texto {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}

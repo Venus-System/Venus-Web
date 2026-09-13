@@ -99,11 +99,6 @@
   color: var(--texto-suave);
 }
 
-.cardLink {
-  margin-top: var(--espaco-2);
-  font-weight: var(--peso-forte);
-}
-
 .section {
   display: flex;
   flex-direction: column;

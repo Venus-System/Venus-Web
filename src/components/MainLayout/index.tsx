@@ -3,16 +3,11 @@ import Footer from "../Footer";
 import Sidebar from "../Sidebar";
 import styles from "./styles.module.css";
 
-interface MainLayoutUser {
-  name: string;
-}
-
 interface MainLayoutProps {
   children: ReactNode;
-  user?: MainLayoutUser | null;
 }
 
-function MainLayout({ children, user = null }: MainLayoutProps) {
+function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className={styles.layout}>
       <a href="#main-content" className={styles.skipLink}>
@@ -21,7 +16,7 @@ function MainLayout({ children, user = null }: MainLayoutProps) {
 
       <div className={styles.columns}>
         <div className={styles.aside}>
-          <Sidebar user={user} />
+          <Sidebar />
         </div>
 
         <main id="main-content" className={styles.content} tabIndex={-1}>

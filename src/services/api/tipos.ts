@@ -6,6 +6,7 @@ export interface ProdutoApi {
 }
 
 export interface MarcaApi {
+  id: number;
   name: string;
   country: string | null;
   website: string | null;
@@ -15,6 +16,7 @@ export interface MarcaApi {
 }
 
 export interface CategoriaApi {
+  id: number;
   name: string;
 }
 
@@ -42,4 +44,14 @@ export interface ProductFullResponse {
   category: CategoriaApi;
   claims: ClaimApi[];
   score: NotasApi | null;
+}
+
+export interface ProdutoApi {
+  id: number;
+  name: string;
+  description: string | null;
+  slug: string;
+  brandId: number;
+  productCategoryId: number;
+  isActive: boolean;
 }

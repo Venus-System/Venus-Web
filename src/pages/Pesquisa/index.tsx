@@ -11,18 +11,14 @@ import styles from "./styles.module.css";
 type EstadoBusca =
   | { situacao: "carregando"; listaAnterior: Produto[] }
   | { situacao: "sucesso"; lista: Produto[] }
-  | { situacao: "erro"; mensagem: string };
+  | { situacao: "erro"; mensagem: string; listaAnterior: Produto[] };
 
 function listaVisivel(estado: EstadoBusca): Produto[] {
-  if (estado.situacao === "carregando") {
-    return estado.listaAnterior;
-  }
-
   if (estado.situacao === "sucesso") {
     return estado.lista;
   }
 
-  return [];
+  return estado.listaAnterior;
 }
 
 function textoDeStatus(estado: EstadoBusca, termo: string): string {
@@ -90,6 +86,13 @@ function Pesquisa() {
 
   useEffect(() => {
     let ativo = true;
+    let expirou = false;
+
+    const controle = new AbortController();
+    const limite = setTimeout(() => {
+      expirou = true;
+      controle.abort();
+    }, 8000);
 
     async function carregar() {
       setEstado((atual) => ({
@@ -98,17 +101,20 @@ function Pesquisa() {
       }));
 
       try {
-        const lista = await buscarProdutos(termo);
+        const lista = await buscarProdutos(termo, controle.signal);
 
         if (ativo) {
           setEstado({ situacao: "sucesso", lista });
         }
       } catch {
-        if (ativo) {
-          setEstado({
+        if (ativo || expirou) {
+          setEstado((atual) => ({
             situacao: "erro",
-            mensagem: "Não foi possível carregar os produtos.",
-          });
+            mensagem: expirou
+              ? "A busca demorou demais. Tente novamente."
+              : "Não foi possível carregar os produtos.",
+            listaAnterior: listaVisivel(atual),
+          }));
         }
       }
     }
@@ -117,6 +123,8 @@ function Pesquisa() {
 
     return () => {
       ativo = false;
+      clearTimeout(limite);
+      controle.abort();
     };
   }, [termo]);
 

@@ -1,8 +1,8 @@
 import type { Produto } from "../types/produto";
 import { simularLatencia } from "./mocks/atraso";
 import { produtosMock } from "./mocks/produtos";
-
-const USAR_MOCK = import.meta.env.VITE_USAR_MOCK !== "false";
+import { USAR_MOCK } from "../config/ambiente";
+import { listarProdutosDaApi } from "./api/produtos";
 
 function filtrarPorTermo(produtos: Produto[], termo?: string): Produto[] {
   if (!termo) {
@@ -23,17 +23,23 @@ function filtrarPorTermo(produtos: Produto[], termo?: string): Produto[] {
   );
 }
 
-export async function buscarProdutos(termo?: string): Promise<Produto[]> {
-  if (!USAR_MOCK) {
-    throw new Error(
-      "A busca por produtos ainda não está disponível na API: a listagem não devolve marca nem categoria.",
-    );
-  }
-
+export async function buscarProdutos(
+  termo?: string,
+  sinal?: AbortSignal,
+): Promise<Produto[]> {
   try {
-    await simularLatencia();
-    return filtrarPorTermo(produtosMock, termo);
-  } catch {
+    if (USAR_MOCK) {
+      await simularLatencia();
+      return filtrarPorTermo(produtosMock, termo);
+    }
+
+    const produtos = await listarProdutosDaApi(sinal);
+    return filtrarPorTermo(produtos, termo);
+  } catch (erro) {
+    if (erro instanceof DOMException && erro.name === "AbortError") {
+      throw erro;
+    }
+
     throw new Error("Não foi possível carregar os produtos.");
   }
 }
