@@ -13,4 +13,4 @@ function NaoEncontrado() {
   );
 }
 
-export default NaoEncontrado
+export default NaoEncontrado;

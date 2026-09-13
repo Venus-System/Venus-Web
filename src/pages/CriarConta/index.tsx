@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
@@ -54,7 +54,7 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 };
 
 function CriarConta() {
-  const { criarConta, entrarComGoogle } = useAutenticacao();
+  const { usuario, criarConta, entrarComGoogle } = useAutenticacao();
   const navegar = useNavigate();
 
   const [formulario, setFormulario] = useState<EstadoFormulario>({
@@ -62,6 +62,12 @@ function CriarConta() {
     erros: SEM_ERROS,
     forca: FORCA_INICIAL,
   });
+
+  useEffect(() => {
+    if (usuario !== null) {
+      navegar(DESTINO_PADRAO, { replace: true });
+    }
+  }, [usuario, navegar]);
 
   function handleChangeSenha(event: ChangeEvent<HTMLInputElement>) {
     const forca = forcaDaSenha(event.target.value);

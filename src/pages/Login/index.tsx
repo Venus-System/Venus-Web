@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent, FocusEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
@@ -46,7 +46,7 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function Login() {
-  const { entrar, entrarComGoogle } = useAutenticacao();
+  const { usuario, entrar, entrarComGoogle } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
     erros: SEM_ERROS,
@@ -55,6 +55,12 @@ function Login() {
   const navegar = useNavigate();
   const localizacao = useLocation();
   const destino = destinoDoLogin(localizacao.state);
+
+  useEffect(() => {
+    if (usuario !== null) {
+      navegar(destino, { replace: true });
+    }
+  }, [usuario, destino, navegar]);
 
   function handleBlurEmail(event: FocusEvent<HTMLInputElement>) {
     const mensagem = validarEmail(event.target.value);
