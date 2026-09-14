@@ -24,7 +24,6 @@ export type TipoCouroCabeludo =
 export type NivelSensibilidade = "low" | "medium" | "high" | "very_high";
 
 export type FaixaEtaria =
-  | "under_13"
   | "age_13_17"
   | "age_18_24"
   | "age_25_34"
