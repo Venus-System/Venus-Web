@@ -15,6 +15,9 @@ import NaoEncontrado from "./pages/NaoEncontrado";
 import Dashboard from "./pages/Dashboard";
 import RotaPrivada from "./components/RotaPrivada";
 import Perguntas from "./pages/Perguntas";
+import Privacidade from "./pages/Privacidade";
+import Termos from "./pages/Termos";
+import Cookies from "./pages/Cookies";
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
           </RotaPrivada>
         }
       />
+      <Route path="/privacidade" element={<Privacidade />} />
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/cookies" element={<Cookies />} />
       <Route path="*" element={<NaoEncontrado />} />
     </Routes>
   );
