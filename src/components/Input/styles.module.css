@@ -12,6 +12,20 @@
   text-transform: uppercase;
 }
 
+.labelTitle {
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-titulo);
+  line-height: 1.2;
+}
+
+.hint {
+  margin-bottom: var(--espaco-2);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .labelHidden {
   position: absolute;
   width: 1px;

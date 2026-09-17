@@ -14,6 +14,7 @@ import Sobre from "./pages/Sobre";
 import NaoEncontrado from "./pages/NaoEncontrado";
 import Dashboard from "./pages/Dashboard";
 import RotaPrivada from "./components/RotaPrivada";
+import Perguntas from "./pages/Perguntas";
 
 function App() {
   return (
@@ -35,6 +36,14 @@ function App() {
         element={
           <RotaPrivada>
             <Dashboard />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/perguntas"
+        element={
+          <RotaPrivada>
+            <Perguntas />
           </RotaPrivada>
         }
       />
