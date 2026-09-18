@@ -279,20 +279,44 @@ function CriarConta() {
               name="termos"
               type="checkbox"
               className={styles.caixa}
-              aria-labelledby="rotulo-termos link-termos"
+              aria-labelledby="rotulo-termos link-termos conector-termos link-privacidade"
               aria-describedby={
-                formulario.erros.termos ? "erro-termos" : undefined
+                formulario.erros.termos
+                  ? "aviso-nova-aba erro-termos"
+                  : "aviso-nova-aba"
               }
             />
-
+            
             <label id="rotulo-termos" htmlFor="termos">
               Li e aceito os
             </label>
 
-            <Link id="link-termos" className={styles.link} to="/termos">
-              Termos e a Privacidade
+            <Link
+              id="link-termos"
+              className={styles.link}
+              to="/termos"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Termos de Uso
+            </Link>
+
+            <span id="conector-termos">e a</span>
+
+            <Link
+              id="link-privacidade"
+              className={styles.link}
+              to="/privacidade"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Política de Privacidade
             </Link>
           </div>
+
+          <p id="aviso-nova-aba" className={styles.aviso}>
+            Os dois documentos abrem em uma nova aba.
+          </p>
 
           {formulario.erros.termos ? (
             <p id="erro-termos" className={styles.erroCampo} role="alert">
