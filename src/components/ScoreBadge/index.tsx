@@ -14,7 +14,7 @@ function ScoreBadge({ score, level }: ScoreBadgeProps) {
   return (
     <span className={classes}>
       <span aria-hidden="true">{score === null ? "—" : score}</span>
-      <span className={styles.description}>{description}</span>
+      <span className="texto-oculto">{description}</span>
     </span>
   );
 }

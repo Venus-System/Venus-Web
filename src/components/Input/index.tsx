@@ -67,7 +67,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <div className={styles.wrapper}>
       <label
         htmlFor={id}
-        className={hideLabel ? styles.labelHidden : labelClasses[labelVariant]}
+        className={hideLabel ? "texto-oculto" : labelClasses[labelVariant]}
       >
         {label}
       </label>

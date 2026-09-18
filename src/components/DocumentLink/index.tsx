@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import styles from "./styles.module.css";
 
 interface DocumentLinkProps {
   href?: string;
@@ -27,7 +26,7 @@ function DocumentLink({ href, children }: DocumentLinkProps) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">
       {children}
-      <span className={styles.srOnly}> (abre em nova aba)</span>
+      <span className="texto-oculto"> (abre em nova aba)</span>
     </a>
   );
 }

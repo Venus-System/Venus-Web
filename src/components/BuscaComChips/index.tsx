@@ -137,7 +137,7 @@ function BuscaComChips<T extends string>({
         error={error}
       />
 
-      <p className={styles.status} aria-live="polite">
+      <p className="texto-oculto" aria-live="polite">
         {status}
       </p>
 
