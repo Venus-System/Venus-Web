@@ -1,3 +1,6 @@
+import type { FaixaEtaria } from "../types/perfil";
+import type { AlergiaSelecionada } from "../types/questionario";
+
 export function validarNome(nome: string): string | null {
   if (nome.trim() === "") {
     return "Informe como podemos te chamar.";
@@ -90,6 +93,24 @@ export function validarConfirmacaoSenha(
 ): string | null {
   if (confirmacao !== senha) {
     return "As senhas não são iguais.";
+  }
+
+  return null;
+}
+
+export function validarFaixaEtaria(faixa: FaixaEtaria | ""): string | null {
+  if (faixa === "") {
+    return "Informe a sua faixa etária.";
+  }
+
+  return null;
+}
+
+export function validarGravidadeDasAlergias(
+  alergias: AlergiaSelecionada[],
+): string | null {
+  if (alergias.some((alergia) => alergia.severity === "")) {
+    return "Informe a gravidade de cada alergia que você escolheu.";
   }
 
   return null;

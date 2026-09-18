@@ -7,24 +7,16 @@ import type {
   PreferenciasPerfil,
   TipoCouroCabeludo,
   TipoPele,
+  TipoCabelo
 } from "./perfil";
+import { SituacaoAtual, CondicaoPele } from "./usuario";
 
 export interface AlergiaSelecionada {
   id: string;
   severity: PersonalRiskLevel | "";
 }
 
-export type CurvaturaCabelo =
-  | "1"
-  | "2a"
-  | "2b"
-  | "2c"
-  | "3a"
-  | "3b"
-  | "3c"
-  | "4a"
-  | "4b"
-  | "4c";
+export type CurvaturaCabelo = TipoCabelo
 
 export type SensibilidadeQuestionario = Exclude<
   NivelSensibilidade,
@@ -39,8 +31,9 @@ export interface RespostasQuestionario {
   skinPhototype: Fototipo | "";
   skinSensitivity: SensibilidadeQuestionario | "";
   scalpType: TipoCouroCabeludo | "";
-  allergyIds: string[];
-  preferences: Array<keyof PreferenciasPerfil> | null;
+  allergies: AlergiaSelecionada[];
+  preferences: Array<keyof PreferenciasPerfil>;
   healthDataConsent: boolean;
-  allergies: AlergiaSelecionada[] | null;
+  currentSituation: SituacaoAtual | "";
+  skinConditions: CondicaoPele[];
 }
