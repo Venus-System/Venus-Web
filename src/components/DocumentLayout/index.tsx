@@ -1,4 +1,5 @@
 import { extrairAtualizacao, extrairTitulos } from "../../utils/markdown";
+import LayoutSimples from "../LayoutSimples";
 import Markdown from "../Markdown";
 import TableOfContents from "../TableOfContents";
 import styles from "./styles.module.css";
@@ -16,14 +17,16 @@ function DocumentLayout({ title, content }: DocumentLayoutProps) {
   const atualizacao = extrairAtualizacao(content);
 
   return (
-    <article className={styles.document}>
-      <h1 className={styles.title}>{title}</h1>
-      {atualizacao === null ? null : (
-        <p className={styles.updated}>Última atualização: {atualizacao}</p>
-      )}
-      <TableOfContents items={secoes} label="Seções do documento" />
-      <Markdown content={content} />
-    </article>
+    <LayoutSimples>
+      <article className={styles.document}>
+        <h1 className={styles.title}>{title}</h1>
+        {atualizacao === null ? null : (
+          <p className={styles.updated}>Última atualização: {atualizacao}</p>
+        )}
+        <TableOfContents items={secoes} label="Seções do documento" />
+        <Markdown content={content} />
+      </article>
+    </LayoutSimples>
   );
 }
 
