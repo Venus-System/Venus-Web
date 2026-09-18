@@ -15,6 +15,11 @@ export interface MarcaApi {
   isBrazilian: boolean;
 }
 
+export interface AlergiaApi {
+  id: number;
+  allergyName: string;
+}
+
 export interface CategoriaApi {
   id: number;
   name: string;

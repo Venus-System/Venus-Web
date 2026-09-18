@@ -11,7 +11,17 @@ export type TipoPele =
 
 export type Fototipo = "I" | "II" | "III" | "IV" | "V" | "VI";
 
-export type TipoCabelo = "straight" | "wavy" | "curly" | "coily" | "other";
+export type TipoCabelo =
+  | "1"
+  | "2a"
+  | "2b"
+  | "2c"
+  | "3a"
+  | "3b"
+  | "3c"
+  | "4a"
+  | "4b"
+  | "4c";
 
 export type TipoCouroCabeludo =
   | "normal"
@@ -39,6 +49,11 @@ export type Genero =
   | "prefer_not_say";
 
 export type TipoAlergia = "ingredient" | "material" | "condition" | "other";
+
+export interface AlergiaCatalogo {
+  id: string;
+  name: string;
+}
 
 export interface Alergia {
   name: string;
@@ -72,4 +87,27 @@ export interface Perfil {
   hasEczema: boolean;
   preferences: PreferenciasPerfil;
   allergies: Alergia[];
+}
+
+export interface AlergiaParaSalvar {
+  allergyId: string;
+  severity: PersonalRiskLevel | null;
+}
+
+export interface PerfilParaSalvar {
+  gender: Genero | null;
+  ageRange: FaixaEtaria | null;
+  hairType: TipoCabelo | null;
+  skinType: TipoPele | null;
+  skinPhototype: Fototipo | null;
+  skinSensitivity: NivelSensibilidade | null;
+  scalpType: TipoCouroCabeludo | null;
+  isPregnant: boolean | null;
+  acneProne: boolean | null;
+  hasRosacea: boolean | null;
+  hasEczema: boolean | null;
+  hasHyperpigmentation: boolean | null;
+  hasMelasma: boolean | null;
+  preferences: PreferenciasPerfil;
+  allergies: AlergiaParaSalvar[];
 }
