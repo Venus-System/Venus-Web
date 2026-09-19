@@ -51,6 +51,13 @@
   --foco-largura: 3px;
   --foco-offset: 2px;
 
+  --sobreposicao: rgb(26 10 46 / 0.6);
+  --fototipo-i: #f6d9bd;
+  --fototipo-ii: #ecc39a;
+  --fototipo-iii: #d9a172;
+  --fototipo-iv: #b97a45;
+  --fototipo-v: #8a5327;
+  --fototipo-vi: #4a2a15;
   --superficie-suave: #f2ecfa;
   --lavanda-clara: #efe7f9;
   --lavanda-media: #e7daf7;
