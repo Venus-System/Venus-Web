@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import AllergyPicker from "../../components/AllergyPicker";
@@ -8,6 +9,9 @@ import GrupoCaixas from "../../components/GrupoCaixas";
 import GrupoRadio from "../../components/GrupoRadio";
 import LayoutSimples from "../../components/LayoutSimples";
 import ListaSuspensa from "../../components/ListaSuspensa";
+import ModalFototipo from "../../components/ModalFototipo";
+import ModalTipoCabelo from "../../components/ModalTipoCabelo";
+import ModalTipoPele from "../../components/ModalTipoPele";
 import QuestionCard from "../../components/QuestionCard";
 import ResumoErros from "../../components/ResumoErros";
 import {
@@ -29,7 +33,10 @@ import {
 } from "./opcoes";
 import styles from "./styles.module.css";
 
+type Guia = "cabelo" | "pele" | "fototipo" | null;
+
 function Perguntas() {
+  const [guia, setGuia] = useState<Guia>(null);
   const {
     respostas,
     responder,
@@ -95,6 +102,15 @@ function Perguntas() {
             value={respostas.hairCurvature}
             onChange={(curvatura) => responder("hairCurvature", curvatura)}
           />
+
+          <button
+            type="button"
+            className={styles.guia}
+            onClick={() => setGuia("cabelo")}
+          >
+            Saiba qual seu tipo de cabelo
+            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
+          </button>
         </QuestionCard>
 
         <ConsentimentoSaude
@@ -111,6 +127,15 @@ function Perguntas() {
             value={respostas.skinType}
             onChange={(skinType) => responder("skinType", skinType)}
           />
+
+          <button
+            type="button"
+            className={styles.guia}
+            onClick={() => setGuia("pele")}
+          >
+            Saiba qual seu tipo de pele
+            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
+          </button>
         </QuestionCard>
 
         <QuestionCard number={4} total={TOTAL_PERGUNTAS}>
@@ -132,6 +157,15 @@ function Perguntas() {
             value={respostas.skinPhototype}
             onChange={(fototipo) => responder("skinPhototype", fototipo)}
           />
+
+          <button
+            type="button"
+            className={styles.guia}
+            onClick={() => setGuia("fototipo")}
+          >
+            Saiba qual seu fototipo
+            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
+          </button>
         </QuestionCard>
 
         <QuestionCard number={6} total={TOTAL_PERGUNTAS}>
@@ -275,6 +309,10 @@ function Perguntas() {
           </Button>
         )}
       </form>
+
+      <ModalTipoCabelo open={guia === "cabelo"} onClose={() => setGuia(null)} />
+      <ModalTipoPele open={guia === "pele"} onClose={() => setGuia(null)} />
+      <ModalFototipo open={guia === "fototipo"} onClose={() => setGuia(null)} />
     </LayoutSimples>
   );
 }

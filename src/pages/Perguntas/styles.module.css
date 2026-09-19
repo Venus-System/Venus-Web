@@ -79,6 +79,32 @@
   border-radius: var(--raio-medio);
 }
 
+.guia {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espaco-1);
+  min-height: var(--alvo-toque);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--violeta);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.guia:hover {
+  color: var(--crimson);
+}
+
+.guiaIcone {
+  width: 1em;
+  height: 1em;
+}
+
 .decisao {
   display: flex;
   flex-direction: column;
