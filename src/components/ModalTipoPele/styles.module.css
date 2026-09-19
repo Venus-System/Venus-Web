@@ -1,0 +1,35 @@
+.intro {
+  max-width: 60ch;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.lista {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  padding: var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-radius: var(--raio-medio);
+}
+
+.nome {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-forte);
+}
+
+.descricao {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+@media (min-width: 40rem) {
+  .lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
