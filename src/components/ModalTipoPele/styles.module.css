@@ -13,9 +13,19 @@
 }
 
 .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-1);
   padding: var(--espaco-3);
   background-color: var(--superficie-suave);
   border-radius: var(--raio-medio);
+  text-align: center;
+}
+
+.ilustracao {
+  width: var(--espaco-5);
+  height: auto;
 }
 
 .nome {

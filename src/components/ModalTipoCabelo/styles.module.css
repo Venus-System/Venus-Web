@@ -25,9 +25,19 @@
 }
 
 .item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0 var(--espaco-3);
   padding: var(--espaco-3);
   background-color: var(--superficie-suave);
   border-radius: var(--raio-medio);
+}
+
+.ilustracao {
+  grid-row: span 2;
+  width: var(--espaco-4);
+  height: auto;
 }
 
 .codigo {
