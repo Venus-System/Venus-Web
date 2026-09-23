@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { LogOut, RotateCcw } from "lucide-react";
 import AllergyPicker from "../../components/AllergyPicker";
 import BuscaComChips from "../../components/BuscaComChips";
 import Button from "../../components/Button";
@@ -56,8 +56,20 @@ const INDISPONIVEIS = [
   { id: "resumo-semanal", label: "Receber resumo semanal por e-mail" },
 ];
 
+interface EstadoDaConta {
+  nome: string;
+  situacao: "ocioso" | "salvando" | "salvo" | "erro";
+  mensagem: string;
+}
+
 function Perfil() {
-  const { usuario } = useAutenticacao();
+  const navegar = useNavigate();
+  const { usuario, sair, atualizarNome } = useAutenticacao();
+  const [conta, setConta] = useState<EstadoDaConta>({
+    nome: "",
+    situacao: "ocioso",
+    mensagem: "",
+  });
   const [revogando, setRevogando] = useState(false);
   const [trocandoFoto, setTrocandoFoto] = useState(false);
   const [avatar, setAvatar] = useState<Avatar>(() => lerAvatar());
@@ -71,6 +83,8 @@ function Perfil() {
     itensDoResumo,
     respostasPreenchidas,
     totalDeRespostas,
+    foto,
+    enviarFoto,
     resumoRef,
     trocarCondicoes,
     revogarConsentimento,
@@ -79,6 +93,37 @@ function Perfil() {
 
   const nome = usuario === null ? "" : usuario.name;
   const email = usuario === null ? "" : usuario.email;
+
+  useEffect(() => {
+    setConta({ nome, situacao: "ocioso", mensagem: "" });
+  }, [nome]);
+
+  async function salvarNome() {
+    if (conta.nome.trim() === nome) {
+      return;
+    }
+
+    setConta((atual) => ({ ...atual, situacao: "salvando", mensagem: "" }));
+
+    try {
+      await atualizarNome(conta.nome);
+
+      setConta((atual) => ({ ...atual, situacao: "salvo", mensagem: "" }));
+    } catch (erro) {
+      setConta((atual) => ({
+        ...atual,
+        situacao: "erro",
+        mensagem:
+          erro instanceof Error
+            ? erro.message
+            : "Não foi possível salvar o seu nome.",
+      }));
+    }
+  }
+
+  function handleSair() {
+    void sair().then(() => navegar("/login"));
+  }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
 
   return (
@@ -102,7 +147,12 @@ function Perfil() {
               className={`${styles.avatar} ${styles[avatar]}`}
               onClick={() => setTrocandoFoto(true)}
             >
-              <span aria-hidden="true">{nome.charAt(0)}</span>
+              {foto.url === null ? (
+                <span aria-hidden="true">{nome.charAt(0)}</span>
+              ) : (
+                <img className={styles.avatarFoto} src={foto.url} alt="" />
+              )}
+
               <span className="texto-oculto">Trocar a foto de perfil</span>
             </button>
 
@@ -190,7 +240,14 @@ function Perfil() {
             ) : null}
 
             {respostas === null ? null : (
-              <form className={styles.form} noValidate onSubmit={handleSubmit}>
+              <form
+                className={styles.form}
+                noValidate
+                onSubmit={(evento) => {
+                  void salvarNome();
+                  handleSubmit(evento);
+                }}
+              >
                 <ResumoErros ref={resumoRef} items={itensDoResumo} />
 
                 <section className={styles.card} aria-labelledby="titulo-conta">
@@ -207,9 +264,17 @@ function Perfil() {
                     <Input
                       id="perfil-nome"
                       label="Nome"
-                      value={nome}
-                      readOnly
-                      hint="Nome e e-mail vêm da sua conta de acesso."
+                      value={conta.nome}
+                      onChange={(evento) =>
+                        setConta({
+                          nome: evento.target.value,
+                          situacao: "ocioso",
+                          mensagem: "",
+                        })
+                      }
+                      error={
+                        conta.situacao === "erro" ? conta.mensagem : undefined
+                      }
                     />
 
                     <Input
@@ -217,7 +282,8 @@ function Perfil() {
                       label="E-mail"
                       type="email"
                       value={email}
-                      readOnly
+                      disabled
+                      hint="Para trocar o e-mail, escreva para venussystem2026@gmail.com."
                     />
 
                     <ListaSuspensa
@@ -239,6 +305,7 @@ function Perfil() {
                       onChange={(gender) => responder("gender", gender)}
                     />
                   </div>
+
                 </section>
 
                 <section className={styles.card} aria-labelledby="titulo-pele">
@@ -466,8 +533,18 @@ function Perfil() {
 
             <section className={styles.cardRisco} aria-labelledby="titulo-fim">
               <h2 id="titulo-fim" className={styles.cardTitulo}>
-                Apagar conta
+                Sair e apagar
               </h2>
+
+              <p className={styles.cardTexto}>
+                Sair encerra a sessão neste navegador. Seus dados continuam
+                salvos e você volta quando quiser.
+              </p>
+
+              <button type="button" className={styles.sair} onClick={handleSair}>
+                <LogOut className={styles.sairIcone} aria-hidden="true" />
+                Sair da conta
+              </button>
 
               <p className={styles.cardTexto}>
                 Apaga o seu perfil, as alergias, as preferências e o histórico.
@@ -523,10 +600,23 @@ function Perfil() {
         open={trocandoFoto}
         inicial={nome.charAt(0)}
         avatar={avatar}
+        situacao={foto.situacao}
+        mensagemDeErro={foto.mensagem}
         onClose={() => setTrocandoFoto(false)}
-        onSave={(escolhido) => {
-          setAvatar(escolhido);
-          guardarAvatar(escolhido);
+        onSave={(escolha) => {
+          if (escolha.tipo === "arquivo") {
+            void enviarFoto(escolha.arquivo).then((salvou) => {
+              if (salvou) {
+                setTrocandoFoto(false);
+              }
+            });
+
+            return;
+          }
+
+          setAvatar(escolha.avatar);
+          guardarAvatar(escolha.avatar);
+          setTrocandoFoto(false);
         }}
       />
     </MainLayout>

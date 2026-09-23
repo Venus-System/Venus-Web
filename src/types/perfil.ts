@@ -119,4 +119,5 @@ export interface PerfilParaSalvar {
 export interface PerfilCarregado {
   perfil: PerfilParaSalvar;
   accountStatus: StatusConta | null;
+  avatarUrl: string | null;
 }

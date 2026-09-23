@@ -14,7 +14,7 @@ import type {
 } from "../../types/perfil";
 import type { PersonalRiskLevel } from "../../types/analise";
 import type { StatusConta } from "../../types/usuario";
-import { ErroDeOrientacao } from "../erros";
+import { ErroDeOrientacao, ErroUsuarioInexistente } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
 function paraEnum(valor: string | null): string | undefined {
@@ -116,7 +116,7 @@ export async function buscarPerfilNaApi(
   const resposta = await pedir(`${URL_API}${caminho}`);
 
   if (resposta.status === 404) {
-    return null;
+    throw new ErroUsuarioInexistente(usuarioId);
   }
 
   verificarResposta(resposta, caminho);
@@ -129,9 +129,11 @@ export async function buscarPerfilNaApi(
   }
 
   const conta = comoObjeto(dados.user);
+  const avatar = comoObjeto(dados.avatar);
 
   return {
     accountStatus: paraMinusculas<StatusConta>(conta.status),
+    avatarUrl: typeof avatar.url === "string" ? avatar.url : null,
     perfil: {
       gender: paraMinusculas<Genero>(perfil.gender),
       ageRange: paraMinusculas<FaixaEtaria>(perfil.ageRange),
@@ -171,6 +173,12 @@ async function enviar(
   });
 
   verificarResposta(resposta, caminho);
+}
+
+async function usuarioExiste(usuarioId: number): Promise<boolean> {
+  const resposta = await pedir(`${URL_API}/api/users/${usuarioId}`);
+
+  return resposta.status !== 404;
 }
 
 function respostasCompletas(perfil: PerfilParaSalvar): boolean {
@@ -219,7 +227,17 @@ async function enviarPerfil(
     );
   }
 
-  await enviar("/api/user-profiles", "POST", corpo);
+  const criacao = await pedir(`${URL_API}/api/user-profiles`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(corpo),
+  });
+
+  if (criacao.status === 409 && !(await usuarioExiste(usuarioId))) {
+    throw new ErroUsuarioInexistente(usuarioId);
+  }
+
+  verificarResposta(criacao, "/api/user-profiles");
 }
 
 async function enviarPreferencias(
