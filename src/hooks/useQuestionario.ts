@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
 import { buscarCatalogoAlergias } from "../services/alergias";
-import { salvarPerfil } from "../services/perfil";
+import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
 import type { CondicaoPele } from "../types/usuario";
@@ -95,6 +95,7 @@ export function useQuestionario(): Questionario {
   const [respostas, setRespostas] = useState<RespostasQuestionario>(
     () => lerProgresso() ?? RESPOSTAS_INICIAIS,
   );
+  const [temRascunho] = useState(() => lerProgresso() !== null);
   const [catalogo, setCatalogo] = useState<EstadoCatalogo>({
     status: "loading",
   });
@@ -129,6 +130,30 @@ export function useQuestionario(): Questionario {
       controle.abort();
     };
   }, [tentativaCatalogo]);
+
+  useEffect(() => {
+    if (temRascunho) {
+      return;
+    }
+
+    let ativo = true;
+
+    buscarPerfil()
+      .then((carregado) => {
+        if (!ativo || carregado === null) {
+          return;
+        }
+
+        setRespostas((atual) =>
+          atual === RESPOSTAS_INICIAIS ? paraRespostas(carregado.perfil) : atual,
+        );
+      })
+      .catch(() => undefined);
+
+    return () => {
+      ativo = false;
+    };
+  }, [temRascunho]);
 
   useEffect(() => {
     const temErro =

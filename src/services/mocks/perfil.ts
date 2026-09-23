@@ -1,4 +1,4 @@
-import type { PerfilParaSalvar } from "../../types/perfil";
+import type { PerfilCarregado, PerfilParaSalvar } from "../../types/perfil";
 import { guardar, ler } from "../../utils/armazenamento";
 
 const CHAVE_PERFIL = "venus.perfil";
@@ -19,6 +19,8 @@ export function guardarPerfilFalso(perfil: PerfilParaSalvar): void {
   guardar(CHAVE_PERFIL, perfil);
 }
 
-export function lerPerfilFalso(): PerfilParaSalvar | null {
-  return ler(CHAVE_PERFIL, ehPerfilSalvo);
+export function lerPerfilFalso(): PerfilCarregado | null {
+  const perfil = ler(CHAVE_PERFIL, ehPerfilSalvo);
+
+  return perfil === null ? null : { perfil, accountStatus: "active" };
 }

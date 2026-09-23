@@ -1,4 +1,4 @@
-const VERSAO = 1;
+const VERSAO = 2;
 
 interface Guardado<T> {
   _versao: number;

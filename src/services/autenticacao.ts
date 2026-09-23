@@ -18,7 +18,29 @@ import { autenticacaoFirebase } from "../config/firebase";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
-import { criarUsuarioNaApi } from "./api/usuarios";
+import { buscarIdPorUid, criarUsuarioNaApi } from "./api/usuarios";
+import { guardarIdDaApi, lerIdDaApi } from "../utils/idDaApi";
+
+async function registrarNaApi(usuario: Usuario): Promise<void> {
+  const encontrado = await buscarIdPorUid(usuario.id);
+
+  if (encontrado !== null) {
+    guardarIdDaApi(usuario.id, encontrado);
+    return;
+  }
+
+  const criado = await criarUsuarioNaApi(usuario);
+
+  if (criado !== null) {
+    guardarIdDaApi(usuario.id, criado);
+  }
+}
+
+export function idDoUsuarioNaApi(): number | null {
+  const uid = autenticacaoFirebase?.currentUser?.uid;
+
+  return uid === undefined ? null : lerIdDaApi(uid);
+}
 
 function paraUsuario(conta: User): Usuario {
   const email = conta.email ?? "";
@@ -92,7 +114,7 @@ export async function entrarComGoogle(
 
   if (informacoes?.isNewUser === true) {
     try {
-      await criarUsuarioNaApi(usuario);
+      await registrarNaApi(usuario);
     } catch {
       return usuario;
     }
@@ -150,7 +172,13 @@ export function observarSessao(
   }
 
   return onAuthStateChanged(autenticacaoFirebase, (conta) => {
-    aoMudar(conta === null ? null : paraUsuario(conta));
+    const usuario = conta === null ? null : paraUsuario(conta);
+
+    aoMudar(usuario);
+
+    if (usuario !== null && lerIdDaApi(usuario.id) === null) {
+      void registrarNaApi(usuario).catch(() => undefined);
+    }
   });
 }
 
@@ -231,7 +259,7 @@ export async function criarConta(
   };
 
   try {
-    await criarUsuarioNaApi(usuario);
+    await registrarNaApi(usuario);
   } catch {
     return usuario;
   }

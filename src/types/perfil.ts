@@ -1,4 +1,5 @@
 import type { PersonalRiskLevel } from "./analise";
+import type { StatusConta } from "./usuario";
 
 export type TipoPele =
   | "normal"
@@ -12,7 +13,9 @@ export type TipoPele =
 export type Fototipo = "I" | "II" | "III" | "IV" | "V" | "VI";
 
 export type TipoCabelo =
-  | "1"
+  | "1a"
+  | "1b"
+  | "1c"
   | "2a"
   | "2b"
   | "2c"
@@ -103,6 +106,7 @@ export interface PerfilParaSalvar {
   skinSensitivity: NivelSensibilidade | null;
   scalpType: TipoCouroCabeludo | null;
   isPregnant: boolean | null;
+  isBreastfeeding: boolean | null;
   acneProne: boolean | null;
   hasRosacea: boolean | null;
   hasEczema: boolean | null;
@@ -110,4 +114,9 @@ export interface PerfilParaSalvar {
   hasMelasma: boolean | null;
   preferences: PreferenciasPerfil;
   allergies: AlergiaParaSalvar[];
+}
+
+export interface PerfilCarregado {
+  perfil: PerfilParaSalvar;
+  accountStatus: StatusConta | null;
 }

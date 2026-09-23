@@ -25,7 +25,9 @@ export const OPCOES_GENERO: RadioOption<Genero>[] = [
 ];
 
 export const OPCOES_CABELO: RadioOption<CurvaturaCabelo>[] = [
-  { value: "1", label: "1" },
+  { value: "1a", label: "1a" },
+  { value: "1b", label: "1b" },
+  { value: "1c", label: "1c" },
   { value: "2a", label: "2a" },
   { value: "2b", label: "2b" },
   { value: "2c", label: "2c" },
@@ -97,7 +99,7 @@ export const OPCOES_SITUACAO: RadioOption<SituacaoAtual>[] = [
 ];
 
 export const OPCOES_CONDICOES: CheckboxOption<CondicaoPele>[] = [
-  { value: "acneProne", label: "Tendência a acne" },
+  { value: "acneProne", label: "Tendência à acne" },
   { value: "hasRosacea", label: "Rosácea" },
   { value: "hasEczema", label: "Eczema" },
   { value: "hasHyperpigmentation", label: "Hiperpigmentação" },

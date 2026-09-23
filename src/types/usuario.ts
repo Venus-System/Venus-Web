@@ -4,6 +4,8 @@ export interface Usuario {
   email: string;
 }
 
+export type StatusConta = "active" | "inactive" | "blocked" | "pending";
+
 export type SituacaoAtual =
   | "pregnant"
   | "breastfeeding"

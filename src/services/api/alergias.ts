@@ -1,6 +1,7 @@
 import type { AlergiaApi } from "./tipos";
 import type { AlergiaCatalogo } from "../../types/perfil";
 import { URL_API } from "../../config/ambiente";
+import { pedir, verificarResposta } from "./requisicao";
 
 function ehAlergiaApi(valor: unknown): valor is AlergiaApi {
   return (
@@ -16,11 +17,9 @@ function ehAlergiaApi(valor: unknown): valor is AlergiaApi {
 export async function listarAlergiasDaApi(
   sinal?: AbortSignal,
 ): Promise<AlergiaCatalogo[]> {
-  const resposta = await fetch(`${URL_API}/api/allergies`, { signal: sinal });
+  const resposta = await pedir(`${URL_API}/api/allergies`, { signal: sinal });
 
-  if (!resposta.ok) {
-    throw new Error(`A API respondeu ${resposta.status} ao listar alergias.`);
-  }
+  verificarResposta(resposta, "/api/allergies");
 
   const dados: unknown = await resposta.json();
 

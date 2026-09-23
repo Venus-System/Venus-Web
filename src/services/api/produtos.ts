@@ -8,6 +8,7 @@ import type {
 import type { Produto } from "../../types/produto";
 import { paraProduto, paraProdutoDaListagem } from "./tradutores";
 import { URL_API } from "../../config/ambiente";
+import { pedir, verificarResposta } from "./requisicao";
 
 const idsPorSlug = new Map<string, number>();
 
@@ -65,11 +66,9 @@ async function buscarIdPorSlug(
     return guardado;
   }
 
-  const resposta = await fetch(`${URL_API}/api/products`, { signal: sinal });
+  const resposta = await pedir(`${URL_API}/api/products`, { signal: sinal });
 
-  if (!resposta.ok) {
-    throw new Error(`A API respondeu ${resposta.status} ao listar produtos.`);
-  }
+  verificarResposta(resposta, "/api/products");
 
   const dados: unknown = await resposta.json();
 
@@ -99,18 +98,15 @@ export async function buscarProdutoDaApi(
   sinal?: AbortSignal,
 ): Promise<Produto> {
   const id = await buscarIdPorSlug(slug, sinal);
-  const resposta = await fetch(`${URL_API}/api/products/${id}/full`, {
-    signal: sinal,
-  });
+  const caminho = `/api/products/${id}/full`;
+  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
   if (resposta.status === 404) {
     idsPorSlug.clear();
     throw new ErroProdutoNaoEncontrado(slug);
   }
 
-  if (!resposta.ok) {
-    throw new Error(`A API respondeu ${resposta.status}.`);
-  }
+  verificarResposta(resposta, caminho);
 
   const dados: ProductFullResponse = await resposta.json();
   return paraProduto(dados);
@@ -120,11 +116,9 @@ async function buscarLista(
   caminho: string,
   sinal?: AbortSignal,
 ): Promise<unknown[]> {
-  const resposta = await fetch(`${URL_API}${caminho}`, { signal: sinal });
+  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
-  if (!resposta.ok) {
-    throw new Error(`A API respondeu ${resposta.status} em ${caminho}.`);
-  }
+  verificarResposta(resposta, caminho);
 
   const dados: unknown = await resposta.json();
 

@@ -1,12 +1,47 @@
 import { URL_API, USAR_MOCK } from "../../config/ambiente";
 import type { Usuario } from "../../types/usuario";
+import { pedir, verificarResposta } from "./requisicao";
 
-export async function criarUsuarioNaApi(usuario: Usuario): Promise<void> {
-  if (USAR_MOCK) {
-    return;
+function lerId(valor: unknown): number | null {
+  if (typeof valor !== "object" || valor === null || !("id" in valor)) {
+    return null;
   }
 
-  const resposta = await fetch(`${URL_API}/api/users`, {
+  return typeof valor.id === "number" ? valor.id : null;
+}
+
+export async function buscarIdPorUid(uid: string): Promise<number | null> {
+  if (USAR_MOCK) {
+    return null;
+  }
+
+  const caminho = `/api/users/search?firebaseUid=${encodeURIComponent(uid)}`;
+  const resposta = await pedir(`${URL_API}${caminho}`);
+
+  verificarResposta(resposta, caminho);
+
+  const dados: unknown = await resposta.json();
+
+  if (
+    typeof dados !== "object" ||
+    dados === null ||
+    !("content" in dados) ||
+    !Array.isArray(dados.content)
+  ) {
+    return null;
+  }
+
+  return dados.content.length === 0 ? null : lerId(dados.content[0]);
+}
+
+export async function criarUsuarioNaApi(
+  usuario: Usuario,
+): Promise<number | null> {
+  if (USAR_MOCK) {
+    return null;
+  }
+
+  const resposta = await pedir(`${URL_API}/api/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -17,7 +52,9 @@ export async function criarUsuarioNaApi(usuario: Usuario): Promise<void> {
     }),
   });
 
-  if (!resposta.ok) {
-    throw new Error(`A API respondeu ${resposta.status} ao criar o usuário.`);
-  }
+  verificarResposta(resposta, "/api/users");
+
+  const dados: unknown = await resposta.json();
+
+  return lerId(dados);
 }
