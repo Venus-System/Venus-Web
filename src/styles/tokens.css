@@ -34,6 +34,7 @@
   --tamanho-grande: clamp(1.5rem, 1.29rem + 1.04vw, 2.125rem);
   --tamanho-enorme: clamp(2rem, 1.58rem + 2.08vw, 3.25rem);
   --tamanho-marca: clamp(4rem, 18vw, 14rem);
+  --tamanho-avatar: 5.25rem;
 
   --espaco-1: 0.25rem;
   --espaco-2: 0.5rem;

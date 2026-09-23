@@ -38,13 +38,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--espaco-5);
-  height: var(--espaco-5);
+  width: var(--tamanho-avatar);
+  height: var(--tamanho-avatar);
+  flex-shrink: 0;
+  overflow: hidden;
   border: var(--borda-largura) solid transparent;
   border-radius: var(--raio-pilula);
   color: var(--texto-invertido);
   font-family: var(--fonte-titulo);
-  font-size: var(--tamanho-medio);
+  font-size: var(--tamanho-grande);
   cursor: pointer;
 }
 
