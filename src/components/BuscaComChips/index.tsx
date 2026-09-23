@@ -15,6 +15,7 @@ export interface SearchOption<T extends string> {
 interface BuscaComChipsProps<T extends string> {
   id: string;
   label: string;
+  hideLabel?: boolean;
   hint?: string;
   placeholder?: string;
   options: SearchOption<T>[];
@@ -65,6 +66,7 @@ function descreverResultados(
 function BuscaComChips<T extends string>({
   id,
   label,
+  hideLabel = false,
   hint,
   placeholder,
   options,
@@ -126,6 +128,7 @@ function BuscaComChips<T extends string>({
         ref={campoRef}
         id={id}
         label={label}
+        hideLabel={hideLabel}
         labelVariant="title"
         hint={hint}
         placeholder={placeholder}

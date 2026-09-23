@@ -1,5 +1,7 @@
 import styles from "./styles.module.css";
 
+export type CheckboxVariant = "quadrado" | "pilula";
+
 export interface CheckboxOption<T extends string> {
   value: T;
   label: string;
@@ -12,6 +14,7 @@ interface GrupoCaixasProps<T extends string> {
   options: CheckboxOption<T>[];
   value: T[];
   onChange: (valores: T[]) => void;
+  variant?: CheckboxVariant;
   error?: string;
 }
 
@@ -22,8 +25,10 @@ function GrupoCaixas<T extends string>({
   options,
   value,
   onChange,
+  variant = "quadrado",
   error,
 }: GrupoCaixasProps<T>) {
+  const ehPilula = variant === "pilula";
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 
@@ -60,12 +65,12 @@ function GrupoCaixas<T extends string>({
             <label
               key={option.value}
               htmlFor={optionId}
-              className={styles.option}
+              className={ehPilula ? styles.pilula : styles.option}
             >
               <input
                 id={optionId}
                 type="checkbox"
-                className={styles.checkbox}
+                className={ehPilula ? "texto-oculto" : styles.checkbox}
                 checked={value.includes(option.value)}
                 onChange={() => alternar(option)}
               />

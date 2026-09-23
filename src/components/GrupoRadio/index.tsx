@@ -1,5 +1,7 @@
 import styles from "./styles.module.css";
 
+export type RadioVariant = "circulo" | "pilula";
+
 export interface RadioOption<T extends string> {
   value: T;
   label: string;
@@ -11,6 +13,7 @@ interface GrupoRadioProps<T extends string> {
   options: RadioOption<T>[];
   value: T | "";
   onChange: (valor: T) => void;
+  variant?: RadioVariant;
   error?: string;
 }
 
@@ -20,9 +23,11 @@ function GrupoRadio<T extends string>({
   options,
   value,
   onChange,
+  variant = "circulo",
   error,
 }: GrupoRadioProps<T>) {
   const errorId = `${id}-error`;
+  const ehPilula = variant === "pilula";
 
   return (
     <fieldset
@@ -36,7 +41,11 @@ function GrupoRadio<T extends string>({
           const optionId = posicao === 0 ? id : `${id}-${option.value}`;
 
           return (
-            <label key={option.value} htmlFor={optionId} className={styles.option}>
+            <label
+              key={option.value}
+              htmlFor={optionId}
+              className={ehPilula ? styles.pilula : styles.option}
+            >
               <input
                 id={optionId}
                 type="radio"
@@ -44,7 +53,7 @@ function GrupoRadio<T extends string>({
                 value={option.value}
                 checked={value === option.value}
                 onChange={() => onChange(option.value)}
-                className={styles.radio}
+                className={ehPilula ? "texto-oculto" : styles.radio}
               />
               {option.label}
             </label>

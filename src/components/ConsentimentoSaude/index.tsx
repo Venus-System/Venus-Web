@@ -18,22 +18,20 @@ function ConsentimentoSaude({
   return (
     <section className={styles.card} aria-labelledby={tituloId}>
       <h2 id={tituloId} className={styles.title}>
-        Antes das perguntas sobre pele e saúde
+        Perguntas sobre pele e saúde
       </h2>
 
       <p className={styles.text}>
-        As próximas respostas — tipo de pele, fototipo, sensibilidade, couro
-        cabeludo, gestação, condições de pele e alergias — são dados pessoais
-        sensíveis. A Venus usa essas respostas só para cruzar com a lista de
-        ingredientes e montar a sua análise pessoal. Nada vai para marcas ou
-        anunciantes.
+        As próximas respostas são dados sensíveis: tipo de pele, fototipo,
+        sensibilidade, couro cabeludo, gestação, condições de pele e alergias.
+        A Venus usa essas respostas só para cruzar com a lista de ingredientes
+        e montar a sua análise. Nada vai para marcas ou anunciantes.
       </p>
 
       <p className={styles.text}>
-        Autorizar é opcional. Sem isso, o restante do questionário funciona e
-        você continua vendo a avaliação geral dos produtos — o que muda é que a
-        análise não considera a sua pele. Você pode mudar essa escolha depois,
-        no seu perfil.
+        Autorizar é opcional. Sem isso, a análise deixa de considerar a sua
+        pele, e o resto do questionário continua funcionando. Você pode mudar
+        essa escolha depois, no seu perfil.
       </p>
 
       <div className={styles.choice}>

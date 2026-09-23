@@ -21,9 +21,16 @@ interface AllergyPickerProps {
   catalog: AlergiaCatalogo[];
   value: AlergiaSelecionada[];
   onChange: (alergias: AlergiaSelecionada[]) => void;
+  hideLabel?: boolean;
 }
 
-function AllergyPicker({ id, catalog, value, onChange }: AllergyPickerProps) {
+function AllergyPicker({
+  id,
+  catalog,
+  value,
+  onChange,
+  hideLabel = false,
+}: AllergyPickerProps) {
   const opcoes: SearchOption<string>[] = catalog.map((alergia) => ({
     id: alergia.id,
     label: alergia.name,
@@ -58,7 +65,8 @@ function AllergyPicker({ id, catalog, value, onChange }: AllergyPickerProps) {
       <BuscaComChips
         id={id}
         label="Você possui alguma alergia?"
-        hint="Pesquise e selecione."
+        hideLabel={hideLabel}
+        hint={hideLabel ? undefined : "Pesquise e selecione."}
         placeholder="Pesquisar alergia"
         options={opcoes}
         selected={value.map((alergia) => alergia.id)}
