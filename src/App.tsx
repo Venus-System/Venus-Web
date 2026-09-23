@@ -14,6 +14,7 @@ import Sobre from "./pages/Sobre";
 import NaoEncontrado from "./pages/NaoEncontrado";
 import Dashboard from "./pages/Dashboard";
 import RotaPrivada from "./components/RotaPrivada";
+import Perfil from "./pages/Perfil";
 import Perguntas from "./pages/Perguntas";
 import Privacidade from "./pages/Privacidade";
 import Termos from "./pages/Termos";
@@ -23,7 +24,9 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Inicio />} />
-      <Route path="/componentes" element={<Componentes />} />
+      {import.meta.env.DEV ? (
+        <Route path="/componentes" element={<Componentes />} />
+      ) : null}
       <Route path="/login" element={<Login />} />
       <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
@@ -39,6 +42,14 @@ function App() {
         element={
           <RotaPrivada>
             <Dashboard />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/perfil"
+        element={
+          <RotaPrivada>
+            <Perfil />
           </RotaPrivada>
         }
       />
