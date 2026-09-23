@@ -58,6 +58,14 @@
   border-color: var(--avoid);
 }
 
+.field:disabled {
+  background-color: var(--superficie-suave);
+  border-color: var(--borda);
+  color: var(--texto);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
 .icon,
 .action {
   position: absolute;
