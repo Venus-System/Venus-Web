@@ -157,8 +157,17 @@ como verificar isso.
 Se você é responsável por uma criança e acredita que ela criou uma conta aqui,
 escreva para **venussystem2026@gmail.com** e apagamos os dados.
 
-Entre 13 e 18 anos, o uso deve acontecer com conhecimento e acompanhamento dos
-responsáveis.
+**Entre 13 e 17 anos**, o cadastro é permitido, e a LGPD trata esse caso de
+forma própria: o tratamento deve observar o melhor interesse do adolescente, nos
+termos do artigo 14, §5º, e as informações sobre coleta de dados devem ser dadas
+de forma que ele consiga entender — é o que esta página tenta fazer.
+
+O Venus coleta dado de saúde nessa faixa, como em qualquer outra: tipo de pele,
+alergias, e as demais respostas do questionário de perfil, sempre com
+consentimento específico antes de cada coleta. Recomendamos que o uso, nessa
+faixa etária, aconteça com o conhecimento de um responsável. Se você é
+responsável por um adolescente que usa o Venus e quer revisar ou apagar os
+dados dele, o mesmo contato acima atende esse pedido.
 
 ## Segurança
 
