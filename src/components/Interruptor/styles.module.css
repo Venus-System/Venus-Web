@@ -1,0 +1,73 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.rotulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  min-height: var(--alvo-toque);
+  cursor: pointer;
+}
+
+.rotuloInativo {
+  composes: rotulo;
+  color: var(--no-data);
+  cursor: not-allowed;
+}
+
+.texto {
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.pista {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: calc(var(--espaco-5) + var(--espaco-1));
+  height: var(--espaco-4);
+  padding: var(--espaco-1);
+  background-color: var(--prata);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+}
+
+.bolinha {
+  width: var(--espaco-3);
+  height: var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+  margin-left: 0;
+  margin-right: auto;
+}
+
+input:checked + .rotulo .pista {
+  background-color: var(--violeta);
+  border-color: var(--violeta);
+}
+
+input:checked + .rotulo .bolinha {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+input:focus-visible + .rotulo .pista {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
+.dica {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}

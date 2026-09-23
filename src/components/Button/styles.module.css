@@ -11,12 +11,22 @@
   font-weight: var(--peso-forte);
   line-height: 1.2;
   text-align: center;
+  text-decoration: none;
   cursor: pointer;
 }
 
 .primary {
   background-image: var(--gradiente-primario);
   color: var(--texto-invertido);
+}
+
+.violet {
+  background-color: var(--violeta);
+  color: var(--texto-invertido);
+}
+
+.violet:hover:not(:disabled) {
+  background-color: var(--roxo);
 }
 
 .secondary {
@@ -34,8 +44,7 @@
 }
 
 .primary:hover:not(:disabled) {
-  background-image: none;
-  background-color: var(--crimson-escuro);
+  filter: brightness(0.85);
 }
 
 .secondary:hover:not(:disabled) {

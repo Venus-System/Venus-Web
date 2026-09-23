@@ -1,0 +1,15 @@
+.severities {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.severity {
+  min-width: 0;
+  padding: var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-radius: var(--raio-medio);
+}

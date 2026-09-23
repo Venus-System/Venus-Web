@@ -1,0 +1,55 @@
+.dialog {
+  width: min(100%, 34rem);
+  max-height: 85vh;
+  padding: 0;
+  overflow: auto;
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  color: var(--texto);
+}
+
+.dialog::backdrop {
+  background-color: var(--sobreposicao);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}
+
+.titulo {
+  font-size: var(--tamanho-medio);
+}
+
+.fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  background-color: var(--superficie-suave);
+  border: none;
+  border-radius: var(--raio-pilula);
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background-color: var(--lavanda-media);
+}
+
+.fecharIcone {
+  width: 1em;
+  height: 1em;
+}

@@ -1,0 +1,28 @@
+.resumo {
+  min-width: 0;
+  padding: var(--espaco-4);
+  background-color: var(--avoid-fundo);
+  border: var(--borda-largura) solid var(--avoid);
+  border-radius: var(--raio-grande);
+}
+
+.titulo {
+  color: var(--avoid);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}
+
+.lista {
+  margin-top: var(--espaco-3);
+  padding-left: var(--espaco-4);
+  font-size: var(--tamanho-pequeno);
+}
+
+.lista li + li {
+  margin-top: var(--espaco-2);
+}
+
+.lista a {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}

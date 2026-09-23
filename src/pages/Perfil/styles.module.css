@@ -1,0 +1,354 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+  padding-block: var(--espaco-4);
+}
+
+.title {
+  font-size: var(--tamanho-enorme);
+}
+
+.titleAccent {
+  color: var(--violeta);
+}
+
+.subtitle {
+  max-width: 60ch;
+  margin-top: var(--espaco-2);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.columns {
+  display: grid;
+  gap: var(--espaco-5);
+  align-items: start;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  min-width: 0;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tamanho-avatar);
+  height: var(--tamanho-avatar);
+  flex-shrink: 0;
+  overflow: hidden;
+  border: var(--borda-largura) solid transparent;
+  border-radius: var(--raio-pilula);
+  color: var(--texto-invertido);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-grande);
+  cursor: pointer;
+}
+
+.vinho {
+  background-image: var(--gradiente-primario);
+}
+
+.noite {
+  background-color: var(--violeta-escuro);
+}
+
+.violeta {
+  background-color: var(--violeta);
+}
+
+.framboesa {
+  background-color: var(--crimson);
+}
+
+.lavanda {
+  background-color: var(--lavanda);
+  color: var(--roxo);
+}
+
+.prata {
+  background-color: var(--prata);
+  color: var(--roxo);
+}
+
+.aurora {
+  background-image: var(--gradiente-marca);
+}
+
+.ametista {
+  background-color: var(--roxo);
+}
+
+.marca {
+  background-color: var(--card);
+  border-color: var(--borda-forte);
+  color: var(--roxo);
+}
+
+.name {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+}
+
+.email {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.progresso {
+  width: 100%;
+}
+
+.progressoTopo {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  font-size: var(--tamanho-pequeno);
+}
+
+.progressoValor {
+  color: var(--violeta);
+  font-weight: var(--peso-forte);
+}
+
+.barra {
+  margin-top: var(--espaco-1);
+  height: var(--espaco-1);
+  background-color: var(--trilha);
+  border-radius: var(--raio-pilula);
+  overflow: hidden;
+}
+
+.barraPreenchida {
+  height: 100%;
+  background-image: var(--gradiente-marca);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  min-width: 0;
+}
+
+.estado {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.estadoErro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  min-width: 0;
+  padding: var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.cardTitulo {
+  font-size: var(--tamanho-medio);
+}
+
+.cardTexto {
+  margin-top: calc(var(--espaco-3) * -1);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.grade {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.sair {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-2) var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--avoid);
+  border-radius: var(--raio-pilula);
+  color: var(--avoid);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+  cursor: pointer;
+}
+
+.sair:hover {
+  background-color: var(--avoid);
+  color: var(--texto-invertido);
+}
+
+.sairIcone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  flex-shrink: 0;
+}
+
+.indice {
+  width: 100%;
+}
+
+.refazer {
+  width: 100%;
+}
+
+.avatarFoto {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--raio-pilula);
+  object-fit: cover;
+}
+
+.selo {
+  padding: var(--espaco-1) var(--espaco-2);
+  border-radius: var(--raio-pilula);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.active {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}
+
+.pending {
+  background-color: var(--warning-fundo);
+  color: var(--warning);
+}
+
+.inactive {
+  background-color: var(--no-data-fundo);
+  color: var(--no-data);
+}
+
+.blocked {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.refazerIcone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  flex-shrink: 0;
+}
+
+.indiceLista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.indiceLink {
+  display: block;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-medio);
+  font-size: var(--tamanho-pequeno);
+  text-decoration: none;
+}
+
+.indiceLink:hover {
+  background-color: var(--superficie-suave);
+}
+
+.cardTitulo:focus-visible {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
+.submit {
+  align-self: flex-start;
+}
+
+.sucesso {
+  color: var(--safe);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.cardRisco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  min-width: 0;
+  padding: var(--espaco-4);
+  background-color: var(--avoid-fundo);
+  border: var(--borda-largura) solid var(--avoid);
+  border-radius: var(--raio-grande);
+}
+
+.apagar {
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-2) var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+  color: var(--no-data);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+  cursor: not-allowed;
+}
+
+.modalAcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.convite {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.conviteTitulo {
+  font-size: var(--tamanho-medio);
+}
+
+.conviteTexto {
+  max-width: 60ch;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.conviteLink {
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+@media (min-width: 60rem) {
+  .columns {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+}

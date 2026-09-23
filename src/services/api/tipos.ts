@@ -1,4 +1,4 @@
-export interface ProdutoApi {
+export interface ProdutoBaseApi {
   id: number;
   name: string;
   description: string | null;
@@ -13,6 +13,11 @@ export interface MarcaApi {
   hasCrueltyFreeClaim: boolean;
   hasVeganClaim: boolean;
   isBrazilian: boolean;
+}
+
+export interface AlergiaApi {
+  id: number;
+  allergyName: string;
 }
 
 export interface CategoriaApi {
@@ -39,18 +44,14 @@ export interface NotasApi {
 }
 
 export interface ProductFullResponse {
-  product: ProdutoApi;
+  product: ProdutoBaseApi;
   brand: MarcaApi;
   category: CategoriaApi;
   claims: ClaimApi[];
   score: NotasApi | null;
 }
 
-export interface ProdutoApi {
-  id: number;
-  name: string;
-  description: string | null;
-  slug: string;
+export interface ProdutoApi extends ProdutoBaseApi {
   brandId: number;
   productCategoryId: number;
   isActive: boolean;

@@ -19,6 +19,10 @@ ol {
   padding: 0;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--fundo);
   color: var(--texto);
@@ -104,4 +108,15 @@ textarea {
 :focus-visible {
   outline: var(--foco-largura) solid var(--foco-cor);
   outline-offset: var(--foco-offset);
+}
+
+.texto-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

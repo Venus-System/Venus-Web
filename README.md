@@ -53,6 +53,32 @@ Inside `services/`, `api/` describes the backend's own format and translates it
 into the domain types, and `mocks/` holds fake data already in the domain
 format.
 
+## Routes
+
+| Route                    | Screen                                        |
+| ------------------------ | --------------------------------------------- |
+| `/`                      | home                                          |
+| `/pesquisa`              | product search                                |
+| `/produto/:slug`         | product analysis                              |
+| `/sobre`                 | about the project                             |
+| `/metodologia`           | how the scores are calculated                 |
+| `/fontes`                | where the data comes from                     |
+| `/privacidade`           | privacy policy                                |
+| `/termos`                | terms of use                                  |
+| `/cookies`               | cookie policy                                 |
+| `/login`                 | sign in                                       |
+| `/criar-conta`           | sign up                                       |
+| `/esqueci-senha`         | password recovery, in three steps             |
+| `/dashboard`             | private, requires sign in                     |
+| `/perguntas`             | private, the profile questionnaire            |
+| `/componentes`           | **internal tool**, see below                  |
+| `*`                      | not found, with a way back                    |
+
+`/componentes` is a development screen: it renders every component in every
+state on a single page. It is kept in the build on purpose, because it is the
+fastest way to audit contrast and focus, but it is not linked from anywhere in
+the interface and is not meant for end users.
+
 ## Environment variables
 
 Example values live in `.env.example`. Copy that file to `.env` before running.

@@ -22,10 +22,17 @@ interface SidebarProps {
   onScan?: () => void;
 }
 
+interface NavLinkItem {
+  to: string;
+  label: string;
+  Icon: LucideIcon;
+  emBreve?: boolean;
+}
+
 interface NavGroup {
   id: string;
   title: string;
-  links: { to: string; label: string; Icon: LucideIcon }[];
+  links: NavLinkItem[];
 }
 
 const GROUPS: NavGroup[] = [
@@ -34,7 +41,12 @@ const GROUPS: NavGroup[] = [
     title: "Analisar",
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
-      { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
+      {
+        to: "/comparar",
+        label: "Comparar",
+        Icon: ArrowLeftRight,
+        emBreve: true,
+      },
     ],
   },
   {
@@ -42,8 +54,8 @@ const GROUPS: NavGroup[] = [
     title: "Meu Espaço",
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
-      { to: "/historico", label: "Histórico", Icon: History },
-      { to: "/favoritos", label: "Favoritos", Icon: Heart },
+      { to: "/historico", label: "Histórico", Icon: History, emBreve: true },
+      { to: "/favoritos", label: "Favoritos", Icon: Heart, emBreve: true },
     ],
   },
   {
@@ -100,17 +112,25 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
           <ul className={styles.list} aria-labelledby={`group-${group.id}`}>
             {group.links.map((link) => (
               <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    [styles.link, isActive ? styles.linkActive : ""]
-                      .filter(Boolean)
-                      .join(" ")
-                  }
-                >
-                  <link.Icon className={styles.linkIcon} aria-hidden="true" />
-                  {link.label}
-                </NavLink>
+                {link.emBreve === true ? (
+                  <span className={styles.linkEmBreve}>
+                    <link.Icon className={styles.linkIcon} aria-hidden="true" />
+                    {link.label}
+                    <span className={styles.emBreve}>Em breve</span>
+                  </span>
+                ) : (
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      [styles.link, isActive ? styles.linkActive : ""]
+                        .filter(Boolean)
+                        .join(" ")
+                    }
+                  >
+                    <link.Icon className={styles.linkIcon} aria-hidden="true" />
+                    {link.label}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>

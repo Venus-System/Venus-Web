@@ -1,0 +1,42 @@
+.page {
+  width: min(100%, 44rem);
+  margin-inline: auto;
+  padding: var(--espaco-4) var(--espaco-3) var(--espaco-5);
+}
+
+.skipLink {
+  position: absolute;
+  left: var(--espaco-3);
+  top: -5rem;
+  z-index: 10;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--violeta);
+  border-radius: var(--raio-pequeno);
+}
+
+.skipLink:focus {
+  top: var(--espaco-3);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-5);
+  color: var(--roxo);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  text-decoration: none;
+}
+
+.logo {
+  width: var(--espaco-5);
+  height: var(--espaco-5);
+}
+
+@media (min-width: 40rem) {
+  .page {
+    padding-inline: var(--espaco-4);
+  }
+}

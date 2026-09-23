@@ -107,7 +107,7 @@ function Pesquisa() {
           setEstado({ situacao: "sucesso", lista });
         }
       } catch {
-        if (ativo || expirou) {
+        if (ativo) {
           setEstado((atual) => ({
             situacao: "erro",
             mensagem: expirou
