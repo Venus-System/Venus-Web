@@ -87,6 +87,21 @@
   text-decoration: underline;
 }
 
+.linkEmBreve {
+  composes: link;
+  gap: var(--espaco-1);
+  color: var(--texto-suave);
+  cursor: default;
+}
+
+.emBreve {
+  padding: 0 var(--espaco-1);
+  background-color: var(--no-data-fundo);
+  border-radius: var(--raio-pilula);
+  color: var(--no-data);
+  white-space: nowrap;
+}
+
 .watermark {
   color: var(--lavanda);
   font-family: var(--fonte-titulo);

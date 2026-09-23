@@ -94,6 +94,22 @@
   font-weight: var(--peso-forte);
 }
 
+.linkEmBreve {
+  composes: link;
+  color: var(--texto-suave);
+  cursor: default;
+}
+
+.emBreve {
+  margin-left: auto;
+  padding: 0 var(--espaco-1);
+  background-color: var(--no-data-fundo);
+  border-radius: var(--raio-pilula);
+  color: var(--no-data);
+  font-size: var(--tamanho-pequeno);
+  white-space: nowrap;
+}
+
 .user {
   display: flex;
   align-items: center;
