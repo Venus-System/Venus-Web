@@ -34,6 +34,24 @@ export async function buscarIdPorUid(uid: string): Promise<number | null> {
   return dados.content.length === 0 ? null : lerId(dados.content[0]);
 }
 
+export async function atualizarNomeNaApi(
+  usuarioId: number,
+  nome: string,
+): Promise<void> {
+  if (USAR_MOCK) {
+    return;
+  }
+
+  const caminho = `/api/users/${usuarioId}`;
+  const resposta = await pedir(`${URL_API}${caminho}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: nome }),
+  });
+
+  verificarResposta(resposta, caminho);
+}
+
 export async function criarUsuarioNaApi(
   usuario: Usuario,
 ): Promise<number | null> {

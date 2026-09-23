@@ -1,7 +1,11 @@
 import { USAR_MOCK } from "../config/ambiente";
 import { buscarPerfilNaApi, salvarPerfilNaApi } from "./api/perfil";
-import { idDoUsuarioNaApi } from "./autenticacao";
-import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
+import { idDoUsuarioNaApi, renovarIdDoUsuarioNaApi } from "./autenticacao";
+import {
+  ErroDeOrientacao,
+  ErroServicoIndisponivel,
+  ErroUsuarioInexistente,
+} from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarPerfilFalso, lerPerfilFalso } from "./mocks/perfil";
 import type {
@@ -218,7 +222,15 @@ export async function salvarPerfil(
       return perfil;
     }
 
-    await salvarPerfilNaApi(buscarIdNumerico(), perfil);
+    try {
+      await salvarPerfilNaApi(buscarIdNumerico(), perfil);
+    } catch (erro) {
+      if (!(erro instanceof ErroUsuarioInexistente)) {
+        throw erro;
+      }
+
+      await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
+    }
 
     return perfil;
   } catch (erro) {
@@ -246,6 +258,18 @@ function buscarIdNumerico(): number {
   return id;
 }
 
+async function renovarIdNumerico(): Promise<number> {
+  const id = await renovarIdDoUsuarioNaApi();
+
+  if (id === null) {
+    throw new ErroDeOrientacao(
+      "Não conseguimos recriar o seu cadastro na API. Entre de novo e tente outra vez.",
+    );
+  }
+
+  return id;
+}
+
 export async function buscarPerfil(): Promise<PerfilCarregado | null> {
   try {
     if (USAR_MOCK) {
@@ -254,7 +278,15 @@ export async function buscarPerfil(): Promise<PerfilCarregado | null> {
       return lerPerfilFalso();
     }
 
-    return await buscarPerfilNaApi(buscarIdNumerico());
+    try {
+      return await buscarPerfilNaApi(buscarIdNumerico());
+    } catch (erro) {
+      if (!(erro instanceof ErroUsuarioInexistente)) {
+        throw erro;
+      }
+
+      return await buscarPerfilNaApi(await renovarIdNumerico());
+    }
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||

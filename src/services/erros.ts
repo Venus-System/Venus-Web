@@ -14,6 +14,13 @@ export class ErroDeOrientacao extends Error {
   }
 }
 
+export class ErroUsuarioInexistente extends Error {
+  constructor(id: number) {
+    super(`A API não tem nenhum usuário com o id ${id}.`);
+    this.name = "ErroUsuarioInexistente";
+  }
+}
+
 export class ErroProdutoNaoEncontrado extends Error {
   constructor(slug: string) {
     super(`Nenhum produto corresponde a "${slug}".`);

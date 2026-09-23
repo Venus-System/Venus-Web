@@ -18,8 +18,16 @@ import { autenticacaoFirebase } from "../config/firebase";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
-import { buscarIdPorUid, criarUsuarioNaApi } from "./api/usuarios";
-import { guardarIdDaApi, lerIdDaApi } from "../utils/idDaApi";
+import {
+  atualizarNomeNaApi,
+  buscarIdPorUid,
+  criarUsuarioNaApi,
+} from "./api/usuarios";
+import {
+  esquecerIdDaApi,
+  guardarIdDaApi,
+  lerIdDaApi,
+} from "../utils/idDaApi";
 
 async function registrarNaApi(usuario: Usuario): Promise<void> {
   const encontrado = await buscarIdPorUid(usuario.id);
@@ -36,10 +44,68 @@ async function registrarNaApi(usuario: Usuario): Promise<void> {
   }
 }
 
+export async function atualizarNome(nome: string): Promise<Usuario> {
+  const limpo = nome.trim();
+  const problema = validarNome(limpo);
+
+  if (problema !== null) {
+    throw new Error(problema);
+  }
+
+  const conta = autenticacaoFirebase?.currentUser ?? null;
+
+  if (conta === null) {
+    throw new Error("Entre de novo para alterar o seu nome.");
+  }
+
+  await updateProfile(conta, { displayName: limpo });
+
+  const id = idDoUsuarioNaApi();
+
+  if (id !== null) {
+    await atualizarNomeNaApi(id, limpo);
+  }
+
+  return { ...paraUsuario(conta), name: limpo };
+}
+
 export function idDoUsuarioNaApi(): number | null {
   const uid = autenticacaoFirebase?.currentUser?.uid;
 
   return uid === undefined ? null : lerIdDaApi(uid);
+}
+
+export async function renovarIdDoUsuarioNaApi(): Promise<number | null> {
+  const uid = autenticacaoFirebase?.currentUser?.uid;
+
+  if (uid === undefined) {
+    return null;
+  }
+
+  esquecerIdDaApi(uid);
+
+  const encontrado = await buscarIdPorUid(uid);
+
+  if (encontrado !== null) {
+    guardarIdDaApi(uid, encontrado);
+    return encontrado;
+  }
+
+  const conta = autenticacaoFirebase?.currentUser;
+
+  if (conta === null || conta === undefined) {
+    return null;
+  }
+
+  const criado = await criarUsuarioNaApi(paraUsuario(conta));
+
+  if (criado === null) {
+    return null;
+  }
+
+  guardarIdDaApi(uid, criado);
+
+  return criado;
 }
 
 function paraUsuario(conta: User): Usuario {

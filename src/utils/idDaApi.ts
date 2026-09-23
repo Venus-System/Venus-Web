@@ -27,3 +27,16 @@ export function guardarIdDaApi(uid: string, id: number): void {
 
   guardar(CHAVE_IDS, { ...mapa, [uid]: id });
 }
+
+export function esquecerIdDaApi(uid: string): void {
+  const mapa = ler(CHAVE_IDS, ehMapaDeIds);
+
+  if (mapa === null) {
+    return;
+  }
+
+  const restante = { ...mapa };
+
+  delete restante[uid];
+  guardar(CHAVE_IDS, restante);
+}
