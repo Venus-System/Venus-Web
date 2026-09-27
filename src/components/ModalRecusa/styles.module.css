@@ -1,0 +1,77 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.produto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-3);
+  background-color: var(--lavanda-clara);
+  border-radius: var(--raio-medio);
+}
+
+.produtoNome {
+  color: var(--roxo);
+}
+
+.produtoMeta {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.motivos {
+  display: flex;
+  flex-direction: column;
+}
+
+.campoComentario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.rotulo {
+  color: var(--texto);
+}
+
+.obrigatorio {
+  color: var(--avoid);
+}
+
+.campo,
+.campoInvalido {
+  width: 100%;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  resize: vertical;
+}
+
+.campoInvalido {
+  border-color: var(--avoid);
+}
+
+.aviso {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espaco-2);
+}
