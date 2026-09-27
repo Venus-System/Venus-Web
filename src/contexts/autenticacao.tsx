@@ -9,11 +9,13 @@ import {
   criarConta as criarContaNoServico,
   atualizarNome as atualizarNomeNoServico,
 } from "../services/autenticacao";
-
+import { buscarFotoDePerfil } from "../services/avatar";
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
   carregando: boolean;
+  fotoUrl: string | null;
+  definirFoto: (url: string | null) => void;
   entrar: (
     email: string,
     senha: string,
@@ -44,6 +46,9 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     carregando: true,
   });
 
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+  const idUsuario = estado.usuario === null ? null : estado.usuario.id;
+
   useEffect(() => {
     const cancelar = observarSessao((usuario) => {
       setEstado({ usuario, carregando: false });
@@ -51,6 +56,29 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
 
     return cancelar;
   }, []);
+
+  useEffect(() => {
+    if (idUsuario === null) {
+      setFotoUrl(null);
+      return;
+    }
+
+    const controle = new AbortController();
+    let ativo = true;
+
+    buscarFotoDePerfil(controle.signal)
+      .then((url) => {
+        if (ativo) {
+          setFotoUrl(url);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      ativo = false;
+      controle.abort();
+    };
+  }, [idUsuario]);
 
   async function entrar(
     email: string,
@@ -85,6 +113,8 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     <ContextoAutenticacao.Provider
       value={{
         ...estado,
+        fotoUrl,
+        definirFoto: setFotoUrl,
         entrar,
         entrarComGoogle,
         criarConta,

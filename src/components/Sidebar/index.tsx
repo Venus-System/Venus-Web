@@ -66,7 +66,7 @@ const GROUPS: NavGroup[] = [
 ];
 
 function Sidebar({ onSearch, onScan }: SidebarProps) {
-  const { usuario } = useAutenticacao();
+  const { usuario, fotoUrl } = useAutenticacao();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -140,7 +140,11 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
       {usuario  ? (
         <Link to="/perfil" className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
-            {usuario.name.charAt(0)}
+            {fotoUrl === null ? (
+              usuario.name.charAt(0)
+            ) : (
+              <img className={styles.avatarFoto} src={fotoUrl} alt="" />
+            )}
           </span>
 
           <span className={styles.userInfo}>

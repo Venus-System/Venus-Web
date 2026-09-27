@@ -1,12 +1,20 @@
 import { USAR_MOCK } from "../config/ambiente";
-import { apagarAvatarNaApi, enviarAvatarNaApi } from "./api/avatar";
+import {
+  apagarAvatarNaApi,
+  buscarAvatarNaApi,
+  enviarAvatarNaApi,
+} from "./api/avatar";
 import { idDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarFotoFalsa, lerFotoFalsa, limparFotoFalsa } from "./mocks/avatar";
+import { recortarEmQuadrado } from "../utils/imagem";
 
 export const TIPOS_DE_IMAGEM = ["image/png", "image/jpeg", "image/webp"];
-export const TAMANHO_MAXIMO = 5 * 1024 * 1024;
+export const TAMANHO_MAXIMO_EM_MB = 20;
+
+const TAMANHO_MAXIMO = TAMANHO_MAXIMO_EM_MB * 1024 * 1024;
+const LADO_DO_AVATAR = 1024;
 
 export function validarFoto(arquivo: File): string | null {
   if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
@@ -14,10 +22,20 @@ export function validarFoto(arquivo: File): string | null {
   }
 
   if (arquivo.size > TAMANHO_MAXIMO) {
-    return "A imagem precisa ter no máximo 5 MB.";
+    return `A imagem precisa ter no máximo ${TAMANHO_MAXIMO_EM_MB} MB.`;
   }
 
   return null;
+}
+
+async function prepararFoto(arquivo: File): Promise<File> {
+  try {
+    return await recortarEmQuadrado(arquivo, LADO_DO_AVATAR);
+  } catch {
+    throw new ErroDeOrientacao(
+      "Não conseguimos abrir essa imagem. Tente outra foto.",
+    );
+  }
 }
 
 function comoTexto(arquivo: File): Promise<string> {
@@ -44,8 +62,10 @@ function idNumerico(): number {
 
 export async function enviarFotoDePerfil(arquivo: File): Promise<string | null> {
   try {
+    const foto = await prepararFoto(arquivo);
+
     if (USAR_MOCK) {
-      const conteudo = await comoTexto(arquivo);
+      const conteudo = await comoTexto(foto);
 
       await simularLatencia();
       guardarFotoFalsa(conteudo);
@@ -53,7 +73,7 @@ export async function enviarFotoDePerfil(arquivo: File): Promise<string | null> 
       return conteudo;
     }
 
-    return await enviarAvatarNaApi(idNumerico(), arquivo);
+    return await enviarAvatarNaApi(idNumerico(), foto);
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||
@@ -88,6 +108,22 @@ export async function apagarFotoDePerfil(): Promise<void> {
   }
 }
 
-export function fotoGuardadaNoMock(): string | null {
-  return USAR_MOCK ? lerFotoFalsa() : null;
+export async function buscarFotoDePerfil(
+  sinal?: AbortSignal,
+): Promise<string | null> {
+  try {
+    if (USAR_MOCK) {
+      return lerFotoFalsa();
+    }
+
+    const id = idDoUsuarioNaApi();
+
+    return id === null ? null : await buscarAvatarNaApi(id, sinal);
+  } catch (erro) {
+    if (erro instanceof DOMException && erro.name === "AbortError") {
+      throw erro;
+    }
+
+    throw new Error("Não foi possível carregar a sua foto de perfil.");
+  }
 }
