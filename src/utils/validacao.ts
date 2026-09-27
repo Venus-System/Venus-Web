@@ -1,3 +1,4 @@
+import type { MotivoRecusa } from "../types/admin";
 import type { FaixaEtaria } from "../types/perfil";
 import type { AlergiaSelecionada } from "../types/questionario";
 
@@ -114,4 +115,51 @@ export function validarGravidadeDasAlergias(
   }
 
   return null;
+}
+
+export const MINIMO_DO_COMENTARIO = 10;
+export const MAXIMO_DO_COMENTARIO = 900;
+
+export function validarMotivoDaRecusa(motivo: MotivoRecusa | ""): string | null {
+  return motivo === "" ? "Escolha por que está recusando." : null;
+}
+
+export function validarComentarioDaRecusa(comentario: string): string | null {
+  const limpo = comentario.trim();
+
+  if (limpo === "") {
+    return "Escreva um comentário para quem enviou.";
+  }
+
+  if (limpo.length < MINIMO_DO_COMENTARIO) {
+    return `Explique em pelo menos ${MINIMO_DO_COMENTARIO} caracteres, para quem enviou saber o que corrigir.`;
+  }
+
+  if (limpo.length > MAXIMO_DO_COMENTARIO) {
+    return `O comentário pode ter até ${MAXIMO_DO_COMENTARIO} caracteres.`;
+  }
+
+  return null;
+}
+
+export function validarNomeDoProduto(nome: string): string | null {
+  return nome.trim() === "" ? "Informe o nome do produto." : null;
+}
+
+export function validarMarca(marcaId: string): string | null {
+  return marcaId === "" ? "Escolha a marca do produto." : null;
+}
+
+export function validarCategoria(categoriaId: string): string | null {
+  return categoriaId === "" ? "Escolha a categoria do produto." : null;
+}
+
+export function validarDecisaoDoIngrediente(opcao: string): string | null {
+  return opcao === "" ? "Decida o que fazer com este ingrediente." : null;
+}
+
+export function validarNomeInci(nome: string): string | null {
+  return nome.trim() === ""
+    ? "Informe o nome INCI do ingrediente novo."
+    : null;
 }
