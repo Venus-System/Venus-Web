@@ -3,6 +3,10 @@
   min-height: 100vh;
 }
 
+:global(html):has(.pagina) {
+  scrollbar-gutter: auto;
+}
+
 .painelFormulario {
   display: flex;
   flex-direction: column;
@@ -52,14 +56,24 @@
 
   .painelMarca {
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-end;
     padding: var(--espaco-5);
     background-image: var(--gradiente-marca);
     overflow: hidden;
   }
 
+  .painelTexto {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+    max-width: 30rem;
+    margin-bottom: auto;
+    color: var(--texto-invertido);
+  }
+
   .marca {
+    align-self: center;
     color: var(--texto-invertido);
     font-family: var(--fonte-titulo);
     font-size: var(--tamanho-marca);

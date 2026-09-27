@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import type { LinkProps } from "react-router-dom";
 import styles from "./styles.module.css";
 
-export type ButtonVariant = "primary" | "secondary" | "text" | "violet";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "text"
+  | "violet"
+  | "danger"
+  | "soft";
 
 interface ButtonBaseProps {
   variant?: ButtonVariant;

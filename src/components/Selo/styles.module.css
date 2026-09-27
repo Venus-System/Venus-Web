@@ -1,0 +1,26 @@
+.selo {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--espaco-2);
+  border: var(--borda-largura) solid transparent;
+  border-radius: var(--raio-pilula);
+  font-size: var(--tamanho-pequeno);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.contorno {
+  background-color: var(--card);
+  border-color: var(--borda);
+  color: var(--texto);
+}
+
+.destaque {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.alerta {
+  background-color: var(--warning-fundo);
+  color: var(--warning);
+}
