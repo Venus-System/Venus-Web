@@ -4,7 +4,7 @@ import type {
   Fototipo,
   Genero,
   NivelSensibilidade,
-  PreferenciasPerfil,
+  Preferencia,
   TipoCouroCabeludo,
   TipoPele,
   TipoCabelo
@@ -32,7 +32,7 @@ export interface RespostasQuestionario {
   skinSensitivity: SensibilidadeQuestionario | "";
   scalpType: TipoCouroCabeludo | "";
   allergies: AlergiaSelecionada[];
-  preferences: Array<keyof PreferenciasPerfil>;
+  preferences: Preferencia[];
   healthDataConsent: boolean;
   currentSituation: SituacaoAtual | "";
   skinConditions: CondicaoPele[];

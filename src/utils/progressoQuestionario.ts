@@ -1,5 +1,6 @@
 import type { RespostasQuestionario } from "../types/questionario";
 import { guardar, ler, limpar } from "./armazenamento";
+import { somentePreferenciasValidas } from "./preferencias";
 
 const CHAVE_PROGRESSO = "venus.questionario";
 
@@ -33,7 +34,16 @@ function semDadosDeSaude(
 }
 
 export function lerProgresso(): RespostasQuestionario | null {
-  return ler(CHAVE_PROGRESSO, ehRespostas);
+  const progresso = ler(CHAVE_PROGRESSO, ehRespostas);
+
+  if (progresso === null) {
+    return null;
+  }
+
+  return {
+    ...progresso,
+    preferences: somentePreferenciasValidas(progresso.preferences),
+  };
 }
 
 export function guardarProgresso(respostas: RespostasQuestionario): void {

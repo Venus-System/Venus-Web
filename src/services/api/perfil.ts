@@ -7,13 +7,15 @@ import type {
   NivelSensibilidade,
   PerfilCarregado,
   PerfilParaSalvar,
-  PreferenciasPerfil,
+  Preferencia,
   TipoCabelo,
   TipoCouroCabeludo,
   TipoPele,
 } from "../../types/perfil";
 import type { PersonalRiskLevel } from "../../types/analise";
 import type { StatusConta } from "../../types/usuario";
+import { paraSlug } from "../../utils/paraSlug";
+import { somentePreferenciasValidas } from "../../utils/preferencias";
 import { ErroDeOrientacao, ErroUsuarioInexistente } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
@@ -72,18 +74,67 @@ function comoObjeto(valor: unknown): CampoDesconhecido {
     : {};
 }
 
-function lerPreferencias(valor: unknown): PreferenciasPerfil {
-  const dados = comoObjeto(valor);
+interface PreferenciaEmColuna {
+  preferencia: Preferencia;
+  coluna: string;
+}
 
-  return {
-    preferCrueltyFree: dados.preferCrueltyFree === true,
-    preferVegan: dados.preferVegan === true,
-    preferSustainable: dados.preferSustainable === true,
-    preferFragranceFree: dados.preferFragranceFree === true,
-    preferParabenFree: dados.preferParabenFree === true,
-    preferSulfateFree: dados.preferSulfateFree === true,
-    preferSiliconeFree: dados.preferSiliconeFree === true,
-  };
+const PREFERENCIAS_EM_COLUNA: PreferenciaEmColuna[] = [
+  { preferencia: "vegan", coluna: "preferVegan" },
+  { preferencia: "crueltyFree", coluna: "preferCrueltyFree" },
+  { preferencia: "parabenFree", coluna: "preferParabenFree" },
+  { preferencia: "sulfateFree", coluna: "preferSulfateFree" },
+  { preferencia: "siliconeFree", coluna: "preferSiliconeFree" },
+];
+
+interface PreferenciaEmEtiqueta {
+  preferencia: Preferencia;
+  nomes: string[];
+}
+
+const PREFERENCIAS_EM_ETIQUETA: PreferenciaEmEtiqueta[] = [
+  { preferencia: "alcoholFree", nomes: ["Sem álcool"] },
+  { preferencia: "oilFree", nomes: ["Sem óleo"] },
+  { preferencia: "natural", nomes: ["Natural", "Ingredientes naturais"] },
+  { preferencia: "organic", nomes: ["Orgânico"] },
+  { preferencia: "hypoallergenic", nomes: ["Hipoalergênico"] },
+  { preferencia: "nonComedogenic", nomes: ["Não comedogênico"] },
+  {
+    preferencia: "dermatologicallyTested",
+    nomes: ["Testado dermatologicamente"],
+  },
+  { preferencia: "recyclablePackaging", nomes: ["Embalagem reciclável"] },
+];
+
+function preferenciaDaEtiqueta(valor: unknown): Preferencia | null {
+  const etiqueta = comoObjeto(valor);
+  const formas = [etiqueta.slug, etiqueta.name].flatMap((campo) =>
+    typeof campo === "string" ? [paraSlug(campo)] : [],
+  );
+
+  const encontrada = PREFERENCIAS_EM_ETIQUETA.find(({ nomes }) =>
+    nomes.some((nome) => formas.includes(paraSlug(nome))),
+  );
+
+  return encontrada === undefined ? null : encontrada.preferencia;
+}
+
+function lerPreferencias(colunas: unknown, etiquetas: unknown): Preferencia[] {
+  const dados = comoObjeto(colunas);
+
+  const dasColunas = PREFERENCIAS_EM_COLUNA.flatMap(({ preferencia, coluna }) =>
+    dados[coluna] === true ? [preferencia] : [],
+  );
+
+  const dasEtiquetas = Array.isArray(etiquetas)
+    ? etiquetas.flatMap((etiqueta) => {
+        const preferencia = preferenciaDaEtiqueta(etiqueta);
+
+        return preferencia === null ? [] : [preferencia];
+      })
+    : [];
+
+  return somentePreferenciasValidas([...dasColunas, ...dasEtiquetas]);
 }
 
 function lerAlergias(valor: unknown): AlergiaParaSalvar[] {
@@ -154,7 +205,7 @@ export async function buscarPerfilNaApi(
       hasEczema: lerBooleano(perfil.hasEczema),
       hasHyperpigmentation: lerBooleano(perfil.hasHyperpigmentation),
       hasMelasma: lerBooleano(perfil.hasMelasma),
-      preferences: lerPreferencias(dados.preferences),
+      preferences: lerPreferencias(dados.preferences, dados.tags),
       allergies: lerAlergias(dados.allergies),
     },
   };
@@ -242,9 +293,18 @@ async function enviarPerfil(
 
 async function enviarPreferencias(
   usuarioId: number,
-  preferencias: PreferenciasPerfil,
+  preferencias: Preferencia[],
 ): Promise<void> {
-  const corpo = { userId: usuarioId, ...preferencias };
+  const corpo: Record<string, unknown> = {
+    userId: usuarioId,
+    preferFragranceFree: false,
+    preferSustainable: false,
+  };
+
+  for (const { preferencia, coluna } of PREFERENCIAS_EM_COLUNA) {
+    corpo[coluna] = preferencias.includes(preferencia);
+  }
+
   const caminho = `/api/user-preferences/${usuarioId}`;
 
   const resposta = await pedir(`${URL_API}${caminho}`, {
@@ -267,33 +327,42 @@ async function enviarPreferencias(
 const TAMANHO_PAGINA = 100;
 const LIMITE_PAGINAS = 20;
 
-async function lerAlergiasSalvas(
-  usuarioId: number,
-): Promise<Map<number, string | null>> {
-  const salvas = new Map<number, string | null>();
+async function lerTodasAsPaginas(caminhoBase: string): Promise<unknown[]> {
+  const itens: unknown[] = [];
 
   for (let pagina = 0; pagina < LIMITE_PAGINAS; pagina += 1) {
-    const caminho = `/api/user-allergies/user/${usuarioId}?page=${pagina}&size=${TAMANHO_PAGINA}`;
+    const caminho = `${caminhoBase}?page=${pagina}&size=${TAMANHO_PAGINA}`;
     const resposta = await pedir(`${URL_API}${caminho}`);
 
     verificarResposta(resposta, caminho);
 
     const dados = comoObjeto(await resposta.json());
-    const itens = Array.isArray(dados.content) ? dados.content : [];
+    const daPagina = Array.isArray(dados.content) ? dados.content : [];
 
-    for (const item of itens) {
-      const alergia = comoObjeto(item);
+    itens.push(...daPagina);
 
-      if (typeof alergia.allergyId === "number") {
-        salvas.set(
-          alergia.allergyId,
-          typeof alergia.severity === "string" ? alergia.severity : null,
-        );
-      }
-    }
-
-    if (dados.last === true || itens.length < TAMANHO_PAGINA) {
+    if (dados.last === true || daPagina.length < TAMANHO_PAGINA) {
       break;
+    }
+  }
+
+  return itens;
+}
+
+async function lerAlergiasSalvas(
+  usuarioId: number,
+): Promise<Map<number, string | null>> {
+  const salvas = new Map<number, string | null>();
+  const itens = await lerTodasAsPaginas(`/api/user-allergies/user/${usuarioId}`);
+
+  for (const item of itens) {
+    const alergia = comoObjeto(item);
+
+    if (typeof alergia.allergyId === "number") {
+      salvas.set(
+        alergia.allergyId,
+        typeof alergia.severity === "string" ? alergia.severity : null,
+      );
     }
   }
 
@@ -342,6 +411,82 @@ async function sincronizarAlergias(
   }
 }
 
+async function lerCatalogoDeEtiquetas(): Promise<Map<Preferencia, number>> {
+  const caminho = "/api/profile-tags/preferences";
+  const resposta = await pedir(`${URL_API}${caminho}`);
+
+  verificarResposta(resposta, caminho);
+
+  const itens: unknown = await resposta.json();
+  const catalogo = new Map<Preferencia, number>();
+
+  if (!Array.isArray(itens)) {
+    return catalogo;
+  }
+
+  for (const item of itens) {
+    const id = comoObjeto(item).id;
+    const preferencia = preferenciaDaEtiqueta(item);
+
+    if (typeof id === "number" && preferencia !== null) {
+      catalogo.set(preferencia, id);
+    }
+  }
+
+  return catalogo;
+}
+
+async function lerEtiquetasSalvas(usuarioId: number): Promise<Set<number>> {
+  const itens = await lerTodasAsPaginas(
+    `/api/user-profile-tags/user/${usuarioId}`,
+  );
+
+  return new Set(
+    itens.flatMap((item) => {
+      const id = comoObjeto(item).profileTagId;
+
+      return typeof id === "number" ? [id] : [];
+    }),
+  );
+}
+
+async function sincronizarEtiquetas(
+  usuarioId: number,
+  preferencias: Preferencia[],
+): Promise<void> {
+  const catalogo = await lerCatalogoDeEtiquetas();
+  const salvas = await lerEtiquetasSalvas(usuarioId);
+
+  for (const [preferencia, etiquetaId] of catalogo) {
+    const escolhida = preferencias.includes(preferencia);
+
+    if (escolhida && !salvas.has(etiquetaId)) {
+      await enviar("/api/user-profile-tags", "POST", {
+        userId: usuarioId,
+        profileTagId: etiquetaId,
+      });
+    }
+
+    if (!escolhida && salvas.has(etiquetaId)) {
+      await enviar(
+        `/api/user-profile-tags/user/${usuarioId}/profile-tag/${etiquetaId}`,
+        "DELETE",
+      );
+    }
+  }
+
+  const semEtiqueta = PREFERENCIAS_EM_ETIQUETA.filter(
+    ({ preferencia }) =>
+      preferencias.includes(preferencia) && !catalogo.has(preferencia),
+  );
+
+  if (semEtiqueta.length > 0) {
+    throw new ErroDeOrientacao(
+      "O perfil foi salvo, mas algumas preferências ainda não existem na API e ficaram de fora. Tente de novo mais tarde.",
+    );
+  }
+}
+
 export async function salvarPerfilNaApi(
   usuarioId: number,
   perfil: PerfilParaSalvar,
@@ -349,5 +494,6 @@ export async function salvarPerfilNaApi(
   await enviarPerfil(usuarioId, perfil);
   await enviarPreferencias(usuarioId, perfil.preferences);
   await sincronizarAlergias(usuarioId, perfil.allergies);
+  await sincronizarEtiquetas(usuarioId, perfil.preferences);
 }
 
