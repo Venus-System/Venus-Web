@@ -55,7 +55,7 @@
   font-size: var(--tamanho-pequeno);
   line-height: 2;
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .marca {
