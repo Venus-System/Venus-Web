@@ -9,6 +9,11 @@ import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
 import type { CondicaoPele, StatusConta } from "../types/usuario";
 import {
+  CAMPOS_BASICOS,
+  contarPreenchidas,
+  totalDeRespostas,
+} from "../utils/progressoPerfil";
+import {
   validarFaixaEtaria,
   validarGravidadeDasAlergias,
 } from "../utils/validacao";
@@ -93,43 +98,6 @@ function temRespostasDeSaude(respostas: RespostasQuestionario): boolean {
     respostas.skinConditions.length > 0 ||
     respostas.allergies.length > 0
   );
-}
-
-const CAMPOS_BASICOS = 3;
-const CAMPOS_DE_SAUDE = 6;
-
-function contarPreenchidas(respostas: RespostasQuestionario): number {
-  const basicos = [
-    respostas.gender,
-    respostas.hairCurvature,
-    respostas.ageRange,
-  ];
-
-  const preenchidos = basicos.filter((valor) => valor !== "").length;
-
-  if (!respostas.healthDataConsent) {
-    return preenchidos;
-  }
-
-  const saude = [
-    respostas.skinType,
-    respostas.skinPhototype,
-    respostas.skinSensitivity,
-    respostas.scalpType,
-    respostas.currentSituation,
-  ];
-
-  const condicoes = respostas.skinConditions.length > 0 ? 1 : 0;
-
-  return (
-    preenchidos + saude.filter((valor) => valor !== "").length + condicoes
-  );
-}
-
-function totalDeRespostas(respostas: RespostasQuestionario): number {
-  return respostas.healthDataConsent
-    ? CAMPOS_BASICOS + CAMPOS_DE_SAUDE
-    : CAMPOS_BASICOS;
 }
 
 export function usePerfil(): Perfil {
