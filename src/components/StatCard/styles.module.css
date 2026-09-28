@@ -1,0 +1,48 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.label {
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-enorme);
+  line-height: 1;
+}
+
+.suffix {
+  color: var(--crimson);
+}
+
+.description {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  color: var(--safe);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.icon {
+  width: var(--tamanho-pequeno);
+  height: var(--tamanho-pequeno);
+}

@@ -153,12 +153,20 @@ function Componentes() {
         <h2>ProductRow</h2>
 
         <div className={styles.rows}>
-          <ProductRow produto={comImagem} realizadaEm="2026-08-26T14:32:00Z" />
-          <ProductRow
-            produto={produtosMock[2]}
-            realizadaEm="2026-08-25T09:05:00Z"
-          />
-          <ProductRow produto={semDados} realizadaEm="2026-07-05T18:40:00Z" />
+          {[comImagem, produtosMock[2], semDados].map((produto) => (
+            <ProductRow
+              key={produto.slug}
+              produto={{
+                slug: produto.slug,
+                name: produto.name,
+                brandName: produto.brand.name,
+                imageUrl: produto.imageUrl,
+              }}
+              nota={produto.scores.overallScore}
+              nivel={produto.level}
+              realizadaEm="2026-08-26T14:32:00Z"
+            />
+          ))}
         </div>
       </section>
     </MainLayout>
