@@ -8,6 +8,10 @@
   border-radius: var(--raio-grande);
 }
 
+.card > * {
+  margin: 0;
+}
+
 .label {
   color: var(--texto-suave);
   font-family: var(--fonte-corpo);
