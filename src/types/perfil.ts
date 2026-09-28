@@ -64,15 +64,20 @@ export interface Alergia {
   severity: PersonalRiskLevel;
 }
 
-export interface PreferenciasPerfil {
-  preferCrueltyFree: boolean;
-  preferVegan: boolean;
-  preferSustainable: boolean;
-  preferFragranceFree: boolean;
-  preferParabenFree: boolean;
-  preferSulfateFree: boolean;
-  preferSiliconeFree: boolean;
-}
+export type Preferencia =
+  | "vegan"
+  | "crueltyFree"
+  | "parabenFree"
+  | "sulfateFree"
+  | "siliconeFree"
+  | "alcoholFree"
+  | "oilFree"
+  | "natural"
+  | "organic"
+  | "hypoallergenic"
+  | "nonComedogenic"
+  | "dermatologicallyTested"
+  | "recyclablePackaging";
 
 export interface Perfil {
   skinType: TipoPele;
@@ -88,7 +93,7 @@ export interface Perfil {
   hasMelasma: boolean;
   hasRosacea: boolean;
   hasEczema: boolean;
-  preferences: PreferenciasPerfil;
+  preferences: Preferencia[];
   allergies: Alergia[];
 }
 
@@ -112,7 +117,7 @@ export interface PerfilParaSalvar {
   hasEczema: boolean | null;
   hasHyperpigmentation: boolean | null;
   hasMelasma: boolean | null;
-  preferences: PreferenciasPerfil;
+  preferences: Preferencia[];
   allergies: AlergiaParaSalvar[];
 }
 

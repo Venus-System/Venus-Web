@@ -8,35 +8,9 @@ import {
 } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarPerfilFalso, lerPerfilFalso } from "./mocks/perfil";
-import type {
-  PerfilCarregado,
-  PerfilParaSalvar,
-  PreferenciasPerfil,
-} from "../types/perfil";
+import type { PerfilCarregado, PerfilParaSalvar } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
 import type { CondicaoPele } from "../types/usuario";
-
-const PREFERENCIAS_VAZIAS: PreferenciasPerfil = {
-  preferCrueltyFree: false,
-  preferVegan: false,
-  preferSustainable: false,
-  preferFragranceFree: false,
-  preferParabenFree: false,
-  preferSulfateFree: false,
-  preferSiliconeFree: false,
-};
-
-function montarPreferencias(
-  escolhidas: Array<keyof PreferenciasPerfil>,
-): PreferenciasPerfil {
-  const preferencias = { ...PREFERENCIAS_VAZIAS };
-
-  for (const chave of escolhidas) {
-    preferencias[chave] = true;
-  }
-
-  return preferencias;
-}
 
 function temCondicao(
   marcadas: CondicaoPele[],
@@ -90,7 +64,7 @@ function converter(respostas: RespostasQuestionario): PerfilParaSalvar {
     hasEczema: temCondicao(condicoes, "hasEczema"),
     hasHyperpigmentation: temCondicao(condicoes, "hasHyperpigmentation"),
     hasMelasma: temCondicao(condicoes, "hasMelasma"),
-    preferences: montarPreferencias(respostas.preferences),
+    preferences: respostas.preferences,
     allergies: consentiu
       ? respostas.allergies.map((alergia) => ({
           allergyId: alergia.id,
@@ -173,11 +147,6 @@ function lerSensibilidade(
 export function paraRespostas(
   perfil: PerfilParaSalvar,
 ): RespostasQuestionario {
-  const preferencias = Object.entries(perfil.preferences).flatMap(
-    ([chave, ligada]) =>
-      ligada ? [chave as keyof PreferenciasPerfil] : [],
-  );
-
   return {
     gender: perfil.gender ?? "",
     hairCurvature: perfil.hairType ?? "",
@@ -192,7 +161,7 @@ export function paraRespostas(
       id: alergia.allergyId,
       severity: alergia.severity ?? "",
     })),
-    preferences: preferencias,
+    preferences: perfil.preferences,
     healthDataConsent:
       perfil.skinType !== null ||
       perfil.skinPhototype !== null ||

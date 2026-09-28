@@ -82,6 +82,44 @@
   outline-offset: var(--foco-offset);
 }
 
+.optionsVertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.segmentos {
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-pilula);
+}
+
+.segmento {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  padding: 0 var(--espaco-3);
+  border-radius: var(--raio-pilula);
+  color: var(--texto);
+  font-size: var(--tamanho-pequeno);
+  cursor: pointer;
+}
+
+.segmento:hover {
+  color: var(--violeta);
+}
+
+.segmento:has(input:checked) {
+  background-color: var(--violeta);
+  color: var(--texto-invertido);
+}
+
+.segmento:has(input:focus-visible) {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
 .error {
   margin-top: var(--espaco-2);
   color: var(--avoid);

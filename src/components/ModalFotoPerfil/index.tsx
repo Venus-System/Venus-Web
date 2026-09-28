@@ -4,7 +4,11 @@ import { Focus } from "lucide-react";
 import logo from "../../assets/Logo.svg";
 import { AVATARES } from "../../utils/avatarPerfil";
 import type { Avatar } from "../../utils/avatarPerfil";
-import { TIPOS_DE_IMAGEM, validarFoto } from "../../services/avatar";
+import {
+  TAMANHO_MAXIMO_EM_MB,
+  TIPOS_DE_IMAGEM,
+  validarFoto,
+} from "../../services/avatar";
 import Button from "../Button";
 import Modal from "../Modal";
 import styles from "./styles.module.css";
@@ -172,7 +176,9 @@ function ModalFotoPerfil({
 
         <p className={styles.dica}>
           Cole com <kbd>Ctrl</kbd> + <kbd>V</kbd>, arraste o arquivo, ou clique
-          para escolher no computador. PNG, JPEG ou WebP, até 5 MB.
+          para escolher no computador. PNG, JPEG ou WebP, até{" "}
+          {TAMANHO_MAXIMO_EM_MB} MB. Fotos que não forem quadradas são
+          recortadas no centro, como na prévia.
         </p>
 
         <input

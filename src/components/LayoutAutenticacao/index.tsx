@@ -5,9 +5,10 @@ import styles from "./styles.module.css";
 
 interface LayoutAutenticacaoProps {
   children: ReactNode;
+  painel?: ReactNode;
 }
 
-function LayoutAutenticacao({ children }: LayoutAutenticacaoProps) {
+function LayoutAutenticacao({ children, painel }: LayoutAutenticacaoProps) {
   return (
     <div className={styles.pagina}>
       <section className={styles.painelFormulario}>
@@ -18,8 +19,18 @@ function LayoutAutenticacao({ children }: LayoutAutenticacaoProps) {
 
         <div className={styles.conteudo}>{children}</div>
       </section>
-      <aside className={styles.painelMarca} aria-hidden="true">
-        <span className={styles.marca}>Venus</span>
+
+      <aside
+        className={styles.painelMarca}
+        aria-hidden={painel === undefined ? true : undefined}
+      >
+        {painel === undefined ? null : (
+          <div className={styles.painelTexto}>{painel}</div>
+        )}
+
+        <span className={styles.marca} aria-hidden="true">
+          Venus
+        </span>
       </aside>
     </div>
   );

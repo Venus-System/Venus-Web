@@ -1,0 +1,75 @@
+.painel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4);
+}
+
+.titulo {
+  color: var(--roxo);
+  font-size: var(--tamanho-medio);
+}
+
+.legenda {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item,
+.itemAtivo {
+  display: grid;
+  grid-template-columns: var(--espaco-5) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espaco-2);
+  width: 100%;
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-3) var(--espaco-4);
+  background-color: transparent;
+  border: none;
+  border-top: var(--borda-largura) solid var(--borda);
+  border-left: var(--espaco-1) solid transparent;
+  color: var(--roxo);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-base);
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover {
+  background-color: var(--superficie-suave);
+}
+
+.itemAtivo {
+  background-color: var(--lavanda-clara);
+  border-left-color: var(--violeta);
+}
+
+.item:focus-visible,
+.itemAtivo:focus-visible {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: calc(var(--foco-largura) * -1);
+}
+
+.numero {
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+}
+
+.nome {
+  overflow-wrap: break-word;
+}

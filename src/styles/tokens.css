@@ -24,6 +24,7 @@
 
   --fonte-titulo: "Poppins", "Segoe UI", sans-serif;
   --fonte-corpo: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+  --fonte-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
 
   --peso-titulo: 400;
   --peso-forte: 600;

@@ -3,6 +3,7 @@ import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
 import { buscarCatalogoAlergias } from "../services/alergias";
 import { enviarFotoDePerfil } from "../services/avatar";
+import { useAutenticacao } from "./useAutenticacao";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
@@ -36,7 +37,12 @@ export interface EstadoDaFoto {
   mensagem: string;
 }
 
-const SEM_FOTO: EstadoDaFoto = { url: null, situacao: "ocioso", mensagem: "" };
+interface EnvioDaFoto {
+  situacao: EstadoDaFoto["situacao"];
+  mensagem: string;
+}
+
+const FOTO_PARADA: EnvioDaFoto = { situacao: "ocioso", mensagem: "" };
 
 interface ErrosPerfil {
   ageRange: string | null;
@@ -138,7 +144,8 @@ export function usePerfil(): Perfil {
     situacao: "ocioso",
     mensagem: "",
   });
-  const [foto, setFoto] = useState<EstadoDaFoto>(SEM_FOTO);
+  const [envioDaFoto, setEnvioDaFoto] = useState<EnvioDaFoto>(FOTO_PARADA);
+  const { fotoUrl, definirFoto } = useAutenticacao();
   const resumoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -151,7 +158,7 @@ export function usePerfil(): Perfil {
         }
 
         if (carregado !== null) {
-          setFoto((atual) => ({ ...atual, url: carregado.avatarUrl }));
+          definirFoto(carregado.avatarUrl);
         }
 
         setCarregamento(
@@ -179,7 +186,7 @@ export function usePerfil(): Perfil {
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [definirFoto]);
 
   useEffect(() => {
     const controle = new AbortController();
@@ -282,23 +289,23 @@ export function usePerfil(): Perfil {
   }
 
   async function subirFoto(arquivo: File): Promise<boolean> {
-    setFoto((atual) => ({ ...atual, situacao: "enviando", mensagem: "" }));
+    setEnvioDaFoto({ situacao: "enviando", mensagem: "" });
 
     try {
       const url = await enviarFotoDePerfil(arquivo);
 
-      setFoto({ url, situacao: "ocioso", mensagem: "" });
+      definirFoto(url);
+      setEnvioDaFoto(FOTO_PARADA);
 
       return true;
     } catch (erro) {
-      setFoto((atual) => ({
-        ...atual,
+      setEnvioDaFoto({
         situacao: "erro",
         mensagem:
           erro instanceof Error
             ? erro.message
             : "Não foi possível salvar a sua foto de perfil.",
-      }));
+      });
 
       return false;
     }
@@ -357,7 +364,7 @@ export function usePerfil(): Perfil {
     respostasPreenchidas: respostas === null ? 0 : contarPreenchidas(respostas),
     totalDeRespostas:
       respostas === null ? CAMPOS_BASICOS : totalDeRespostas(respostas),
-    foto,
+    foto: { url: fotoUrl, ...envioDaFoto },
     enviarFoto: subirFoto,
     resumoRef,
     handleSubmit,

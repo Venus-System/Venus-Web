@@ -5,7 +5,7 @@ import type {
   FaixaEtaria,
   Fototipo,
   Genero,
-  PreferenciasPerfil,
+  Preferencia,
   TipoCouroCabeludo,
   TipoPele,
 } from "../../types/perfil";
@@ -80,14 +80,20 @@ export const OPCOES_COURO: RadioOption<TipoCouroCabeludo>[] = [
   { value: "other", label: "Não sei ou outro" },
 ];
 
-export const OPCOES_PREFERENCIAS: SearchOption<keyof PreferenciasPerfil>[] = [
-  { id: "preferCrueltyFree", label: "Cruelty-free" },
-  { id: "preferVegan", label: "Vegano" },
-  { id: "preferSustainable", label: "Sustentável" },
-  { id: "preferFragranceFree", label: "Sem fragrância" },
-  { id: "preferParabenFree", label: "Sem parabenos" },
-  { id: "preferSulfateFree", label: "Sem sulfatos" },
-  { id: "preferSiliconeFree", label: "Sem silicones" },
+export const OPCOES_PREFERENCIAS: SearchOption<Preferencia>[] = [
+  { id: "vegan", label: "Vegano" },
+  { id: "crueltyFree", label: "Cruelty free" },
+  { id: "parabenFree", label: "Sem parabenos" },
+  { id: "sulfateFree", label: "Sem sulfatos" },
+  { id: "siliconeFree", label: "Sem silicones" },
+  { id: "alcoholFree", label: "Sem álcool" },
+  { id: "oilFree", label: "Sem óleo" },
+  { id: "natural", label: "Natural" },
+  { id: "organic", label: "Orgânico" },
+  { id: "hypoallergenic", label: "Hipoalergênico" },
+  { id: "nonComedogenic", label: "Não comedogênico" },
+  { id: "dermatologicallyTested", label: "Testado dermatologicamente" },
+  { id: "recyclablePackaging", label: "Embalagem reciclável" },
 ];
 
 export const OPCOES_SITUACAO: RadioOption<SituacaoAtual>[] = [

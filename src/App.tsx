@@ -4,6 +4,9 @@ import CriarConta from "./pages/CriarConta";
 import EsqueciSenha from "./pages/EsqueciSenha";
 import Fontes from "./pages/Fontes";
 import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
+import FilaAprovacao from "./pages/FilaAprovacao";
+import RotaAdmin from "./components/RotaAdmin";
 import Inicio from "./pages/Inicio";
 import Metodologia from "./pages/Metodologia";
 import NovaSenha from "./pages/NovaSenha";
@@ -28,6 +31,15 @@ function App() {
         <Route path="/componentes" element={<Componentes />} />
       ) : null}
       <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route
+        path="/admin/fila/:id?"
+        element={
+          <RotaAdmin>
+            <FilaAprovacao />
+          </RotaAdmin>
+        }
+      />
       <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
       <Route path="/esqueci-senha/nova" element={<NovaSenha />} />

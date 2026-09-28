@@ -1,6 +1,6 @@
 import styles from "./styles.module.css";
 
-export type RadioVariant = "circulo" | "pilula";
+export type RadioVariant = "circulo" | "pilula" | "segmentado";
 
 export interface RadioOption<T extends string> {
   value: T;
@@ -14,8 +14,16 @@ interface GrupoRadioProps<T extends string> {
   value: T | "";
   onChange: (valor: T) => void;
   variant?: RadioVariant;
+  vertical?: boolean;
+  legendHidden?: boolean;
   error?: string;
 }
+
+const CLASSE_DA_OPCAO: Record<RadioVariant, string> = {
+  circulo: styles.option,
+  pilula: styles.pilula,
+  segmentado: styles.segmento,
+};
 
 function GrupoRadio<T extends string>({
   id,
@@ -24,19 +32,29 @@ function GrupoRadio<T extends string>({
   value,
   onChange,
   variant = "circulo",
+  vertical = false,
+  legendHidden = false,
   error,
 }: GrupoRadioProps<T>) {
   const errorId = `${id}-error`;
-  const ehPilula = variant === "pilula";
+  const radioOculto = variant !== "circulo";
+
+  let classeDasOpcoes = vertical ? styles.optionsVertical : styles.options;
+
+  if (variant === "segmentado") {
+    classeDasOpcoes = styles.segmentos;
+  }
 
   return (
     <fieldset
       className={styles.group}
       aria-describedby={error ? errorId : undefined}
     >
-      <legend className={styles.legend}>{legend}</legend>
+      <legend className={legendHidden ? "texto-oculto" : styles.legend}>
+        {legend}
+      </legend>
 
-      <div className={styles.options}>
+      <div className={classeDasOpcoes}>
         {options.map((option, posicao) => {
           const optionId = posicao === 0 ? id : `${id}-${option.value}`;
 
@@ -44,7 +62,7 @@ function GrupoRadio<T extends string>({
             <label
               key={option.value}
               htmlFor={optionId}
-              className={ehPilula ? styles.pilula : styles.option}
+              className={CLASSE_DA_OPCAO[variant]}
             >
               <input
                 id={optionId}
@@ -53,7 +71,7 @@ function GrupoRadio<T extends string>({
                 value={option.value}
                 checked={value === option.value}
                 onChange={() => onChange(option.value)}
-                className={ehPilula ? "texto-oculto" : styles.radio}
+                className={radioOculto ? "texto-oculto" : styles.radio}
               />
               {option.label}
             </label>
