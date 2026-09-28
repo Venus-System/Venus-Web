@@ -10,6 +10,9 @@ import ProductRow from "../../components/ProductRow";
 import RiskBadge from "../../components/RiskBadge";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
+import SegmentedNav from "../../components/SegmentedNav";
+import SubmissionRow from "../../components/SubmissionRow";
+import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
 import type { RiskLevel } from "../../types/ingrediente";
 import styles from "./styles.module.css";
@@ -166,6 +169,29 @@ function Componentes() {
               nivel={produto.level}
               realizadaEm="2026-08-26T14:32:00Z"
             />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>SegmentedNav</h2>
+
+        <SegmentedNav
+          label="Exemplo de navegação"
+          items={[
+            { to: "/componentes", label: "Esta página" },
+            { to: "/dashboard", label: "Dashboard" },
+            { to: "/favoritos", label: "Favoritos", emBreve: true },
+          ]}
+        />
+      </section>
+
+      <section className={styles.section}>
+        <h2>SubmissionRow</h2>
+
+        <div className={styles.rows}>
+          {enviosDoMock().submissions.map((envio) => (
+            <SubmissionRow key={envio.id} envio={envio} />
           ))}
         </div>
       </section>
