@@ -150,9 +150,13 @@
   align-items: flex-start;
   gap: var(--espaco-3);
   padding: var(--espaco-4);
-  background-image: var(--gradiente-marca);
+  background-color: var(--roxo);
   border-radius: var(--raio-grande);
   color: var(--texto-invertido);
+}
+
+.perfil :focus-visible {
+  outline-color: var(--texto-invertido);
 }
 
 .perfilTitulo {
@@ -167,7 +171,7 @@
 .barra {
   width: 100%;
   height: var(--espaco-1);
-  background-color: var(--violeta-escuro);
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
   overflow: hidden;
 }

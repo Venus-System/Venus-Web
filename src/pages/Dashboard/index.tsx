@@ -159,7 +159,7 @@ function Dashboard() {
                 label="Alertas no seu perfil"
                 value={valorDaContagem(estado.painel.alerts)}
                 valueLabel={rotuloDaContagem(estado.painel.alerts)}
-                description="Produtos analisados com contraindicação para o seu perfil"
+                description="Contraindicados para você"
                 trend={tendencia(estado.painel.alerts)}
               />
 
