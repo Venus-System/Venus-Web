@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import type { Produto } from "../../types/produto";
+import type { RiskLevel } from "../../types/ingrediente";
+import type { ProdutoDoPainel } from "../../types/painel";
 import ScoreBadge from "../ScoreBadge";
 import styles from "./styles.module.css";
 
 interface ProductRowProps {
-  produto: Produto;
+  produto: ProdutoDoPainel;
+  nota: number | null;
+  nivel: RiskLevel;
   realizadaEm: string;
 }
 
@@ -15,8 +18,8 @@ const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", {
   minute: "2-digit",
 });
 
-function ProductRow({ produto, realizadaEm }: ProductRowProps) {
-  const thumbClasses = [styles.thumb, styles[produto.level]].join(" ");
+function ProductRow({ produto, nota, nivel, realizadaEm }: ProductRowProps) {
+  const thumbClasses = [styles.thumb, styles[nivel]].join(" ");
   const data = new Date(realizadaEm);
   const dataValida = !Number.isNaN(data.getTime());
 
@@ -42,7 +45,7 @@ function ProductRow({ produto, realizadaEm }: ProductRowProps) {
         )}
       </span>
 
-      <ScoreBadge score={produto.scores.overallScore} level={produto.level} />
+      <ScoreBadge score={nota} level={nivel} />
     </Link>
   );
 }

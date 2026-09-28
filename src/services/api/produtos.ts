@@ -93,23 +93,36 @@ async function buscarIdPorSlug(
   return encontrado;
 }
 
-export async function buscarProdutoDaApi(
-  slug: string,
+export async function buscarProdutoPorIdDaApi(
+  id: number,
   sinal?: AbortSignal,
-): Promise<Produto> {
-  const id = await buscarIdPorSlug(slug, sinal);
+): Promise<Produto | null> {
   const caminho = `/api/products/${id}/full`;
   const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
   if (resposta.status === 404) {
-    idsPorSlug.clear();
-    throw new ErroProdutoNaoEncontrado(slug);
+    return null;
   }
 
   verificarResposta(resposta, caminho);
 
   const dados: ProductFullResponse = await resposta.json();
   return paraProduto(dados);
+}
+
+export async function buscarProdutoDaApi(
+  slug: string,
+  sinal?: AbortSignal,
+): Promise<Produto> {
+  const id = await buscarIdPorSlug(slug, sinal);
+  const produto = await buscarProdutoPorIdDaApi(id, sinal);
+
+  if (produto === null) {
+    idsPorSlug.clear();
+    throw new ErroProdutoNaoEncontrado(slug);
+  }
+
+  return produto;
 }
 
 async function buscarLista(
