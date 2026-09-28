@@ -1,7 +1,7 @@
 export class ErroServicoIndisponivel extends Error {
   constructor() {
     super(
-      "O serviço da Venus está fora do ar no momento. Tente de novo mais tarde.",
+      "Não conseguimos falar com o serviço da Venus agora. Tente de novo em instantes.",
     );
     this.name = "ErroServicoIndisponivel";
   }
