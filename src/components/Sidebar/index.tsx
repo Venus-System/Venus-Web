@@ -54,7 +54,7 @@ const GROUPS: NavGroup[] = [
     title: "Meu Espaço",
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
-      { to: "/historico", label: "Histórico", Icon: History, emBreve: true },
+      { to: "/historico", label: "Histórico", Icon: History },
       { to: "/favoritos", label: "Favoritos", Icon: Heart, emBreve: true },
     ],
   },

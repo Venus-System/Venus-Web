@@ -23,6 +23,7 @@ import Privacidade from "./pages/Privacidade";
 import Termos from "./pages/Termos";
 import Cookies from "./pages/Cookies";
 import Enviados from "./pages/Enviados";
+import Historico from "./pages/Historico";
 
 function App() {
   return (
@@ -55,6 +56,14 @@ function App() {
         element={
           <RotaPrivada>
             <Dashboard />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/historico"
+        element={
+          <RotaPrivada>
+            <Historico />
           </RotaPrivada>
         }
       />
