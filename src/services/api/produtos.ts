@@ -56,7 +56,7 @@ function ehCategoriaApi(valor: unknown): valor is CategoriaApi {
   );
 }
 
-async function buscarIdPorSlug(
+export async function buscarIdPorSlug(
   slug: string,
   sinal?: AbortSignal,
 ): Promise<number> {
