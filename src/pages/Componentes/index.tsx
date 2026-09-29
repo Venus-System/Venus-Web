@@ -3,6 +3,7 @@ import { useState } from "react";
 import logo from "../../assets/Logo.svg";
 import Button from "../../components/Button";
 import Chip from "../../components/Chip";
+import FavoriteButton from "../../components/FavoriteButton";
 import Input from "../../components/Input";
 import MainLayout from "../../components/MainLayout";
 import ProductCard from "../../components/ProductCard";
@@ -23,6 +24,7 @@ const CHIPS_INICIAIS = ["Lanolina", "Óleo de amêndoas", "Vegano"];
 
 function Componentes() {
   const [alergias, setAlergias] = useState<string[]>(CHIPS_INICIAIS);
+  const [favorito, setFavorito] = useState(false);
 
   const aprovado = produtosMock[0];
   const semDados = produtosMock[4];
@@ -168,8 +170,43 @@ function Componentes() {
               nota={produto.scores.overallScore}
               nivel={produto.level}
               realizadaEm="2026-08-26T14:32:00Z"
+              action={
+                produto.slug === comImagem.slug ? (
+                  <FavoriteButton
+                    productName={produto.name}
+                    isFavorite={favorito}
+                    isPending={false}
+                    onToggle={() => setFavorito((atual) => !atual)}
+                  />
+                ) : undefined
+              }
             />
           ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>FavoriteButton</h2>
+
+        <div className={styles.row}>
+          <FavoriteButton
+            productName="Produto de exemplo"
+            isFavorite={favorito}
+            isPending={false}
+            onToggle={() => setFavorito((atual) => !atual)}
+          />
+          <FavoriteButton
+            productName="Produto já favoritado"
+            isFavorite
+            isPending={false}
+            onToggle={() => undefined}
+          />
+          <FavoriteButton
+            productName="Produto aguardando a API"
+            isFavorite={false}
+            isPending
+            onToggle={() => undefined}
+          />
         </div>
       </section>
 
