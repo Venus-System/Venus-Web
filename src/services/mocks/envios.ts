@@ -1,11 +1,6 @@
 import type { Envios } from "../../types/envio";
+import { horasAtras } from "./painel";
 import { serumCalmanteAveia } from "./produtos";
-
-const UMA_HORA = 60 * 60 * 1000;
-
-function horasAtras(horas: number): string {
-  return new Date(Date.now() - horas * UMA_HORA).toISOString();
-}
 
 export function enviosDoMock(): Envios {
   return {

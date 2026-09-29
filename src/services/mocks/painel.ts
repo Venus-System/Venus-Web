@@ -10,11 +10,11 @@ import {
 
 const UMA_HORA = 60 * 60 * 1000;
 
-function horasAtras(horas: number): string {
+export function horasAtras(horas: number): string {
   return new Date(Date.now() - horas * UMA_HORA).toISOString();
 }
 
-function doPainel(produto: Produto): ProdutoDoPainel {
+export function doPainel(produto: Produto): ProdutoDoPainel {
   return {
     slug: produto.slug,
     name: produto.name,
