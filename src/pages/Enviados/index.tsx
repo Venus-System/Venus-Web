@@ -1,17 +1,10 @@
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
-import SegmentedNav from "../../components/SegmentedNav";
-import type { SegmentedNavItem } from "../../components/SegmentedNav";
+import MySpaceNav from "../../components/MySpaceNav";
 import SubmissionRow from "../../components/SubmissionRow";
 import { useEnvios } from "../../hooks/useEnvios";
 import type { Envio } from "../../types/envio";
 import styles from "./styles.module.css";
-
-const ABAS: SegmentedNavItem[] = [
-  { to: "/historico", label: "Histórico", end: true, emBreve: true },
-  { to: "/favoritos", label: "Favoritos", emBreve: true },
-  { to: "/historico/enviados", label: "Enviados" },
-];
 
 interface GrupoDeEnvios {
   id: string;
@@ -53,7 +46,7 @@ function Enviados() {
           </p>
         </header>
 
-        <SegmentedNav label="Meu espaço" items={ABAS} />
+        <MySpaceNav />
 
         <p className="texto-oculto" aria-live="polite">
           {estado.status === "carregando" ? "Carregando os seus envios." : ""}
