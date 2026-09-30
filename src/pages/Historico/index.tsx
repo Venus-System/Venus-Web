@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Button from "../../components/Button";
+import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
 import MySpaceNav from "../../components/MySpaceNav";
 import ProductRow from "../../components/ProductRow";
+import { useFavoritos } from "../../hooks/useFavoritos";
+import type { EstadoFavoritos } from "../../hooks/useFavoritos";
 import { useHistorico } from "../../hooks/useHistorico";
 import type { EstadoHistorico } from "../../hooks/useHistorico";
 import { agruparPorData } from "../../utils/agruparPorData";
@@ -32,8 +35,25 @@ function anuncio(estado: EstadoHistorico): string {
     : `${estado.recemCarregadas} análises carregadas.`;
 }
 
+function anuncioDoFavorito(favoritos: EstadoFavoritos): string {
+  if (favoritos.status !== "pronto" || favoritos.ultimaAcao === null) {
+    return "";
+  }
+
+  const { nome, favoritado } = favoritos.ultimaAcao;
+
+  return favoritado
+    ? `Você favoritou ${nome}.`
+    : `Você tirou ${nome} dos favoritos.`;
+}
+
 function Historico() {
   const { estado, recarregar, carregarMais } = useHistorico();
+  const {
+    estado: favoritos,
+    recarregar: recarregarFavoritos,
+    alternar,
+  } = useFavoritos();
   const fimRef = useRef<HTMLParagraphElement>(null);
 
   const chegouAoFimCarregando =
@@ -65,6 +85,31 @@ function Historico() {
         <p className="texto-oculto" aria-live="polite">
           {anuncio(estado)}
         </p>
+
+        <p className="texto-oculto" aria-live="polite">
+          {anuncioDoFavorito(favoritos)}
+        </p>
+
+        {estado.status === "pronto" &&
+        estado.analises.length > 0 &&
+        favoritos.status === "erro" ? (
+          <div className={styles.avisoFavoritos} role="status">
+            <p>
+              Não conseguimos carregar seus favoritos agora, por isso os
+              corações não aparecem.
+            </p>
+
+            <Button variant="text" onClick={recarregarFavoritos}>
+              Carregar os favoritos de novo
+            </Button>
+          </div>
+        ) : null}
+
+        {favoritos.status === "pronto" && favoritos.erroAoAlternar !== null ? (
+          <p role="alert" className={styles.erroMais}>
+            {favoritos.erroAoAlternar}
+          </p>
+        ) : null}
 
         {estado.status === "carregando" ? (
           <p className={styles.estado}>Carregando o seu histórico...</p>
@@ -111,6 +156,20 @@ function Historico() {
                           analise.recommendationLevel,
                         )}
                         realizadaEm={analise.analyzedAt}
+                        action={
+                          favoritos.status === "pronto" ? (
+                            <FavoriteButton
+                              productName={analise.product.name}
+                              isFavorite={favoritos.slugs.includes(
+                                analise.product.slug,
+                              )}
+                              isPending={favoritos.pendentes.includes(
+                                analise.product.slug,
+                              )}
+                              onToggle={() => alternar(analise.product)}
+                            />
+                          ) : undefined
+                        }
                       />
                     </li>
                   ))}

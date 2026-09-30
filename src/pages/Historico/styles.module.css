@@ -86,6 +86,15 @@
   gap: var(--espaco-2);
 }
 
+.avisoFavoritos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .erroMais {
   color: var(--avoid);
   font-weight: var(--peso-forte);
