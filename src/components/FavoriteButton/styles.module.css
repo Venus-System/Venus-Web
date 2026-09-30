@@ -1,0 +1,35 @@
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-pilula);
+  color: var(--crimson);
+  cursor: pointer;
+}
+
+.botao:hover {
+  border-color: var(--crimson);
+}
+
+.botao[aria-disabled="true"] {
+  cursor: progress;
+}
+
+.favorito {
+  background-color: var(--avoid-fundo);
+  border-color: var(--crimson);
+}
+
+.icone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+}
+
+.favorito .icone {
+  fill: currentColor;
+}

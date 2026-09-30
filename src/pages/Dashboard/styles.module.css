@@ -92,6 +92,15 @@
   font-weight: var(--peso-forte);
 }
 
+.verTudo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
 .saude {
   display: flex;
   flex-wrap: wrap;

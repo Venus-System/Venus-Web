@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import type { RiskLevel } from "../../types/ingrediente";
 import type { ProdutoDoPainel } from "../../types/painel";
@@ -9,6 +10,7 @@ interface ProductRowProps {
   nota: number | null;
   nivel: RiskLevel;
   realizadaEm: string;
+  action?: ReactNode;
 }
 
 const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", {
@@ -18,13 +20,19 @@ const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", {
   minute: "2-digit",
 });
 
-function ProductRow({ produto, nota, nivel, realizadaEm }: ProductRowProps) {
+function ProductRow({
+  produto,
+  nota,
+  nivel,
+  realizadaEm,
+  action,
+}: ProductRowProps) {
   const thumbClasses = [styles.thumb, styles[nivel]].join(" ");
   const data = new Date(realizadaEm);
   const dataValida = !Number.isNaN(data.getTime());
 
   return (
-    <Link to={`/produto/${produto.slug}`} className={styles.row}>
+    <div className={styles.row}>
       <span className={thumbClasses}>
         {produto.imageUrl ? (
           <img src={produto.imageUrl} alt="" className={styles.image} />
@@ -34,7 +42,9 @@ function ProductRow({ produto, nota, nivel, realizadaEm }: ProductRowProps) {
       </span>
 
       <span className={styles.info}>
-        <span className={styles.name}>{produto.name}</span>
+        <Link to={`/produto/${produto.slug}`} className={styles.link}>
+          {produto.name}
+        </Link>
 
         {dataValida ? (
           <time dateTime={realizadaEm} className={styles.detail}>
@@ -46,7 +56,11 @@ function ProductRow({ produto, nota, nivel, realizadaEm }: ProductRowProps) {
       </span>
 
       <ScoreBadge score={nota} level={nivel} />
-    </Link>
+
+      {action === undefined ? null : (
+        <span className={styles.action}>{action}</span>
+      )}
+    </div>
   );
 }
 

@@ -20,7 +20,7 @@ const COLUMNS: LinkColumn[] = [
       { to: "/pesquisa", label: "Analisar" },
       { to: "/comparar", label: "Comparar", emBreve: true },
       { to: "/dashboard", label: "Dashboard" },
-      { to: "/historico", label: "Histórico", emBreve: true },
+      { to: "/historico", label: "Histórico" },
     ],
   },
   {

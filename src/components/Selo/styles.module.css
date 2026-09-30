@@ -24,3 +24,8 @@
   background-color: var(--warning-fundo);
   color: var(--warning);
 }
+
+.sucesso {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}

@@ -1,6 +1,6 @@
 import styles from "./styles.module.css";
 
-export type SeloVariante = "contorno" | "destaque" | "alerta";
+export type SeloVariante = "contorno" | "destaque" | "alerta" | "sucesso";
 
 interface SeloProps {
   label: string;

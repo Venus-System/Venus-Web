@@ -22,6 +22,9 @@ import Perguntas from "./pages/Perguntas";
 import Privacidade from "./pages/Privacidade";
 import Termos from "./pages/Termos";
 import Cookies from "./pages/Cookies";
+import Enviados from "./pages/Enviados";
+import Historico from "./pages/Historico";
+import Favoritos from "./pages/Favoritos";
 
 function App() {
   return (
@@ -54,6 +57,30 @@ function App() {
         element={
           <RotaPrivada>
             <Dashboard />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/historico"
+        element={
+          <RotaPrivada>
+            <Historico />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/favoritos"
+        element={
+          <RotaPrivada>
+            <Favoritos />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/historico/enviados"
+        element={
+          <RotaPrivada>
+            <Enviados />
           </RotaPrivada>
         }
       />
