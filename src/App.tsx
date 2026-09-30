@@ -24,6 +24,7 @@ import Termos from "./pages/Termos";
 import Cookies from "./pages/Cookies";
 import Enviados from "./pages/Enviados";
 import Historico from "./pages/Historico";
+import Favoritos from "./pages/Favoritos";
 
 function App() {
   return (
@@ -64,6 +65,14 @@ function App() {
         element={
           <RotaPrivada>
             <Historico />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path="/favoritos"
+        element={
+          <RotaPrivada>
+            <Favoritos />
           </RotaPrivada>
         }
       />

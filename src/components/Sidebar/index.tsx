@@ -55,7 +55,7 @@ const GROUPS: NavGroup[] = [
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
       { to: "/historico", label: "Histórico", Icon: History },
-      { to: "/favoritos", label: "Favoritos", Icon: Heart, emBreve: true },
+      { to: "/favoritos", label: "Favoritos", Icon: Heart },
     ],
   },
   {

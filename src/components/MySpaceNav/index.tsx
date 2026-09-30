@@ -3,7 +3,7 @@ import type { SegmentedNavItem } from "../SegmentedNav";
 
 const ABAS: SegmentedNavItem[] = [
   { to: "/historico", label: "Histórico", end: true },
-  { to: "/favoritos", label: "Favoritos", emBreve: true },
+  { to: "/favoritos", label: "Favoritos" },
   { to: "/historico/enviados", label: "Enviados" },
 ];
 

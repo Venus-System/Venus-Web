@@ -168,10 +168,10 @@ function Dashboard() {
                 value={String(estado.painel.favoriteCount)}
                 description="Os produtos que você guardou"
               >
-                <p className={styles.emBreveLinha}>
+                <Link to="/favoritos" className={styles.verTudo}>
                   Ver favoritos
-                  <span className={styles.emBreve}>Em breve</span>
-                </p>
+                  <ArrowRight className={styles.icone} aria-hidden="true" />
+                </Link>
               </StatCard>
             </section>
 
