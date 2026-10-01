@@ -13,3 +13,14 @@ export function numero(valor: unknown): number | null {
 export function texto(valor: unknown): string | null {
   return typeof valor === "string" && valor.trim() !== "" ? valor.trim() : null;
 }
+
+export function lerTodos<T>(
+  itens: unknown[],
+  ler: (valor: unknown) => T | null,
+): T[] {
+  return itens.flatMap((item) => {
+    const lido = ler(item);
+
+    return lido === null ? [] : [lido];
+  });
+}

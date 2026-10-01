@@ -9,12 +9,11 @@ import {
   lerAnalise,
   lerNotaPessoal,
   lerPaginas,
-  lerTodos,
   maisRecentePorVersao,
   montarAnalises,
 } from "./analises";
 import type { AnaliseLida, NotaPessoalLida } from "./analises";
-import { numero } from "./leitura";
+import { lerTodos, numero } from "./leitura";
 import { pedir, verificarResposta } from "./requisicao";
 
 const QUANTIDADE_DE_RECENTES = 5;

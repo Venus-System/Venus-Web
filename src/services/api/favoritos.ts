@@ -1,7 +1,7 @@
 import { URL_API } from "../../config/ambiente";
 import type { Produto } from "../../types/produto";
-import { lerPaginas, lerTodos } from "./analises";
-import { comoObjeto, numero } from "./leitura";
+import { lerPaginas } from "./analises";
+import { comoObjeto, lerTodos, numero } from "./leitura";
 import { buscarIdPorSlug, buscarProdutoPorIdDaApi } from "./produtos";
 import { pedir, verificarResposta } from "./requisicao";
 
