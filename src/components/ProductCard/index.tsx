@@ -1,22 +1,11 @@
 import { Link } from "react-router-dom";
 import type { Produto } from "../../types/produto";
+import { tomDoProduto } from "../../utils/tomDoProduto";
 import ScoreBadge from "../ScoreBadge";
 import styles from "./styles.module.css";
 
 interface ProductCardProps {
   produto: Produto;
-}
-
-const TONS = ["tomRoxo", "tomVerde", "tomRosa", "tomAzul"];
-
-function tomDoProduto(slug: string): string {
-  let soma = 0;
-
-  for (const caractere of slug) {
-    soma += caractere.charCodeAt(0);
-  }
-
-  return TONS[soma % TONS.length];
 }
 
 function ProductCard({ produto }: ProductCardProps) {
