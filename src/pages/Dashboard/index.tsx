@@ -350,10 +350,16 @@ function Dashboard() {
                   <>
                     <SwapCard swap={estado.painel.recommendedSwap} />
 
-                    <p className={styles.emBreveLinha}>
+                    <Link
+                      to={`/comparar?${new URLSearchParams({
+                        a: estado.painel.recommendedSwap.current.product.slug,
+                        b: estado.painel.recommendedSwap.suggested.product.slug,
+                      }).toString()}`}
+                      className={styles.verTudo}
+                    >
                       Comparar os dois
-                      <span className={styles.emBreve}>Em breve</span>
-                    </p>
+                      <ArrowRight className={styles.icone} aria-hidden="true" />
+                    </Link>
                   </>
                 )}
               </section>

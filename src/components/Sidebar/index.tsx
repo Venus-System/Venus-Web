@@ -41,12 +41,7 @@ const GROUPS: NavGroup[] = [
     title: "Analisar",
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
-      {
-        to: "/comparar",
-        label: "Comparar",
-        Icon: ArrowLeftRight,
-        emBreve: true,
-      },
+      { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
     ],
   },
   {

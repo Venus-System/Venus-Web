@@ -4,11 +4,10 @@ import {
   lerAnalise,
   lerNotaPessoal,
   lerPaginas,
-  lerTodos,
   maisRecentePorVersao,
   montarAnalises,
 } from "./analises";
-import { comoObjeto } from "./leitura";
+import { comoObjeto, lerTodos } from "./leitura";
 import { pedir, verificarResposta } from "./requisicao";
 
 export async function buscarHistoricoNaApi(

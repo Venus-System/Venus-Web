@@ -106,17 +106,6 @@ export function lerNotaPessoal(valor: unknown): NotaPessoalLida | null {
   };
 }
 
-export function lerTodos<T>(
-  itens: unknown[],
-  ler: (valor: unknown) => T | null,
-): T[] {
-  return itens.flatMap((item) => {
-    const lido = ler(item);
-
-    return lido === null ? [] : [lido];
-  });
-}
-
 export function maisRecentePorVersao<T extends { productVersionId: number }>(
   itens: T[],
 ): T[] {
