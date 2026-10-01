@@ -18,7 +18,7 @@ const COLUMNS: LinkColumn[] = [
     title: "Produto",
     links: [
       { to: "/pesquisa", label: "Analisar" },
-      { to: "/comparar", label: "Comparar", emBreve: true },
+      { to: "/comparar", label: "Comparar" },
       { to: "/dashboard", label: "Dashboard" },
       { to: "/historico", label: "Histórico" },
     ],

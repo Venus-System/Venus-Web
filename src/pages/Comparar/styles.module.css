@@ -1,0 +1,134 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.header > * {
+  margin: 0;
+}
+
+.title {
+  color: var(--texto);
+  font-size: var(--tamanho-enorme);
+  line-height: 1.1;
+}
+
+.destaque {
+  color: var(--violeta);
+}
+
+.subtitle {
+  max-width: 50ch;
+  color: var(--texto-suave);
+}
+
+.estado {
+  color: var(--texto-suave);
+}
+
+.erro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
+.escolha {
+  display: grid;
+  gap: var(--espaco-3);
+  max-width: 56rem;
+}
+
+.canto {
+  background-color: var(--superficie-suave);
+}
+
+.produto {
+  min-width: 14rem;
+}
+
+.foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  margin-bottom: var(--espaco-2);
+  background-color: var(--card);
+  border-radius: var(--raio-medio);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-grande);
+  overflow: hidden;
+}
+
+.imagem {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.nome {
+  display: block;
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+}
+
+.meta {
+  display: block;
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-weight: var(--peso-titulo);
+}
+
+.nota {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.melhor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  padding: 0 var(--espaco-2);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--safe);
+  border-radius: var(--raio-pilula);
+  color: var(--safe);
+  font-weight: var(--peso-forte);
+}
+
+.icone {
+  width: var(--tamanho-pequeno);
+  height: var(--tamanho-pequeno);
+}
+
+.celulaMelhor {
+  background-color: var(--safe-fundo);
+}
+
+.selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+}
+
+.semSelo {
+  color: var(--texto-suave);
+}
+
+@media (min-width: 40rem) {
+  .escolha {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 export interface SelectOption<T extends string> {
   value: T;
   label: string;
+  disabled?: boolean;
 }
 
 interface ListaSuspensaProps<T extends string> {
@@ -62,7 +63,11 @@ function ListaSuspensa<T extends string>({
           </option>
 
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
               {option.label}
             </option>
           ))}

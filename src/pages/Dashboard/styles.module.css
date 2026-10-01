@@ -211,24 +211,6 @@
   list-style: none;
 }
 
-.emBreveLinha {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--espaco-2);
-  color: var(--texto-suave);
-  font-size: var(--tamanho-pequeno);
-  font-weight: var(--peso-forte);
-}
-
-.emBreve {
-  padding: 0 var(--espaco-1);
-  background-color: var(--no-data-fundo);
-  border-radius: var(--raio-pilula);
-  color: var(--no-data);
-  font-weight: var(--peso-titulo);
-  white-space: nowrap;
-}
-
 @media (min-width: 64rem) {
   .linha {
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
