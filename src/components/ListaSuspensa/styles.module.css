@@ -20,6 +20,10 @@
   max-width: 20rem;
 }
 
+.fullWidth {
+  max-width: none;
+}
+
 .field {
   width: 100%;
   padding: var(--espaco-2) var(--espaco-5) var(--espaco-2) var(--espaco-3);

@@ -16,6 +16,8 @@ interface ListaSuspensaProps<T extends string> {
   value: T | "";
   onChange: (valor: T) => void;
   error?: string;
+  hideLabel?: boolean;
+  fullWidth?: boolean;
 }
 
 function ListaSuspensa<T extends string>({
@@ -26,6 +28,8 @@ function ListaSuspensa<T extends string>({
   value,
   onChange,
   error,
+  hideLabel = false,
+  fullWidth = false,
 }: ListaSuspensaProps<T>) {
   const errorId = `${id}-error`;
 
@@ -45,11 +49,18 @@ function ListaSuspensa<T extends string>({
 
   return (
     <div className={styles.wrapper}>
-      <label htmlFor={id} className={styles.label}>
+      <label
+        htmlFor={id}
+        className={hideLabel ? "texto-oculto" : styles.label}
+      >
         {label}
       </label>
 
-      <div className={styles.control}>
+      <div
+        className={
+          fullWidth ? `${styles.control} ${styles.fullWidth}` : styles.control
+        }
+      >
         <select
           id={id}
           className={fieldClasses}
