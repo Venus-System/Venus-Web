@@ -93,10 +93,15 @@ export async function buscarIdPorSlug(
   return encontrado;
 }
 
-export async function buscarProdutoPorIdDaApi(
+export interface ProdutoComVersao {
+  produto: Produto;
+  versaoId: number | null;
+}
+
+async function buscarCompletoPorId(
   id: number,
   sinal?: AbortSignal,
-): Promise<Produto | null> {
+): Promise<ProductFullResponse | null> {
   const caminho = `/api/products/${id}/full`;
   const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
@@ -107,20 +112,41 @@ export async function buscarProdutoPorIdDaApi(
   verificarResposta(resposta, caminho);
 
   const dados: ProductFullResponse = await resposta.json();
-  return paraProduto(dados);
+  return dados;
+}
+
+export async function buscarProdutoPorIdDaApi(
+  id: number,
+  sinal?: AbortSignal,
+): Promise<Produto | null> {
+  const dados = await buscarCompletoPorId(id, sinal);
+
+  return dados === null ? null : paraProduto(dados);
+}
+
+export async function buscarProdutoComVersaoDaApi(
+  slug: string,
+  sinal?: AbortSignal,
+): Promise<ProdutoComVersao> {
+  const id = await buscarIdPorSlug(slug, sinal);
+  const dados = await buscarCompletoPorId(id, sinal);
+
+  if (dados === null) {
+    idsPorSlug.clear();
+    throw new ErroProdutoNaoEncontrado(slug);
+  }
+
+  return {
+    produto: paraProduto(dados),
+    versaoId: dados.currentVersion?.id ?? null,
+  };
 }
 
 export async function buscarProdutoDaApi(
   slug: string,
   sinal?: AbortSignal,
 ): Promise<Produto> {
-  const id = await buscarIdPorSlug(slug, sinal);
-  const produto = await buscarProdutoPorIdDaApi(id, sinal);
-
-  if (produto === null) {
-    idsPorSlug.clear();
-    throw new ErroProdutoNaoEncontrado(slug);
-  }
+  const { produto } = await buscarProdutoComVersaoDaApi(slug, sinal);
 
   return produto;
 }

@@ -43,10 +43,15 @@ export interface NotasApi {
   confidenceScore: number;
 }
 
+export interface VersaoApi {
+  id: number;
+}
+
 export interface ProductFullResponse {
   product: ProdutoBaseApi;
   brand: MarcaApi;
   category: CategoriaApi;
+  currentVersion: VersaoApi | null;
   claims: ClaimApi[];
   score: NotasApi | null;
 }
