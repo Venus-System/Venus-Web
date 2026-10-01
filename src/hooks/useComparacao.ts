@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarComparacao } from "../services/comparacao";
-import type { Produto } from "../types/produto";
+import type { ProdutoComparado } from "../types/comparacao";
 
 export type EstadoComparacao =
   | { status: "incompleta" }
   | { status: "carregando" }
-  | { status: "pronta"; produtos: [Produto, Produto] }
+  | { status: "pronta"; produtos: [ProdutoComparado, ProdutoComparado] }
   | { status: "erro"; mensagem: string };
 
 export function useComparacao(slugA: string | null, slugB: string | null) {
