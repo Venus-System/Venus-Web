@@ -5,12 +5,11 @@ import type {
   Denuncia,
   NovaAvaliacao,
   VotoDeAvaliacao,
-  VotosDaAvaliacao,
 } from "../types/avaliacao";
 import { resumirAvaliacoes } from "../utils/resumoDasAvaliacoes";
 import {
   buscarAvaliacoesNaApi,
-  buscarVotosNaApi,
+  buscarMeuVotoNaApi,
   denunciarNaApi,
   publicarAvaliacaoNaApi,
   votarNaApi,
@@ -25,9 +24,9 @@ import {
 } from "./erros";
 import {
   avaliacoesDoMock,
+  meuVotoDoMock,
   publicarNoMock,
   votarNoMock,
-  votosDoMock,
 } from "./mocks/avaliacoes";
 import { simularLatencia } from "./mocks/atraso";
 
@@ -109,18 +108,22 @@ export async function publicarAvaliacao(
   }
 }
 
-export async function buscarVotos(
+export async function buscarMeuVoto(
   avaliacaoId: string,
   sinal?: AbortSignal,
-): Promise<VotosDaAvaliacao> {
+): Promise<VotoDeAvaliacao | null> {
   try {
     if (USAR_MOCK) {
-      return votosDoMock(avaliacaoId);
+      return meuVotoDoMock(avaliacaoId);
     }
 
-    return await buscarVotosNaApi(avaliacaoId, idDoUsuarioNaApi(), sinal);
+    const usuarioId = idDoUsuarioNaApi();
+
+    return usuarioId === null
+      ? null
+      : await buscarMeuVotoNaApi(avaliacaoId, usuarioId, sinal);
   } catch (erro) {
-    return repassarOuTrocar(erro, "Não foi possível carregar os votos.");
+    return repassarOuTrocar(erro, "Não foi possível carregar o seu voto.");
   }
 }
 

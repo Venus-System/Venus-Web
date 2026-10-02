@@ -2,14 +2,12 @@ import type {
   Avaliacao,
   NovaAvaliacao,
   VotoDeAvaliacao,
-  VotosDaAvaliacao,
 } from "../../types/avaliacao";
 import { ErroAvaliacaoDuplicada } from "../erros";
 import { horasAtras } from "./painel";
 import { hidratanteCeramidas, serumCalmanteAveia } from "./produtos";
 
 interface AvaliacaoDoMock extends Avaliacao {
-  usefulCount: number;
   myVote: VotoDeAvaliacao | null;
 }
 
@@ -96,8 +94,7 @@ let avaliacoesPorSlug: Record<string, AvaliacaoDoMock[]> = {
   ],
 };
 
-function semVotos({
-  usefulCount: _contagem,
+function semMeuVoto({
   myVote: _voto,
   ...avaliacao
 }: AvaliacaoDoMock): Avaliacao {
@@ -123,16 +120,11 @@ function encontrar(id: string): AvaliacaoDoMock | undefined {
 }
 
 export function avaliacoesDoMock(slug: string): Avaliacao[] {
-  return (avaliacoesPorSlug[slug] ?? []).map(semVotos);
+  return (avaliacoesPorSlug[slug] ?? []).map(semMeuVoto);
 }
 
-export function votosDoMock(id: string): VotosDaAvaliacao {
-  const avaliacao = encontrar(id);
-
-  return {
-    usefulCount: avaliacao?.usefulCount ?? 0,
-    myVote: avaliacao?.myVote ?? null,
-  };
+export function meuVotoDoMock(id: string): VotoDeAvaliacao | null {
+  return encontrar(id)?.myVote ?? null;
 }
 
 export function votarNoMock(id: string, voto: VotoDeAvaliacao | null): void {
@@ -167,5 +159,5 @@ export function publicarNoMock(slug: string, nova: NovaAvaliacao): Avaliacao {
 
   avaliacoesPorSlug = { ...avaliacoesPorSlug, [slug]: [criada, ...lista] };
 
-  return semVotos(criada);
+  return semMeuVoto(criada);
 }

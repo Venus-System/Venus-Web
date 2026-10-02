@@ -17,6 +17,7 @@ export interface Avaliacao {
   title: string;
   comment: string;
   verifiedUse: boolean;
+  usefulCount: number;
   createdAt: string;
 }
 
@@ -30,11 +31,6 @@ export interface ResumoDasAvaliacoes {
 export interface AvaliacoesDoProduto {
   reviews: Avaliacao[];
   summary: ResumoDasAvaliacoes;
-}
-
-export interface VotosDaAvaliacao {
-  usefulCount: number;
-  myVote: VotoDeAvaliacao | null;
 }
 
 export interface NovaAvaliacao {

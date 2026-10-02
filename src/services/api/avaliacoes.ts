@@ -4,7 +4,6 @@ import type {
   Denuncia,
   NovaAvaliacao,
   VotoDeAvaliacao,
-  VotosDaAvaliacao,
 } from "../../types/avaliacao";
 import { ROTULO_DO_MOTIVO_DE_DENUNCIA } from "../../utils/motivosDenuncia";
 import { ErroAvaliacaoDuplicada } from "../erros";
@@ -44,6 +43,7 @@ function lerAvaliacao(
     title: texto(dados.title) ?? "",
     comment: texto(dados.comment) ?? "",
     verifiedUse: dados.verifiedUse === true,
+    usefulCount: numero(dados.usefulVotes) ?? 0,
     createdAt,
   };
 }
@@ -131,34 +131,21 @@ export async function publicarAvaliacaoNaApi(
   return criada;
 }
 
-export async function buscarVotosNaApi(
+export async function buscarMeuVotoNaApi(
   avaliacaoId: string,
-  usuarioId: number | null,
+  usuarioId: number,
   sinal?: AbortSignal,
-): Promise<VotosDaAvaliacao> {
-  const caminhoDaContagem = `/api/review-votes/review/${avaliacaoId}/count?voteType=${VOTOS.useful}`;
-  const contagem = await pedir(`${URL_API}${caminhoDaContagem}`, {
-    signal: sinal,
-  });
+): Promise<VotoDeAvaliacao | null> {
+  const caminho = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
+  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
-  verificarResposta(contagem, caminhoDaContagem);
-
-  const usefulCount = numero(await contagem.json()) ?? 0;
-
-  if (usuarioId === null) {
-    return { usefulCount, myVote: null };
+  if (resposta.status === 404) {
+    return null;
   }
 
-  const caminhoDoVoto = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
-  const voto = await pedir(`${URL_API}${caminhoDoVoto}`, { signal: sinal });
+  verificarResposta(resposta, caminho);
 
-  if (voto.status === 404) {
-    return { usefulCount, myVote: null };
-  }
-
-  verificarResposta(voto, caminhoDoVoto);
-
-  return { usefulCount, myVote: lerVoto(await voto.json()) };
+  return lerVoto(await resposta.json());
 }
 
 export async function votarNaApi(
