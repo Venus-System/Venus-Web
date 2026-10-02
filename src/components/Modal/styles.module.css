@@ -9,6 +9,15 @@
   color: var(--texto);
 }
 
+.wide {
+  width: min(100%, 66rem);
+}
+
+.wide .cabecalho {
+  padding-bottom: var(--espaco-3);
+  border-bottom: var(--borda-largura) solid var(--borda);
+}
+
 .dialog::backdrop {
   background-color: var(--sobreposicao);
 }
