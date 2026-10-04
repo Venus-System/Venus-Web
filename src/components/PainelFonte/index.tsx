@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import GrupoRadio from "../GrupoRadio";
 import type { RadioOption } from "../GrupoRadio";
 import type {
@@ -22,6 +22,7 @@ interface PainelFonteProps {
   visao: VisaoDaFonte;
   destaque: TrechoNoTexto | null;
   onTrocarVisao: (visao: VisaoDaFonte) => void;
+  onFotoAberta: (lado: LadoEmbalagem) => void;
 }
 
 const OPCOES_LADO: RadioOption<LadoEmbalagem>[] = [
@@ -84,8 +85,14 @@ function PainelFonte({
   visao,
   destaque,
   onTrocarVisao,
+  onFotoAberta,
 }: PainelFonteProps) {
+  const [falhas, setFalhas] = useState<Record<LadoEmbalagem, boolean>>({
+    front: false,
+    back: false,
+  });
   const fonte = fontes[visao.lado];
+  const falhou = falhas[visao.lado];
   const trecho = destaque !== null && destaque.side === visao.lado ? destaque : null;
 
   return (
@@ -118,18 +125,43 @@ function PainelFonte({
         </div>
       </div>
 
-      {visao.formato === "foto" && fonte.photoUrl !== null ? (
+      {visao.formato === "foto" && fonte.photoUrl !== null && !falhou ? (
         <figure className={styles.figura}>
           <img
+            key={fonte.photoUrl}
             className={styles.foto}
             src={fonte.photoUrl}
             alt={`${NOME_DO_LADO[visao.lado]} da embalagem, como foi fotografada`}
+            onLoad={() => onFotoAberta(visao.lado)}
+            onError={() =>
+              setFalhas((atual) => ({ ...atual, [visao.lado]: true }))
+            }
           />
 
           <figcaption className={styles.legenda}>
             Foto enviada pelo usuário, sem tratamento.
           </figcaption>
         </figure>
+      ) : null}
+
+      {visao.formato === "foto" && fonte.photoUrl !== null && falhou ? (
+        <div className={styles.semFoto}>
+          <p className={styles.semFotoTitulo}>
+            Não foi possível carregar a foto do{" "}
+            {NOME_DO_LADO[visao.lado].toLowerCase()} aqui.
+          </p>
+          <p>
+            <a
+              href={fonte.photoUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => onFotoAberta(visao.lado)}
+            >
+              Abrir a foto em outra aba
+              <span className="texto-oculto"> (abre em uma nova aba)</span>
+            </a>
+          </p>
+        </div>
       ) : null}
 
       {visao.formato === "foto" && fonte.photoUrl === null ? (

@@ -217,7 +217,7 @@ function DetalheCandidato({
       lado: "front",
       formato: temFoto("front") ? "foto" : "texto",
     },
-    fotosVistas: { front: temFoto("front"), back: false },
+    fotosVistas: { front: false, back: false },
     selecionado: null,
     anuncio: "",
   });
@@ -261,14 +261,15 @@ function DetalheCandidato({
   );
 
   function trocarVisao(nova: VisaoDaFonte) {
-    setVisao((atual) => ({
-      ...atual,
-      visao: nova,
-      fotosVistas:
-        nova.formato === "foto" && temFoto(nova.lado)
-          ? { ...atual.fotosVistas, [nova.lado]: true }
-          : atual.fotosVistas,
-    }));
+    setVisao((atual) => ({ ...atual, visao: nova }));
+  }
+
+  function marcarFotoAberta(lado: LadoEmbalagem) {
+    setVisao((atual) =>
+      atual.fotosVistas[lado]
+        ? atual
+        : { ...atual, fotosVistas: { ...atual.fotosVistas, [lado]: true } },
+    );
   }
 
   function selecionar(id: string) {
@@ -415,6 +416,7 @@ function DetalheCandidato({
           visao={visao.visao}
           destaque={ativo === undefined ? null : ativo.match}
           onTrocarVisao={trocarVisao}
+          onFotoAberta={marcarFotoAberta}
         />
 
         <ListaIngredientes
