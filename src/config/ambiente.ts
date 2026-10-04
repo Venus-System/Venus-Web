@@ -42,7 +42,7 @@ function lerUrlApi(bruto: unknown): string {
 
 export const URL_API = lerUrlApi(import.meta.env.VITE_API_URL);
 
-function lerUrlApiAdmin(bruto: unknown): string {
+function lerUrlApiScans(bruto: unknown): string {
   if (USAR_MOCK) {
     return "";
   }
@@ -52,6 +52,6 @@ function lerUrlApiAdmin(bruto: unknown): string {
   return valor === "" ? URL_API : valor.replace(/\/+$/, "");
 }
 
-export const URL_API_ADMIN = lerUrlApiAdmin(
-  import.meta.env.VITE_API_ADMIN_URL,
+export const URL_API_SCANS = lerUrlApiScans(
+  import.meta.env.VITE_API_SCANS_URL,
 );
