@@ -1,5 +1,5 @@
 import type { MotivoRecusa } from "../types/admin";
-import type { Estrelas } from "../types/avaliacao";
+import type { Estrelas, MotivoDenuncia } from "../types/avaliacao";
 import type { FaixaEtaria } from "../types/perfil";
 import type { AlergiaSelecionada } from "../types/questionario";
 
@@ -175,6 +175,12 @@ export function validarTituloDaAvaliacao(titulo: string): string | null {
   return titulo.trim() === ""
     ? "Escreva um título para a sua avaliação."
     : null;
+}
+
+export function validarMotivoDaDenuncia(
+  motivo: MotivoDenuncia | "",
+): string | null {
+  return motivo === "" ? "Escolha o motivo da denúncia." : null;
 }
 
 export function validarComentarioDaAvaliacao(

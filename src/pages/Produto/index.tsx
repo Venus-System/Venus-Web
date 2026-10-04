@@ -4,14 +4,20 @@ import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
 import type { AnaliseExibicao } from "../../types/analise";
-import type { Avaliacao, NovaAvaliacao } from "../../types/avaliacao";
+import type {
+  Avaliacao,
+  Denuncia,
+  NovaAvaliacao,
+} from "../../types/avaliacao";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
+import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
 import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import RatingSummary from "../../components/RatingSummary";
 import ReviewCard from "../../components/ReviewCard";
+import ReportReviewModal from "../../components/ReportReviewModal";
 import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
 import ScoreBadge from "../../components/ScoreBadge";
@@ -59,6 +65,11 @@ function Produto() {
     publicar,
     limpar: limparPublicacao,
   } = usePublicarAvaliacao();
+  const {
+    estado: denuncia,
+    denunciar,
+    limpar: limparDenuncia,
+  } = useDenunciarAvaliacao();
   const logado = usuario !== null;
 
   function exigirLogin() {
@@ -92,7 +103,16 @@ function Produto() {
     }
   }
 
+  async function enviarDenuncia(avaliacaoId: string, nova: Denuncia) {
+    const enviou = await denunciar(avaliacaoId, nova);
+
+    if (enviou) {
+      fecharAcao();
+    }
+  }
+
   function abrirDenuncia(avaliacao: Avaliacao) {
+    limparDenuncia();
     setModais((atual) => ({
       ...atual,
       acao: { tipo: "denunciar", avaliacao },
@@ -200,6 +220,8 @@ function Produto() {
   }
 
   const { product, ingredients, personalized } = estado.analise;
+  const avaliacaoDenunciada =
+    modais.acao?.tipo === "denunciar" ? modais.acao.avaliacao : null;
 
   return (
     <MainLayout>
@@ -314,6 +336,9 @@ function Produto() {
               ? "Carregando as avaliações."
               : ""}
             {publicacao.publicada ? "Sua avaliação foi publicada." : ""}
+            {denuncia.enviada
+              ? "Denúncia enviada. Um moderador vai analisar a avaliação."
+              : ""}
           </p>
 
           {avaliacoes.status === "carregando" ? (
@@ -389,6 +414,19 @@ function Produto() {
                 onSubmit={enviarAvaliacao}
                 onClose={fecharAcao}
               />
+
+              {avaliacaoDenunciada === null ? null : (
+                <ReportReviewModal
+                  open
+                  review={avaliacaoDenunciada}
+                  sending={denuncia.enviando}
+                  errorMessage={denuncia.erro}
+                  onSubmit={(nova) =>
+                    enviarDenuncia(avaliacaoDenunciada.id, nova)
+                  }
+                  onClose={fecharAcao}
+                />
+              )}
             </>
           ) : null}
         </section>
