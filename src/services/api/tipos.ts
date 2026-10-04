@@ -34,13 +34,13 @@ export interface ClaimApi {
 }
 
 export interface NotasApi {
-  overallScore: number;
-  healthScore: number;
-  environmentalScore: number;
-  ethicalScore: number;
-  performanceScore: number;
-  transparencyScore: number;
-  confidenceScore: number;
+  overallScore: number | null;
+  healthScore: number | null;
+  environmentalScore: number | null;
+  ethicalScore: number | null;
+  performanceScore: number | null;
+  transparencyScore: number | null;
+  confidenceScore: number | null;
 }
 
 export interface VersaoApi {
