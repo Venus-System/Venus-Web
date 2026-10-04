@@ -22,6 +22,7 @@ import {
   atualizarNomeNaApi,
   buscarIdPorUid,
   criarUsuarioNaApi,
+  registrarAcessoNaApi,
 } from "./api/usuarios";
 import {
   esquecerIdDaApi,
@@ -242,9 +243,16 @@ export function observarSessao(
 
     aoMudar(usuario);
 
-    if (usuario !== null && lerIdDaApi(usuario.id) === null) {
-      void registrarNaApi(usuario).catch(() => undefined);
+    if (usuario === null) {
+      return;
     }
+
+    const registro =
+      lerIdDaApi(usuario.id) === null
+        ? registrarNaApi(usuario)
+        : Promise.resolve();
+
+    void registro.then(registrarAcessoNaApi).catch(() => undefined);
   });
 }
 

@@ -76,3 +76,14 @@ export async function criarUsuarioNaApi(
 
   return lerId(dados);
 }
+
+export async function registrarAcessoNaApi(): Promise<void> {
+  if (USAR_MOCK) {
+    return;
+  }
+
+  const caminho = "/api/users/me/access";
+  const resposta = await pedir(`${URL_API}${caminho}`, { method: "POST" });
+
+  verificarResposta(resposta, caminho);
+}
