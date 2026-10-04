@@ -227,7 +227,7 @@ function Componentes() {
         <h2>SubmissionRow</h2>
 
         <div className={styles.rows}>
-          {enviosDoMock().submissions.map((envio) => (
+          {enviosDoMock().map((envio) => (
             <SubmissionRow key={envio.id} envio={envio} />
           ))}
         </div>

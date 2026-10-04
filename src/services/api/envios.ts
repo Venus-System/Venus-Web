@@ -1,5 +1,6 @@
 import type { Envio, SituacaoEnvio } from "../../types/envio";
-import { comoObjeto, numero, texto } from "./leitura";
+import { lerPaginas } from "./analises";
+import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { buscarProdutoPorIdDaApi } from "./produtos";
 
 const SITUACOES: Partial<Record<string, SituacaoEnvio>> = {
@@ -60,21 +61,15 @@ async function slugDoProduto(
   }
 }
 
-export async function lerListaDeEnvios(
-  valor: unknown,
+export async function buscarEnviosNaApi(
+  usuarioId: number,
   sinal?: AbortSignal,
 ): Promise<Envio[]> {
-  const conteudo = comoObjeto(valor).content;
-
-  if (!Array.isArray(conteudo)) {
-    throw new Error("A lista de envios não veio no formato esperado.");
-  }
-
-  const lidos = conteudo.flatMap((item) => {
-    const lido = lerEnvio(item);
-
-    return lido === null ? [] : [lido];
-  });
+  const paginas = await lerPaginas(
+    `/api/scan-sessions/user/${usuarioId}`,
+    sinal,
+  );
+  const lidos = lerTodos(paginas.itens, lerEnvio);
 
   const produtos = [
     ...new Set(

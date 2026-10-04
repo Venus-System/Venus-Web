@@ -66,17 +66,7 @@ function Enviados() {
           </div>
         ) : null}
 
-        {envios !== null && !envios.listAvailable ? (
-          <p className={styles.vazio}>
-            Ainda não conseguimos listar seus envios aqui na web. Assim que
-            essa lista estiver disponível, os produtos que você enviou pelo app
-            aparecem nesta página.
-          </p>
-        ) : null}
-
-        {envios !== null &&
-        envios.listAvailable &&
-        envios.submissions.length === 0 ? (
+        {envios !== null && envios.length === 0 ? (
           <p className={styles.vazio}>
             Você ainda não enviou nenhum produto para análise. Quando um
             produto não estiver na Venus, você pode enviar a foto do rótulo
@@ -86,7 +76,7 @@ function Enviados() {
 
         {envios === null
           ? null
-          : agrupar(envios.submissions).map((grupo) => (
+          : agrupar(envios).map((grupo) => (
               <section
                 key={grupo.id}
                 className={styles.secao}
