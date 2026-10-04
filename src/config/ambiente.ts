@@ -41,3 +41,17 @@ function lerUrlApi(bruto: unknown): string {
 }
 
 export const URL_API = lerUrlApi(import.meta.env.VITE_API_URL);
+
+function lerUrlApiAdmin(bruto: unknown): string {
+  if (USAR_MOCK) {
+    return "";
+  }
+
+  const valor = typeof bruto === "string" ? bruto.trim() : "";
+
+  return valor === "" ? URL_API : valor.replace(/\/+$/, "");
+}
+
+export const URL_API_ADMIN = lerUrlApiAdmin(
+  import.meta.env.VITE_API_ADMIN_URL,
+);

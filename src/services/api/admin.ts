@@ -1,4 +1,4 @@
-import { URL_API } from "../../config/ambiente";
+import { URL_API_ADMIN } from "../../config/ambiente";
 import type {
   AprovacaoCandidato,
   CatalogoDaRevisao,
@@ -74,7 +74,7 @@ export async function entrarComoAdminNaApi(
 ): Promise<SessaoAdmin> {
   const caminho = "/api/auth/admin/login";
   const resposta = await pedir(
-    `${URL_API}${caminho}`,
+    `${URL_API_ADMIN}${caminho}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ async function pedirComoAdmin(
 
   cabecalhos.set("Authorization", `Bearer ${sessao.token}`);
 
-  const resposta = await pedir(`${URL_API}${caminho}`, {
+  const resposta = await pedir(`${URL_API_ADMIN}${caminho}`, {
     ...init,
     headers: cabecalhos,
   });
@@ -274,7 +274,9 @@ async function buscarOpcoes(
   caminho: string,
   sinal?: AbortSignal,
 ): Promise<OpcaoDoCatalogo[]> {
-  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+  const resposta = await pedir(`${URL_API_ADMIN}${caminho}`, {
+    signal: sinal,
+  });
 
   verificarResposta(resposta, caminho);
 
