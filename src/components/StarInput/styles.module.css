@@ -1,0 +1,64 @@
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.legenda {
+  padding: 0;
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.estrelas {
+  display: flex;
+  gap: var(--espaco-1);
+}
+
+.opcao {
+  position: relative;
+  display: inline-flex;
+  padding: var(--espaco-1);
+  border-radius: var(--raio-pequeno);
+  cursor: pointer;
+}
+
+.opcao:has(input:focus-visible) {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
+.vazia,
+.cheia {
+  width: var(--tamanho-grande);
+  height: var(--tamanho-grande);
+}
+
+.vazia {
+  color: var(--borda-forte);
+}
+
+.cheia {
+  color: var(--violeta);
+  fill: currentColor;
+}
+
+.opcao:hover .vazia {
+  color: var(--violeta);
+}
+
+.dica {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  margin: 0;
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}

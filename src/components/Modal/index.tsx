@@ -8,9 +8,16 @@ interface ModalProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  size?: "normal" | "wide";
 }
 
-function Modal({ open, title, onClose, children }: ModalProps) {
+function Modal({
+  open,
+  title,
+  onClose,
+  children,
+  size = "normal",
+}: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const tituloId = useId();
 
@@ -53,7 +60,9 @@ function Modal({ open, title, onClose, children }: ModalProps) {
   return (
     <dialog
       ref={dialogRef}
-      className={styles.dialog}
+      className={
+        size === "wide" ? `${styles.dialog} ${styles.wide}` : styles.dialog
+      }
       aria-labelledby={tituloId}
       onClose={onClose}
       onClick={handleClick}
