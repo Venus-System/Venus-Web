@@ -151,16 +151,34 @@
   font-size: var(--tamanho-pequeno);
 }
 
-.reviewButton {
-  align-self: flex-start;
-  padding: var(--espaco-2) var(--espaco-4);
-  min-height: var(--alvo-toque);
-  background-color: var(--no-data-fundo);
-  border: var(--borda-largura) solid var(--borda-forte);
-  border-radius: var(--raio-pilula);
-  color: var(--no-data);
+.reviewsSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-4);
+}
+
+.reviewsError {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  color: var(--avoid);
   font-weight: var(--peso-forte);
-  cursor: not-allowed;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.allReviews {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (min-width: 48rem) {

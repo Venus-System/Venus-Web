@@ -1,0 +1,144 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.formulario p {
+  margin: 0;
+}
+
+.produto {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  border-radius: var(--raio-medio);
+  color: var(--texto-suave);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-forte);
+  overflow: hidden;
+}
+
+.tomRoxo {
+  background-image: var(--tom-roxo);
+}
+
+.tomVerde {
+  background-image: var(--tom-verde);
+}
+
+.tomRosa {
+  background-image: var(--tom-rosa);
+}
+
+.tomAzul {
+  background-image: var(--tom-azul);
+}
+
+.imagem {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.produtoTexto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.produtoNome {
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.produtoMarca {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.campoComentario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.rotulo {
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.campo,
+.campoInvalido {
+  width: 100%;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  resize: vertical;
+}
+
+.campoInvalido {
+  border-color: var(--avoid);
+}
+
+.contador {
+  align-self: flex-end;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.uso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.caixaRotulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: var(--alvo-toque);
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.caixa {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  accent-color: var(--violeta);
+  cursor: pointer;
+}
+
+.dica {
+  padding-left: calc(var(--tamanho-base) + var(--espaco-2));
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}

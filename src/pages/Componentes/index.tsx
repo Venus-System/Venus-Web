@@ -8,14 +8,19 @@ import Input from "../../components/Input";
 import MainLayout from "../../components/MainLayout";
 import ProductCard from "../../components/ProductCard";
 import ProductRow from "../../components/ProductRow";
+import RatingSummary from "../../components/RatingSummary";
+import ReviewCard from "../../components/ReviewCard";
 import RiskBadge from "../../components/RiskBadge";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
 import SegmentedNav from "../../components/SegmentedNav";
+import StarRating from "../../components/StarRating";
 import SubmissionRow from "../../components/SubmissionRow";
+import { avaliacoesDoMock } from "../../services/mocks/avaliacoes";
 import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
 import type { RiskLevel } from "../../types/ingrediente";
+import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
 import styles from "./styles.module.css";
 
 const LEVELS: RiskLevel[] = ["safe", "warning", "avoid", "no-data"];
@@ -230,6 +235,46 @@ function Componentes() {
           {enviosDoMock().map((envio) => (
             <SubmissionRow key={envio.id} envio={envio} />
           ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>StarRating</h2>
+
+        <div className={styles.row}>
+          <StarRating rating={5} />
+          <StarRating rating={3.5} />
+          <StarRating rating={2.5} size="medium" />
+          <StarRating rating={0} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>RatingSummary</h2>
+
+        <div className={styles.grid}>
+          <RatingSummary
+            summary={resumirAvaliacoes(avaliacoesDoMock(aprovado.slug), false)}
+          />
+          <RatingSummary summary={resumirAvaliacoes([], false)} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>ReviewCard</h2>
+
+        <div className={styles.rows}>
+          {avaliacoesDoMock(aprovado.slug)
+            .slice(0, 3)
+            .map((avaliacao) => (
+              <ReviewCard
+                key={avaliacao.id}
+                review={avaliacao}
+                canInteract
+                onRequireLogin={() => undefined}
+                onReport={() => undefined}
+              />
+            ))}
         </div>
       </section>
     </MainLayout>

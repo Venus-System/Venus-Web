@@ -68,6 +68,13 @@ export class ErroUsuarioInexistente extends Error {
   }
 }
 
+export class ErroAvaliacaoDuplicada extends Error {
+  constructor() {
+    super("Você já avaliou este produto.");
+    this.name = "ErroAvaliacaoDuplicada";
+  }
+}
+
 export class ErroProdutoNaoEncontrado extends Error {
   constructor(slug: string) {
     super(`Nenhum produto corresponde a "${slug}".`);
