@@ -4,14 +4,16 @@ import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
 import type { AnaliseExibicao } from "../../types/analise";
-import type { Avaliacao } from "../../types/avaliacao";
+import type { Avaliacao, NovaAvaliacao } from "../../types/avaliacao";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
+import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import RatingSummary from "../../components/RatingSummary";
 import ReviewCard from "../../components/ReviewCard";
 import ReviewsModal from "../../components/ReviewsModal";
+import WriteReviewModal from "../../components/WriteReviewModal";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
 import Chip from "../../components/Chip";
@@ -52,6 +54,11 @@ function Produto() {
     todas: false,
     acao: null,
   });
+  const {
+    estado: publicacao,
+    publicar,
+    limpar: limparPublicacao,
+  } = usePublicarAvaliacao();
   const logado = usuario !== null;
 
   function exigirLogin() {
@@ -64,7 +71,25 @@ function Produto() {
       return;
     }
 
+    limparPublicacao();
     setModais((atual) => ({ ...atual, acao: { tipo: "escrever" } }));
+  }
+
+  function fecharAcao() {
+    setModais((atual) => ({ ...atual, acao: null }));
+  }
+
+  async function enviarAvaliacao(nova: NovaAvaliacao) {
+    if (!slug) {
+      return;
+    }
+
+    const publicou = await publicar(slug, nova);
+
+    if (publicou) {
+      fecharAcao();
+      atualizarAvaliacoes();
+    }
   }
 
   function abrirDenuncia(avaliacao: Avaliacao) {
@@ -288,6 +313,7 @@ function Produto() {
             {avaliacoes.status === "carregando"
               ? "Carregando as avaliações."
               : ""}
+            {publicacao.publicada ? "Sua avaliação foi publicada." : ""}
           </p>
 
           {avaliacoes.status === "carregando" ? (
@@ -348,6 +374,20 @@ function Produto() {
                 onRequireLogin={exigirLogin}
                 onReport={abrirDenuncia}
                 onWrite={abrirEscrita}
+              />
+
+              <WriteReviewModal
+                open={modais.acao?.tipo === "escrever"}
+                product={{
+                  slug: product.slug,
+                  name: product.name,
+                  brandName: product.brand.name,
+                  imageUrl: product.imageUrl,
+                }}
+                sending={publicacao.enviando}
+                errorMessage={publicacao.erro}
+                onSubmit={enviarAvaliacao}
+                onClose={fecharAcao}
               />
             </>
           ) : null}

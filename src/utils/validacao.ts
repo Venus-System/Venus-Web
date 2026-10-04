@@ -1,4 +1,5 @@
 import type { MotivoRecusa } from "../types/admin";
+import type { Estrelas } from "../types/avaliacao";
 import type { FaixaEtaria } from "../types/perfil";
 import type { AlergiaSelecionada } from "../types/questionario";
 
@@ -162,4 +163,32 @@ export function validarNomeInci(nome: string): string | null {
   return nome.trim() === ""
     ? "Informe o nome INCI do ingrediente novo."
     : null;
+}
+
+export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
+
+export function validarNotaDaAvaliacao(nota: Estrelas | null): string | null {
+  return nota === null ? "Escolha uma nota de 1 a 5 estrelas." : null;
+}
+
+export function validarTituloDaAvaliacao(titulo: string): string | null {
+  return titulo.trim() === ""
+    ? "Escreva um título para a sua avaliação."
+    : null;
+}
+
+export function validarComentarioDaAvaliacao(
+  comentario: string,
+): string | null {
+  const limpo = comentario.trim();
+
+  if (limpo === "") {
+    return "Conte como foi a sua experiência com o produto.";
+  }
+
+  if (limpo.length > MAXIMO_DO_COMENTARIO_DA_AVALIACAO) {
+    return `O comentário pode ter até ${MAXIMO_DO_COMENTARIO_DA_AVALIACAO} caracteres.`;
+  }
+
+  return null;
 }
