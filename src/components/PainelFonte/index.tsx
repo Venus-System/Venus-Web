@@ -151,12 +151,11 @@ function PainelFonte({
             {NOME_DO_LADO[visao.lado].toLowerCase()} aqui.
           </p>
           <p>
-            <a
-              href={fonte.photoUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => onFotoAberta(visao.lado)}
-            >
+            A aprovação só libera quando a foto carrega aqui. Se ela abrir em
+            outra aba, avise quem cuida do envio das fotos.
+          </p>
+          <p>
+            <a href={fonte.photoUrl} target="_blank" rel="noreferrer">
               Abrir a foto em outra aba
               <span className="texto-oculto"> (abre em uma nova aba)</span>
             </a>
