@@ -52,7 +52,7 @@ function RevisaoIngrediente({
   escolha,
   onMudar,
 }: RevisaoIngredienteProps) {
-  const estado = ingrediente.status === "ambiguous" ? "ambíguo" : "novo na base";
+  const estado = ingrediente.status === "ambiguous" ? "ambíguo" : "fora da base";
 
   return (
     <div className={styles.decisao}>

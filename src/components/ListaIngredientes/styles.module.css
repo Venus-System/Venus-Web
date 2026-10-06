@@ -70,6 +70,19 @@
   font-size: var(--tamanho-pequeno);
 }
 
+.textos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
 .nome {
+  overflow-wrap: break-word;
+}
+
+.lido {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
   overflow-wrap: break-word;
 }
