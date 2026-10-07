@@ -86,3 +86,11 @@
   font-size: var(--tamanho-pequeno);
   overflow-wrap: break-word;
 }
+
+@media (min-width: 72rem) {
+  .lista {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-bottom: var(--borda-largura) solid var(--borda);
+  }
+}
