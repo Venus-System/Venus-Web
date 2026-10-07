@@ -30,12 +30,19 @@ import {
   lerIdDaApi,
 } from "../utils/idDaApi";
 
-async function registrarNaApi(usuario: Usuario): Promise<void> {
+interface CadastroEmAndamento {
+  uid: string;
+  promessa: Promise<number | null>;
+}
+
+let cadastroEmAndamento: CadastroEmAndamento | null = null;
+
+async function registrarNaApi(usuario: Usuario): Promise<number | null> {
   const encontrado = await buscarIdPorUid(usuario.id);
 
   if (encontrado !== null) {
     guardarIdDaApi(usuario.id, encontrado);
-    return;
+    return encontrado;
   }
 
   const criado = await criarUsuarioNaApi(usuario);
@@ -43,6 +50,34 @@ async function registrarNaApi(usuario: Usuario): Promise<void> {
   if (criado !== null) {
     guardarIdDaApi(usuario.id, criado);
   }
+
+  return criado;
+}
+
+function cadastrarUmaVez(usuario: Usuario): Promise<number | null> {
+  if (cadastroEmAndamento !== null && cadastroEmAndamento.uid === usuario.id) {
+    return cadastroEmAndamento.promessa;
+  }
+
+  const promessa = registrarNaApi(usuario).finally(() => {
+    if (cadastroEmAndamento?.promessa === promessa) {
+      cadastroEmAndamento = null;
+    }
+  });
+
+  cadastroEmAndamento = { uid: usuario.id, promessa };
+
+  return promessa;
+}
+
+export async function garantirIdDoUsuarioNaApi(): Promise<number | null> {
+  const conta = autenticacaoFirebase?.currentUser ?? null;
+
+  if (conta === null) {
+    return null;
+  }
+
+  return lerIdDaApi(conta.uid) ?? cadastrarUmaVez(paraUsuario(conta));
 }
 
 export async function atualizarNome(nome: string): Promise<Usuario> {
@@ -61,7 +96,7 @@ export async function atualizarNome(nome: string): Promise<Usuario> {
 
   await updateProfile(conta, { displayName: limpo });
 
-  const id = idDoUsuarioNaApi();
+  const id = await garantirIdDoUsuarioNaApi();
 
   if (id !== null) {
     await atualizarNomeNaApi(id, limpo);
@@ -70,43 +105,16 @@ export async function atualizarNome(nome: string): Promise<Usuario> {
   return { ...paraUsuario(conta), name: limpo };
 }
 
-export function idDoUsuarioNaApi(): number | null {
-  const uid = autenticacaoFirebase?.currentUser?.uid;
-
-  return uid === undefined ? null : lerIdDaApi(uid);
-}
-
 export async function renovarIdDoUsuarioNaApi(): Promise<number | null> {
-  const uid = autenticacaoFirebase?.currentUser?.uid;
+  const conta = autenticacaoFirebase?.currentUser ?? null;
 
-  if (uid === undefined) {
+  if (conta === null) {
     return null;
   }
 
-  esquecerIdDaApi(uid);
+  esquecerIdDaApi(conta.uid);
 
-  const encontrado = await buscarIdPorUid(uid);
-
-  if (encontrado !== null) {
-    guardarIdDaApi(uid, encontrado);
-    return encontrado;
-  }
-
-  const conta = autenticacaoFirebase?.currentUser;
-
-  if (conta === null || conta === undefined) {
-    return null;
-  }
-
-  const criado = await criarUsuarioNaApi(paraUsuario(conta));
-
-  if (criado === null) {
-    return null;
-  }
-
-  guardarIdDaApi(uid, criado);
-
-  return criado;
+  return cadastrarUmaVez(paraUsuario(conta));
 }
 
 function paraUsuario(conta: User): Usuario {
@@ -181,7 +189,7 @@ export async function entrarComGoogle(
 
   if (informacoes?.isNewUser === true) {
     try {
-      await registrarNaApi(usuario);
+      await cadastrarUmaVez(usuario);
     } catch {
       return usuario;
     }
@@ -249,8 +257,8 @@ export function observarSessao(
 
     const registro =
       lerIdDaApi(usuario.id) === null
-        ? registrarNaApi(usuario)
-        : Promise.resolve();
+        ? cadastrarUmaVez(usuario)
+        : Promise.resolve(null);
 
     void registro.then(registrarAcessoNaApi).catch(() => undefined);
   });
@@ -333,7 +341,7 @@ export async function criarConta(
   };
 
   try {
-    await registrarNaApi(usuario);
+    await cadastrarUmaVez(usuario);
   } catch {
     return usuario;
   }

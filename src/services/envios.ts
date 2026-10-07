@@ -1,7 +1,7 @@
 import { USAR_MOCK } from "../config/ambiente";
 import type { Envio } from "../types/envio";
 import { buscarEnviosNaApi } from "./api/envios";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { enviosDoMock } from "./mocks/envios";
@@ -13,7 +13,7 @@ async function enviosDoUsuario(sinal?: AbortSignal): Promise<Envio[]> {
     return enviosDoMock();
   }
 
-  const usuarioId = idDoUsuarioNaApi();
+  const usuarioId = await garantirIdDoUsuarioNaApi();
 
   if (usuarioId === null) {
     throw new ErroDeOrientacao(

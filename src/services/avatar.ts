@@ -4,7 +4,7 @@ import {
   buscarAvatarNaApi,
   enviarAvatarNaApi,
 } from "./api/avatar";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarFotoFalsa, lerFotoFalsa, limparFotoFalsa } from "./mocks/avatar";
@@ -48,8 +48,8 @@ function comoTexto(arquivo: File): Promise<string> {
   });
 }
 
-function idNumerico(): number {
-  const id = idDoUsuarioNaApi();
+async function idNumerico(): Promise<number> {
+  const id = await garantirIdDoUsuarioNaApi();
 
   if (id === null) {
     throw new ErroDeOrientacao(
@@ -73,7 +73,7 @@ export async function enviarFotoDePerfil(arquivo: File): Promise<string | null> 
       return conteudo;
     }
 
-    return await enviarAvatarNaApi(idNumerico(), foto);
+    return await enviarAvatarNaApi(await idNumerico(), foto);
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||
@@ -95,7 +95,7 @@ export async function apagarFotoDePerfil(): Promise<void> {
       return;
     }
 
-    await apagarAvatarNaApi(idNumerico());
+    await apagarAvatarNaApi(await idNumerico());
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||
@@ -116,7 +116,7 @@ export async function buscarFotoDePerfil(
       return lerFotoFalsa();
     }
 
-    const id = idDoUsuarioNaApi();
+    const id = await garantirIdDoUsuarioNaApi().catch(() => null);
 
     return id === null ? null : await buscarAvatarNaApi(id, sinal);
   } catch (erro) {
