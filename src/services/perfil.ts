@@ -1,6 +1,9 @@
 import { USAR_MOCK } from "../config/ambiente";
 import { buscarPerfilNaApi, salvarPerfilNaApi } from "./api/perfil";
-import { idDoUsuarioNaApi, renovarIdDoUsuarioNaApi } from "./autenticacao";
+import {
+  garantirIdDoUsuarioNaApi,
+  renovarIdDoUsuarioNaApi,
+} from "./autenticacao";
 import {
   ErroDeOrientacao,
   ErroServicoIndisponivel,
@@ -192,7 +195,7 @@ export async function salvarPerfil(
     }
 
     try {
-      await salvarPerfilNaApi(buscarIdNumerico(), perfil);
+      await salvarPerfilNaApi(await buscarIdNumerico(), perfil);
     } catch (erro) {
       if (!(erro instanceof ErroUsuarioInexistente)) {
         throw erro;
@@ -215,8 +218,8 @@ export async function salvarPerfil(
 }
 
 
-function buscarIdNumerico(): number {
-  const id = idDoUsuarioNaApi();
+async function buscarIdNumerico(): Promise<number> {
+  const id = await garantirIdDoUsuarioNaApi();
 
   if (id === null) {
     throw new ErroDeOrientacao(
@@ -248,7 +251,7 @@ export async function buscarPerfil(): Promise<PerfilCarregado | null> {
     }
 
     try {
-      return await buscarPerfilNaApi(buscarIdNumerico());
+      return await buscarPerfilNaApi(await buscarIdNumerico());
     } catch (erro) {
       if (!(erro instanceof ErroUsuarioInexistente)) {
         throw erro;

@@ -1,7 +1,7 @@
 import { USAR_MOCK } from "../config/ambiente";
 import type { PaginaDoHistorico } from "../types/historico";
 import { buscarHistoricoNaApi } from "./api/historico";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { historicoDoMock } from "./mocks/historico";
@@ -18,7 +18,7 @@ async function paginaDoHistorico(
     return historicoDoMock(pagina, TAMANHO_DA_PAGINA);
   }
 
-  const usuarioId = idDoUsuarioNaApi();
+  const usuarioId = await garantirIdDoUsuarioNaApi();
 
   if (usuarioId === null) {
     throw new ErroDeOrientacao(

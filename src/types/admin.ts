@@ -106,4 +106,6 @@ export interface AprovacaoCandidato {
   ingredients: DecisaoIngrediente[];
 }
 
-export type ResultadoAprovacao = "publicado" | "sincronizacaoFalhou";
+export type ResultadoAprovacao =
+  | { status: "publicado"; productVersionId: number | null }
+  | { status: "sincronizacaoFalhou" };

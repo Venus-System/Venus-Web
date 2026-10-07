@@ -56,6 +56,7 @@ interface DetalheCandidatoProps {
 
 interface EstadoDaVisao {
   visao: VisaoDaFonte;
+  fotosVistas: Record<LadoEmbalagem, boolean>;
   selecionado: string | null;
   anuncio: string;
 }
@@ -81,6 +82,25 @@ const SEM_ERROS_DO_PRODUTO: ErrosDoProduto = {
 };
 
 const ID_AVISO_DO_PAPEL = "aviso-do-papel";
+const ID_AVISO_DAS_FOTOS = "aviso-das-fotos";
+
+const LADOS: LadoEmbalagem[] = ["front", "back"];
+
+const FOTO_DO_LADO: Record<LadoEmbalagem, string> = {
+  front: "a foto da frente",
+  back: "a foto do verso",
+};
+
+const ID_DO_BOTAO_DO_LADO: Record<LadoEmbalagem, string> = {
+  front: "fonte-lado",
+  back: "fonte-lado-back",
+};
+
+function avisoDasFotos(faltando: LadoEmbalagem[]): string {
+  const fotos = faltando.map((lado) => FOTO_DO_LADO[lado]).join(" e ");
+
+  return `Abra ${fotos} antes de aprovar.`;
+}
 
 function precisaDecidir(ingrediente: IngredienteInterpretado): boolean {
   return ingrediente.status === "ambiguous" || ingrediente.status === "new";
@@ -189,12 +209,15 @@ function DetalheCandidato({
   onSincronizar,
 }: DetalheCandidatoProps) {
   const pendentes = candidato.ingredients.filter(precisaDecidir);
+  const temFoto = (lado: LadoEmbalagem) =>
+    candidato.sources[lado].photoUrl !== null;
 
   const [visao, setVisao] = useState<EstadoDaVisao>({
     visao: {
       lado: "front",
-      formato: candidato.sources.front.photoUrl === null ? "texto" : "foto",
+      formato: temFoto("front") ? "foto" : "texto",
     },
+    fotosVistas: { front: false, back: false },
     selecionado: null,
     anuncio: "",
   });
@@ -233,6 +256,22 @@ function DetalheCandidato({
   const faltam = campos.escolhas.filter((escolha) => escolha.opcao === "")
     .length;
 
+  const fotosFaltando = LADOS.filter(
+    (lado) => temFoto(lado) && !visao.fotosVistas[lado],
+  );
+
+  function trocarVisao(nova: VisaoDaFonte) {
+    setVisao((atual) => ({ ...atual, visao: nova }));
+  }
+
+  function marcarFotoAberta(lado: LadoEmbalagem) {
+    setVisao((atual) =>
+      atual.fotosVistas[lado]
+        ? atual
+        : { ...atual, fotosVistas: { ...atual.fotosVistas, [lado]: true } },
+    );
+  }
+
   function selecionar(id: string) {
     const ingrediente = candidato.ingredients.find((item) => item.id === id);
 
@@ -252,6 +291,7 @@ function DetalheCandidato({
     const trecho = ingrediente.match;
 
     setVisao((atual) => ({
+      ...atual,
       visao:
         trecho === null ? atual.visao : { lado: trecho.side, formato: "texto" },
       selecionado: id,
@@ -273,6 +313,15 @@ function DetalheCandidato({
 
   function aprovar() {
     if (!podeDecidir || enviando) {
+      return;
+    }
+
+    if (fotosFaltando.length > 0) {
+      setVisao((atual) => ({
+        ...atual,
+        anuncio: avisoDasFotos(fotosFaltando),
+      }));
+      document.getElementById(ID_DO_BOTAO_DO_LADO[fotosFaltando[0]])?.focus();
       return;
     }
 
@@ -317,6 +366,10 @@ function DetalheCandidato({
   }
 
   const descricaoDosBotoes = podeDecidir ? undefined : ID_AVISO_DO_PAPEL;
+  const bloqueadoPelasFotos = podeDecidir && fotosFaltando.length > 0;
+  const descricaoDoAprovar = bloqueadoPelasFotos
+    ? ID_AVISO_DAS_FOTOS
+    : descricaoDosBotoes;
 
   return (
     <article className={styles.detalhe} aria-labelledby="titulo-candidato">
@@ -362,9 +415,8 @@ function DetalheCandidato({
           origem={candidato.origin}
           visao={visao.visao}
           destaque={ativo === undefined ? null : ativo.match}
-          onTrocarVisao={(nova) =>
-            setVisao((atual) => ({ ...atual, visao: nova }))
-          }
+          onTrocarVisao={trocarVisao}
+          onFotoAberta={marcarFotoAberta}
         />
 
         <ListaIngredientes
@@ -437,6 +489,10 @@ function DetalheCandidato({
             </p>
           )}
 
+          {bloqueadoPelasFotos ? (
+            <p id={ID_AVISO_DAS_FOTOS}>{avisoDasFotos(fotosFaltando)}</p>
+          ) : null}
+
           {campos.aviso === "" ? null : (
             <p className={styles.erro} role="alert">
               {campos.aviso}
@@ -478,8 +534,10 @@ function DetalheCandidato({
               <Button
                 onClick={aprovar}
                 disabled={enviando}
-                aria-disabled={podeDecidir ? undefined : true}
-                aria-describedby={descricaoDosBotoes}
+                aria-disabled={
+                  !podeDecidir || bloqueadoPelasFotos ? true : undefined
+                }
+                aria-describedby={descricaoDoAprovar}
               >
                 {enviando ? "Salvando..." : "Aprovar"}
                 {enviando ? null : (

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarEnvios } from "../services/envios";
-import type { Envios } from "../types/envio";
+import type { Envio } from "../types/envio";
 
 export type EstadoEnvios =
   | { status: "carregando" }
-  | { status: "pronto"; envios: Envios }
+  | { status: "pronto"; envios: Envio[] }
   | { status: "erro"; mensagem: string };
 
 export function useEnvios() {
@@ -12,11 +12,12 @@ export function useEnvios() {
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
+    const controle = new AbortController();
     let ativo = true;
 
     setEstado({ status: "carregando" });
 
-    buscarEnvios()
+    buscarEnvios(controle.signal)
       .then((envios) => {
         if (ativo) {
           setEstado({ status: "pronto", envios });
@@ -36,6 +37,7 @@ export function useEnvios() {
 
     return () => {
       ativo = false;
+      controle.abort();
     };
   }, [tentativa]);
 

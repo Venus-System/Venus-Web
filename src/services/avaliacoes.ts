@@ -15,7 +15,7 @@ import {
   votarNaApi,
 } from "./api/avaliacoes";
 import type { AvaliacoesLidas } from "./api/avaliacoes";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import {
   ErroAvaliacaoDuplicada,
   ErroDeOrientacao,
@@ -30,8 +30,8 @@ import {
 } from "./mocks/avaliacoes";
 import { simularLatencia } from "./mocks/atraso";
 
-function usuarioDaApi(): number {
-  const usuarioId = idDoUsuarioNaApi();
+async function usuarioDaApi(): Promise<number> {
+  const usuarioId = await garantirIdDoUsuarioNaApi();
 
   if (usuarioId === null) {
     throw new ErroDeOrientacao(
@@ -66,7 +66,9 @@ async function avaliacoesLidas(
     return { avaliacoes: avaliacoesDoMock(slug), truncated: false };
   }
 
-  return buscarAvaliacoesNaApi(slug, idDoUsuarioNaApi(), sinal);
+  const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
+
+  return buscarAvaliacoesNaApi(slug, usuarioId, sinal);
 }
 
 export async function buscarAvaliacoes(
@@ -102,7 +104,7 @@ export async function publicarAvaliacao(
       return publicarNoMock(slug, nova);
     }
 
-    return await publicarAvaliacaoNaApi(usuarioDaApi(), slug, nova);
+    return await publicarAvaliacaoNaApi(await usuarioDaApi(), slug, nova);
   } catch (erro) {
     return repassarOuTrocar(erro, "Não foi possível publicar a avaliação.");
   }
@@ -117,7 +119,7 @@ export async function buscarMeuVoto(
       return meuVotoDoMock(avaliacaoId);
     }
 
-    const usuarioId = idDoUsuarioNaApi();
+    const usuarioId = await garantirIdDoUsuarioNaApi();
 
     return usuarioId === null
       ? null
@@ -140,7 +142,7 @@ export async function votar(
       return;
     }
 
-    await votarNaApi(avaliacaoId, usuarioDaApi(), novo, anterior);
+    await votarNaApi(avaliacaoId, await usuarioDaApi(), novo, anterior);
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível registrar o seu voto.");
   }
@@ -157,7 +159,7 @@ export async function denunciarAvaliacao(
       return;
     }
 
-    await denunciarNaApi(usuarioDaApi(), avaliacaoId, denuncia);
+    await denunciarNaApi(await usuarioDaApi(), avaliacaoId, denuncia);
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível enviar a denúncia.");
   }

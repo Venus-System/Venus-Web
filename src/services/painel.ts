@@ -2,7 +2,7 @@ import { USAR_MOCK } from "../config/ambiente";
 import type { Painel } from "../types/painel";
 import { porcentagemDoPerfil } from "../utils/progressoPerfil";
 import { buscarPainelNaApi } from "./api/painel";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { painelDoMock } from "./mocks/painel";
@@ -17,7 +17,7 @@ async function dadosDoPainel(
     return painelDoMock();
   }
 
-  const usuarioId = idDoUsuarioNaApi();
+  const usuarioId = await garantirIdDoUsuarioNaApi();
 
   if (usuarioId === null) {
     throw new ErroDeOrientacao(

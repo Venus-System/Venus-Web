@@ -5,7 +5,7 @@ import {
   desfavoritarNaApi,
   favoritarNaApi,
 } from "./api/favoritos";
-import { idDoUsuarioNaApi } from "./autenticacao";
+import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import {
@@ -14,8 +14,8 @@ import {
   favoritosDoMock,
 } from "./mocks/favoritos";
 
-function usuarioDaApi(): number {
-  const usuarioId = idDoUsuarioNaApi();
+async function usuarioDaApi(): Promise<number> {
+  const usuarioId = await garantirIdDoUsuarioNaApi();
 
   if (usuarioId === null) {
     throw new ErroDeOrientacao(
@@ -46,7 +46,7 @@ export async function buscarFavoritos(sinal?: AbortSignal): Promise<Produto[]> {
       return favoritosDoMock();
     }
 
-    return await buscarFavoritosNaApi(usuarioDaApi(), sinal);
+    return await buscarFavoritosNaApi(await usuarioDaApi(), sinal);
   } catch (erro) {
     return repassarOuTrocar(
       erro,
@@ -64,7 +64,7 @@ export async function favoritar(slug: string): Promise<void> {
       return;
     }
 
-    await favoritarNaApi(usuarioDaApi(), slug);
+    await favoritarNaApi(await usuarioDaApi(), slug);
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível favoritar este produto.");
   }
@@ -79,7 +79,7 @@ export async function desfavoritar(slug: string): Promise<void> {
       return;
     }
 
-    await desfavoritarNaApi(usuarioDaApi(), slug);
+    await desfavoritarNaApi(await usuarioDaApi(), slug);
   } catch (erro) {
     repassarOuTrocar(
       erro,

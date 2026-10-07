@@ -40,12 +40,13 @@ export interface NotaPessoalLida {
 export async function lerPaginas(
   caminhoBase: string,
   sinal?: AbortSignal,
+  urlBase: string = URL_API,
 ): Promise<Paginas> {
   const itens: unknown[] = [];
 
   for (let pagina = 0; pagina < LIMITE_DE_PAGINAS; pagina += 1) {
     const caminho = `${caminhoBase}?page=${pagina}&size=${TAMANHO_DA_PAGINA}&sort=createdAt,desc`;
-    const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+    const resposta = await pedir(`${urlBase}${caminho}`, { signal: sinal });
 
     verificarResposta(resposta, caminho);
 

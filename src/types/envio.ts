@@ -11,8 +11,3 @@ export interface Envio {
   rejectionReason: string | null;
   productSlug: string | null;
 }
-
-export interface Envios {
-  listAvailable: boolean;
-  submissions: Envio[];
-}

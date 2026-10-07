@@ -13,8 +13,15 @@ const SELO_DO_ESTADO: Record<
   known: { label: "conhecido", variant: "contorno" },
   alias: { label: "conhecido", variant: "contorno" },
   ambiguous: { label: "ambíguo", variant: "alerta" },
-  new: { label: "novo na base", variant: "destaque" },
+  new: { label: "fora da base", variant: "destaque" },
 };
+
+function foiCorrigido(ingrediente: IngredienteInterpretado): boolean {
+  return (
+    ingrediente.name.trim().toUpperCase() !==
+    ingrediente.rawName.trim().toUpperCase()
+  );
+}
 
 interface ListaIngredientesProps {
   ingredientes: IngredienteInterpretado[];
@@ -37,7 +44,7 @@ function ListaIngredientes({
         <div className={styles.legenda} aria-hidden="true">
           <Selo label="conhecido" />
           <Selo label="ambíguo" variant="alerta" />
-          <Selo label="novo na base" variant="destaque" />
+          <Selo label="fora da base" variant="destaque" />
         </div>
       </div>
 
@@ -61,7 +68,14 @@ function ListaIngredientes({
                   {ingrediente.position}
                 </span>
 
-                <span className={styles.nome}>{ingrediente.name}</span>
+                <span className={styles.textos}>
+                  <span className={styles.nome}>{ingrediente.name}</span>
+                  {foiCorrigido(ingrediente) ? (
+                    <span className={styles.lido}>
+                      lido como {ingrediente.rawName}
+                    </span>
+                  ) : null}
+                </span>
 
                 <Selo
                   label={SELO_DO_ESTADO[ingrediente.status].label}

@@ -20,6 +20,7 @@ import { useFilaAprovacao } from "../../hooks/useFilaAprovacao";
 import type { EstadoFila } from "../../hooks/useFilaAprovacao";
 import {
   aprovarPendente,
+  calcularNotaBase,
   recusarPendente,
   sincronizarPendente,
 } from "../../services/admin";
@@ -237,7 +238,7 @@ function FilaAprovacao() {
 
       const resultado = await aprovarPendente(candidato.id, pedido.aprovacao);
 
-      if (resultado === "sincronizacaoFalhou") {
+      if (resultado.status === "sincronizacaoFalhou") {
         setDecisao({
           ...SEM_DECISAO,
           semSincronizar: candidato.id,
@@ -247,9 +248,39 @@ function FilaAprovacao() {
         return;
       }
 
-      avancar(candidato.id, `${candidato.name} aprovado e publicado no catálogo.`);
+      await concluirPublicacao(
+        candidato,
+        resultado.productVersionId,
+        `${candidato.name} aprovado e publicado no catálogo.`,
+      );
     } catch (erro) {
       tratarErro(erro);
+    }
+  }
+
+  async function concluirPublicacao(
+    candidato: Candidato,
+    versaoId: number | null,
+    publicado: string,
+  ) {
+    const semNota = `${publicado} A nota base não foi calculada.`;
+
+    if (versaoId === null) {
+      avancar(candidato.id, semNota);
+      return;
+    }
+
+    setDecisao((atual) => ({
+      ...atual,
+      anuncio: `${publicado} Calculando a nota base...`,
+    }));
+
+    try {
+      const nota = await calcularNotaBase(versaoId);
+
+      avancar(candidato.id, `${publicado} Nota base: ${nota}.`);
+    } catch {
+      avancar(candidato.id, semNota);
     }
   }
 
@@ -264,8 +295,12 @@ function FilaAprovacao() {
     try {
       const resultado = await sincronizarPendente(candidato.id);
 
-      if (resultado === "publicado") {
-        avancar(candidato.id, `${candidato.name} publicado no catálogo.`);
+      if (resultado.status === "publicado") {
+        await concluirPublicacao(
+          candidato,
+          resultado.productVersionId,
+          `${candidato.name} publicado no catálogo.`,
+        );
         return;
       }
 

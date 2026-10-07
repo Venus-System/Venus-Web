@@ -1,4 +1,8 @@
-import { URL_API } from "../../config/ambiente";
+import {
+  URL_API,
+  URL_API_SCANS,
+  URL_CLASSIFICACAO,
+} from "../../config/ambiente";
 import type {
   AprovacaoCandidato,
   CatalogoDaRevisao,
@@ -112,7 +116,7 @@ async function pedirComoAdmin(
 
   cabecalhos.set("Authorization", `Bearer ${sessao.token}`);
 
-  const resposta = await pedir(`${URL_API}${caminho}`, {
+  const resposta = await pedir(`${URL_API_SCANS}${caminho}`, {
     ...init,
     headers: cabecalhos,
   });
@@ -218,9 +222,18 @@ function paraDecisaoDaApi(decisao: DecisaoIngrediente): Record<string, unknown> 
 }
 
 function lerResultado(valor: unknown): ResultadoAprovacao {
-  return comoObjeto(valor).status === "SYNCED"
-    ? "publicado"
-    : "sincronizacaoFalhou";
+  const dados = comoObjeto(valor);
+
+  if (dados.status !== "SYNCED") {
+    return { status: "sincronizacaoFalhou" };
+  }
+
+  const versaoId = comoObjeto(dados.sync).productVersionId;
+
+  return {
+    status: "publicado",
+    productVersionId: typeof versaoId === "number" ? versaoId : null,
+  };
 }
 
 export async function aprovarNaApi(
@@ -237,6 +250,38 @@ export async function aprovarNaApi(
   });
 
   return lerResultado(resposta);
+}
+
+export async function calcularNotaBaseNaApi(versaoId: number): Promise<number> {
+  const sessao = lerSessaoAdmin();
+
+  if (sessao === null) {
+    throw new ErroSessaoAdminExpirada();
+  }
+
+  if (URL_CLASSIFICACAO === "") {
+    throw new Error("VITE_CLASSIFICACAO_URL não está configurada.");
+  }
+
+  const caminho = `/api/base-scores/product-version/${versaoId}`;
+  const resposta = await pedir(
+    `${URL_CLASSIFICACAO}${caminho}`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${sessao.token}` },
+    },
+    false,
+  );
+
+  verificarResposta(resposta, caminho);
+
+  const nota = comoObjeto(await resposta.json()).qualityScore;
+
+  if (typeof nota !== "number") {
+    throw new Error("A nota base não veio no formato esperado.");
+  }
+
+  return nota;
 }
 
 export async function sincronizarNaApi(
