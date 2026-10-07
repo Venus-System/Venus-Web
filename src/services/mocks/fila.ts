@@ -291,6 +291,18 @@ let pendentes: Candidato[] = PRODUTOS.map(montar);
 
 const falhamNaPrimeiraSincronizacao = new Set(["scan-base-liquida"]);
 const aguardandoSincronizacao = new Set<string>();
+const NOTA_BASE_DO_MOCK = 74;
+let ultimaVersaoDoMock = 900;
+
+function publicarNoMock(): ResultadoAprovacao {
+  ultimaVersaoDoMock += 1;
+
+  return { status: "publicado", productVersionId: ultimaVersaoDoMock };
+}
+
+export function notaBaseDoMock(): number {
+  return NOTA_BASE_DO_MOCK;
+}
 
 function opcoes(nomes: string[]): OpcaoDoCatalogo[] {
   return nomes.map((name, indice) => ({ id: indice + 1, name }));
@@ -389,10 +401,10 @@ export function aprovarNoMock(
     falhamNaPrimeiraSincronizacao.delete(id);
     aguardandoSincronizacao.add(id);
 
-    return "sincronizacaoFalhou";
+    return { status: "sincronizacaoFalhou" };
   }
 
-  return "publicado";
+  return publicarNoMock();
 }
 
 export function sincronizarNoMock(id: string): ResultadoAprovacao {
@@ -402,7 +414,7 @@ export function sincronizarNoMock(id: string): ResultadoAprovacao {
 
   aguardandoSincronizacao.delete(id);
 
-  return "publicado";
+  return publicarNoMock();
 }
 
 export function listarPendentesDoMock(): Candidato[] {

@@ -18,6 +18,7 @@ import {
   aprovarNaApi,
   buscarCatalogoDaRevisaoNaApi,
   buscarScanNaApi,
+  calcularNotaBaseNaApi,
   entrarComoAdminNaApi,
   listarScansNaApi,
   recusarNaApi,
@@ -40,6 +41,7 @@ import {
   buscarPendenteDoMock,
   catalogoDaRevisaoDoMock,
   listarPendentesDoMock,
+  notaBaseDoMock,
   sincronizarNoMock,
   tirarDaFilaNoMock,
 } from "./mocks/fila";
@@ -222,6 +224,21 @@ export async function sincronizarPendente(
       erro,
       "Não foi possível publicar o produto no catálogo.",
     );
+  }
+}
+
+export async function calcularNotaBase(versaoId: number): Promise<number> {
+  try {
+    if (USAR_MOCK) {
+      await simularLatencia();
+      exigirSessaoNoMock();
+
+      return notaBaseDoMock();
+    }
+
+    return await calcularNotaBaseNaApi(versaoId);
+  } catch {
+    throw new Error("A nota base não foi calculada.");
   }
 }
 
