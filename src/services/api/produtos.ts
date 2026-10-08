@@ -6,7 +6,9 @@ import type {
   ProductFullResponse,
 } from "./tipos";
 import type { Produto } from "../../types/produto";
+import type { IngredienteAvaliado } from "../../types/ingrediente";
 import { paraProduto, paraProdutoDaListagem } from "./tradutores";
+import { lerIngredientesDoProduto } from "./ingredientes";
 import { URL_API } from "../../config/ambiente";
 import { pedir, verificarResposta } from "./requisicao";
 
@@ -96,6 +98,7 @@ export async function buscarIdPorSlug(
 export interface ProdutoComVersao {
   produto: Produto;
   versaoId: number | null;
+  ingredientes: IngredienteAvaliado[];
 }
 
 async function buscarCompletoPorId(
@@ -139,6 +142,7 @@ export async function buscarProdutoComVersaoDaApi(
   return {
     produto: paraProduto(dados),
     versaoId: dados.currentVersion?.id ?? null,
+    ingredientes: lerIngredientesDoProduto(dados.ingredients),
   };
 }
 
