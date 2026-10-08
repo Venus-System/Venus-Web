@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
+import { ordenarPorRisco } from "../../utils/alertas";
 import type { AnaliseExibicao } from "../../types/analise";
 import type {
   Avaliacao,
@@ -23,7 +24,8 @@ import WriteReviewModal from "../../components/WriteReviewModal";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
 import Chip from "../../components/Chip";
-import RiskBadge from "../../components/RiskBadge";
+import IngredientCard from "../../components/IngredientCard";
+import IngredientsModal from "../../components/IngredientsModal";
 import styles from "./styles.module.css";
 
 type EstadoProduto =
@@ -36,12 +38,14 @@ type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
 
-interface ModaisDeAvaliacao {
+interface ModaisDoProduto {
+  ingredientes: boolean;
   todas: boolean;
   acao: AcaoDeAvaliacao | null;
 }
 
 const AVALIACOES_NA_PAGINA = 4;
+const INGREDIENTES_NA_PAGINA = 3;
 
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
@@ -56,7 +60,8 @@ function Produto() {
     recarregar: recarregarAvaliacoes,
     atualizar: atualizarAvaliacoes,
   } = useAvaliacoes(slug ?? null);
-  const [modais, setModais] = useState<ModaisDeAvaliacao>({
+  const [modais, setModais] = useState<ModaisDoProduto>({
+    ingredientes: false,
     todas: false,
     acao: null,
   });
@@ -117,6 +122,14 @@ function Produto() {
       ...atual,
       acao: { tipo: "denunciar", avaliacao },
     }));
+  }
+
+  function abrirIngredientes() {
+    setModais((atual) => ({ ...atual, ingredientes: true }));
+  }
+
+  function fecharIngredientes() {
+    setModais((atual) => ({ ...atual, ingredientes: false }));
   }
 
   function abrirTodas() {
@@ -311,24 +324,33 @@ function Produto() {
               Ainda não temos a lista de ingredientes deste produto.
             </p>
           ) : (
-            <ul className={styles.ingredients}>
-              {ingredients.map((item) => (
-                <li className={styles.ingredient} key={item.id}>
-                  <h3 className={styles.ingredientName}>
-                    {item.ingredient?.commonName ?? item.inciName}
-                  </h3>
+            <>
+              <ul className={styles.ingredients}>
+                {ordenarPorRisco(ingredients)
+                  .slice(0, INGREDIENTES_NA_PAGINA)
+                  .map((item) => (
+                    <li key={item.id}>
+                      <IngredientCard item={item} />
+                    </li>
+                  ))}
+              </ul>
 
-                  <div className={styles.ingredientRow}>
-                    <RiskBadge level={item.level} />
+              {ingredients.length > INGREDIENTES_NA_PAGINA ? (
+                <Button
+                  variant="secondary"
+                  className={styles.seeAll}
+                  onClick={abrirIngredientes}
+                >
+                  Ver todos os {ingredients.length} ingredientes
+                </Button>
+              ) : null}
 
-                    <p className={styles.ingredientText}>
-                      {item.ingredient?.functionSummary ??
-                        "Ainda não temos informação verificada sobre este ingrediente."}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+              <IngredientsModal
+                open={modais.ingredientes}
+                onClose={fecharIngredientes}
+                ingredients={ingredients}
+              />
+            </>
           )}
         </section>
 
@@ -389,7 +411,7 @@ function Produto() {
               {avaliacoes.avaliacoes.reviews.length > AVALIACOES_NA_PAGINA ? (
                 <Button
                   variant="secondary"
-                  className={styles.allReviews}
+                  className={styles.seeAll}
                   onClick={abrirTodas}
                 >
                   Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
