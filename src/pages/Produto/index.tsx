@@ -306,24 +306,30 @@ function Produto() {
             âmbar pede atenção e vermelho é melhor evitar.
           </p>
 
-          <ul className={styles.ingredients}>
-            {ingredients.map((item) => (
-              <li className={styles.ingredient} key={item.inciName}>
-                <h3 className={styles.ingredientName}>
-                  {item.ingredient?.commonName ?? item.inciName}
-                </h3>
+          {ingredients.length === 0 ? (
+            <p className={styles.sectionText}>
+              Ainda não temos a lista de ingredientes deste produto.
+            </p>
+          ) : (
+            <ul className={styles.ingredients}>
+              {ingredients.map((item) => (
+                <li className={styles.ingredient} key={item.id}>
+                  <h3 className={styles.ingredientName}>
+                    {item.ingredient?.commonName ?? item.inciName}
+                  </h3>
 
-                <div className={styles.ingredientRow}>
-                  <RiskBadge level={item.level} />
+                  <div className={styles.ingredientRow}>
+                    <RiskBadge level={item.level} />
 
-                  <p className={styles.ingredientText}>
-                    {item.ingredient?.functionSummary ??
-                      "Ainda não temos informação verificada sobre este ingrediente."}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+                    <p className={styles.ingredientText}>
+                      {item.ingredient?.functionSummary ??
+                        "Ainda não temos informação verificada sobre este ingrediente."}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className={styles.section} aria-labelledby="titulo-avaliacoes">

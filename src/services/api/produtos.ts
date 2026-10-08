@@ -142,15 +142,6 @@ export async function buscarProdutoComVersaoDaApi(
   };
 }
 
-export async function buscarProdutoDaApi(
-  slug: string,
-  sinal?: AbortSignal,
-): Promise<Produto> {
-  const { produto } = await buscarProdutoComVersaoDaApi(slug, sinal);
-
-  return produto;
-}
-
 async function buscarLista(
   caminho: string,
   sinal?: AbortSignal,
