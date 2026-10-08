@@ -15,6 +15,7 @@ interface ListaSuspensaProps<T extends string> {
   options: SelectOption<T>[];
   value: T | "";
   onChange: (valor: T) => void;
+  onClear?: () => void;
   error?: string;
   hideLabel?: boolean;
   fullWidth?: boolean;
@@ -27,6 +28,7 @@ function ListaSuspensa<T extends string>({
   options,
   value,
   onChange,
+  onClear,
   error,
   hideLabel = false,
   fullWidth = false,
@@ -38,6 +40,11 @@ function ListaSuspensa<T extends string>({
     .join(" ");
 
   function handleChange(event: ChangeEvent<HTMLSelectElement>) {
+    if (event.target.value === "") {
+      onClear?.();
+      return;
+    }
+
     const escolhida = options.find(
       (option) => option.value === event.target.value,
     );
@@ -69,7 +76,7 @@ function ListaSuspensa<T extends string>({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
         >
-          <option value="" disabled>
+          <option value="" disabled={onClear === undefined}>
             {placeholder}
           </option>
 
