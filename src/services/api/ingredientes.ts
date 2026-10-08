@@ -8,6 +8,7 @@ import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { pedir, verificarResposta } from "./requisicao";
 
 interface ItemDaComposicao {
+  id: number;
   ingredientId: number;
   position: number;
 }
@@ -16,12 +17,13 @@ const ingredientesPorId = new Map<number, Ingrediente | null>();
 
 function lerItemDaComposicao(valor: unknown): ItemDaComposicao | null {
   const dados = comoObjeto(valor);
+  const id = numero(dados.id);
   const ingredientId = numero(dados.ingredientId);
   const position = numero(dados.position);
 
-  return ingredientId === null || position === null
+  return id === null || ingredientId === null || position === null
     ? null
-    : { ingredientId, position };
+    : { id, ingredientId, position };
 }
 
 function lerIngrediente(valor: unknown): Ingrediente | null {
@@ -35,7 +37,9 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
   return {
     inciName,
     commonName: texto(dados.commonName) ?? inciName,
-    functionSummary: texto(dados.functionSummary) ?? "",
+    functionSummary:
+      texto(dados.functionSummary) ??
+      "Ainda não temos a descrição deste ingrediente.",
     safetySummary: texto(dados.safetySummary) ?? "",
     biodegradability: numero(dados.biodegradabilityLevel) ?? 0,
     irritationRiskLevel: numero(dados.irritationRiskLevel) ?? 0,
@@ -112,6 +116,7 @@ export async function buscarIngredientesDaVersao(
       const ingrediente = ingredientes[posicao] ?? null;
 
       return {
+        id: item.id,
         inciName: ingrediente?.inciName ?? "Ingrediente sem cadastro",
         position: item.position,
         level: nivelDoIngrediente(ingrediente),
