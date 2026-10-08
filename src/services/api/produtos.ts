@@ -7,6 +7,12 @@ import type {
 } from "./tipos";
 import type { Produto } from "../../types/produto";
 import type { IngredienteAvaliado } from "../../types/ingrediente";
+import type {
+  FiltrosDaPesquisa,
+  OpcoesDaPesquisa,
+  ResultadoDaPesquisa,
+} from "../../types/pesquisa";
+import { comoObjeto } from "./leitura";
 import { paraProduto, paraProdutoDaListagem } from "./tradutores";
 import { lerIngredientesDoProduto } from "./ingredientes";
 import { URL_API } from "../../config/ambiente";
@@ -192,20 +198,40 @@ function indexarPorId<T extends { id: number }>(
   return mapa;
 }
 
-export async function listarProdutosDaApi(
+interface MarcasECategorias {
+  marcasPorId: Map<number, MarcaApi>;
+  categoriasPorId: Map<number, CategoriaApi>;
+}
+
+let marcasECategorias: MarcasECategorias | null = null;
+
+async function buscarMarcasECategorias(
   sinal?: AbortSignal,
-): Promise<Produto[]> {
-  const [produtos, marcas, categorias] = await Promise.all([
-    buscarLista("/api/products", sinal),
+): Promise<MarcasECategorias> {
+  if (marcasECategorias !== null) {
+    return marcasECategorias;
+  }
+
+  const [marcas, categorias] = await Promise.all([
     buscarLista("/api/brands", sinal),
     buscarLista("/api/product-categories", sinal),
   ]);
 
-  const marcasPorId = indexarPorId(marcas, ehMarcaApi);
-  const categoriasPorId = indexarPorId(categorias, ehCategoriaApi);
+  marcasECategorias = {
+    marcasPorId: indexarPorId(marcas, ehMarcaApi),
+    categoriasPorId: indexarPorId(categorias, ehCategoriaApi),
+  };
+
+  return marcasECategorias;
+}
+
+function montarProdutos(
+  itens: unknown[],
+  { marcasPorId, categoriasPorId }: MarcasECategorias,
+): Produto[] {
   const montados: Produto[] = [];
 
-  for (const item of produtos) {
+  for (const item of itens) {
     if (!ehProdutoDaListagem(item) || !item.isActive) {
       continue;
     }
@@ -221,4 +247,99 @@ export async function listarProdutosDaApi(
   }
 
   return montados;
+}
+
+export async function listarProdutosDaApi(
+  sinal?: AbortSignal,
+): Promise<Produto[]> {
+  const [produtos, apoio] = await Promise.all([
+    buscarLista("/api/products", sinal),
+    buscarMarcasECategorias(sinal),
+  ]);
+
+  return montarProdutos(produtos, apoio);
+}
+
+function idPeloNome<T extends { id: number; name: string }>(
+  itens: Map<number, T>,
+  nome: string,
+): number | null {
+  for (const item of itens.values()) {
+    if (item.name === nome) {
+      return item.id;
+    }
+  }
+
+  return null;
+}
+
+const POR_NOME = new Intl.Collator("pt-BR");
+
+function nomesOrdenados(itens: Map<number, { name: string }>): string[] {
+  return [...itens.values()]
+    .map((item) => item.name)
+    .sort((a, b) => POR_NOME.compare(a, b));
+}
+
+export async function listarOpcoesDaPesquisaNaApi(
+  sinal?: AbortSignal,
+): Promise<OpcoesDaPesquisa> {
+  const { marcasPorId, categoriasPorId } = await buscarMarcasECategorias(sinal);
+
+  return {
+    categorias: nomesOrdenados(categoriasPorId),
+    marcas: nomesOrdenados(marcasPorId),
+  };
+}
+
+export async function pesquisarProdutosNaApi(
+  filtros: FiltrosDaPesquisa,
+  pagina: number,
+  tamanho: number,
+  sinal?: AbortSignal,
+): Promise<ResultadoDaPesquisa> {
+  const apoio = await buscarMarcasECategorias(sinal);
+  const parametros = new URLSearchParams({
+    isActive: "true",
+    page: String(pagina),
+    size: String(tamanho),
+    sort: "name,asc",
+  });
+
+  if (filtros.termo !== "") {
+    parametros.set("name", filtros.termo);
+  }
+
+  if (filtros.categoria !== "") {
+    const categoriaId = idPeloNome(apoio.categoriasPorId, filtros.categoria);
+
+    if (categoriaId === null) {
+      return { produtos: [], temMais: false };
+    }
+
+    parametros.set("productCategoryId", String(categoriaId));
+  }
+
+  if (filtros.marca !== "") {
+    const marcaId = idPeloNome(apoio.marcasPorId, filtros.marca);
+
+    if (marcaId === null) {
+      return { produtos: [], temMais: false };
+    }
+
+    parametros.set("brandId", String(marcaId));
+  }
+
+  const caminho = `/api/products/search?${parametros.toString()}`;
+  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+
+  verificarResposta(resposta, "/api/products/search");
+
+  const dados = comoObjeto(await resposta.json());
+  const itens: unknown[] = Array.isArray(dados.content) ? dados.content : [];
+
+  return {
+    produtos: montarProdutos(itens, apoio),
+    temMais: dados.last === false,
+  };
 }
