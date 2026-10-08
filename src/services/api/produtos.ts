@@ -203,26 +203,31 @@ interface MarcasECategorias {
   categoriasPorId: Map<number, CategoriaApi>;
 }
 
-let marcasECategorias: MarcasECategorias | null = null;
+let pedidoDeMarcasECategorias: Promise<MarcasECategorias> | null = null;
 
-async function buscarMarcasECategorias(
-  sinal?: AbortSignal,
-): Promise<MarcasECategorias> {
-  if (marcasECategorias !== null) {
-    return marcasECategorias;
-  }
-
+async function carregarMarcasECategorias(): Promise<MarcasECategorias> {
   const [marcas, categorias] = await Promise.all([
-    buscarLista("/api/brands", sinal),
-    buscarLista("/api/product-categories", sinal),
+    buscarLista("/api/brands"),
+    buscarLista("/api/product-categories"),
   ]);
 
-  marcasECategorias = {
+  return {
     marcasPorId: indexarPorId(marcas, ehMarcaApi),
     categoriasPorId: indexarPorId(categorias, ehCategoriaApi),
   };
+}
 
-  return marcasECategorias;
+function buscarMarcasECategorias(): Promise<MarcasECategorias> {
+  if (pedidoDeMarcasECategorias === null) {
+    pedidoDeMarcasECategorias = carregarMarcasECategorias().catch(
+      (erro: unknown) => {
+        pedidoDeMarcasECategorias = null;
+        throw erro;
+      },
+    );
+  }
+
+  return pedidoDeMarcasECategorias;
 }
 
 function montarProdutos(
@@ -254,7 +259,7 @@ export async function listarProdutosDaApi(
 ): Promise<Produto[]> {
   const [produtos, apoio] = await Promise.all([
     buscarLista("/api/products", sinal),
-    buscarMarcasECategorias(sinal),
+    buscarMarcasECategorias(),
   ]);
 
   return montarProdutos(produtos, apoio);
@@ -281,10 +286,8 @@ function nomesOrdenados(itens: Map<number, { name: string }>): string[] {
     .sort((a, b) => POR_NOME.compare(a, b));
 }
 
-export async function listarOpcoesDaPesquisaNaApi(
-  sinal?: AbortSignal,
-): Promise<OpcoesDaPesquisa> {
-  const { marcasPorId, categoriasPorId } = await buscarMarcasECategorias(sinal);
+export async function listarOpcoesDaPesquisaNaApi(): Promise<OpcoesDaPesquisa> {
+  const { marcasPorId, categoriasPorId } = await buscarMarcasECategorias();
 
   return {
     categorias: nomesOrdenados(categoriasPorId),
@@ -298,7 +301,7 @@ export async function pesquisarProdutosNaApi(
   tamanho: number,
   sinal?: AbortSignal,
 ): Promise<ResultadoDaPesquisa> {
-  const apoio = await buscarMarcasECategorias(sinal);
+  const apoio = await buscarMarcasECategorias();
   const parametros = new URLSearchParams({
     isActive: "true",
     page: String(pagina),

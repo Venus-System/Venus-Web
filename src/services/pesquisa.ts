@@ -69,9 +69,7 @@ export async function pesquisarProdutos(
   }
 }
 
-export async function buscarOpcoesDaPesquisa(
-  sinal?: AbortSignal,
-): Promise<OpcoesDaPesquisa> {
+export async function buscarOpcoesDaPesquisa(): Promise<OpcoesDaPesquisa> {
   try {
     if (USAR_MOCK) {
       await simularLatencia();
@@ -82,12 +80,8 @@ export async function buscarOpcoesDaPesquisa(
       };
     }
 
-    return await listarOpcoesDaPesquisaNaApi(sinal);
-  } catch (erro) {
-    if (erro instanceof DOMException && erro.name === "AbortError") {
-      throw erro;
-    }
-
+    return await listarOpcoesDaPesquisaNaApi();
+  } catch {
     throw new Error("Não foi possível carregar as categorias e as marcas.");
   }
 }

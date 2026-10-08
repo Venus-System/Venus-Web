@@ -14,12 +14,11 @@ export function useOpcoesDaPesquisa() {
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    const controle = new AbortController();
     let ativo = true;
 
     setEstado({ status: "carregando" });
 
-    buscarOpcoesDaPesquisa(controle.signal)
+    buscarOpcoesDaPesquisa()
       .then((opcoes) => {
         if (ativo) {
           setEstado({ status: "pronto", opcoes });
@@ -39,7 +38,6 @@ export function useOpcoesDaPesquisa() {
 
     return () => {
       ativo = false;
-      controle.abort();
     };
   }, [tentativa]);
 
