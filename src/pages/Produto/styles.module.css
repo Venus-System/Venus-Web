@@ -123,34 +123,6 @@
   list-style: none;
 }
 
-.ingredient {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-2);
-  padding: var(--espaco-3);
-  background-color: var(--card);
-  border: var(--borda-largura) solid var(--borda);
-  border-radius: var(--raio-medio);
-}
-
-.ingredientName {
-  font-size: var(--tamanho-base);
-  font-weight: var(--peso-forte);
-}
-
-.ingredientRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--espaco-2);
-  align-items: center;
-}
-
-.ingredientText {
-  flex: 1 1 20rem;
-  color: var(--texto-suave);
-  font-size: var(--tamanho-pequeno);
-}
-
 .reviewsSummary {
   display: flex;
   flex-direction: column;
@@ -176,7 +148,7 @@
   list-style: none;
 }
 
-.allReviews {
+.seeAll {
   width: 100%;
   justify-content: center;
 }

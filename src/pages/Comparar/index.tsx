@@ -150,7 +150,7 @@ function selosEAlertas({ product, ingredients }: ProdutoComparado) {
 
       {alertas.map((alerta) => (
         <span
-          key={alerta.inciName}
+          key={alerta.id}
           className={
             alerta.level === "avoid" ? styles.alertaEvitar : styles.alerta
           }

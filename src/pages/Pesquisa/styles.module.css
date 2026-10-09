@@ -37,6 +37,44 @@
   flex: 1 1 20rem;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: flex-end;
+  max-width: 44rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filters > div {
+  flex: 1 1 14rem;
+}
+
+.filtersLegend {
+  margin-bottom: var(--espaco-3);
+  padding: 0;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.filters > .filtersError {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
+.more {
+  width: 100%;
+  justify-content: center;
+}
+
 .results {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,5 @@
 import { USAR_MOCK } from "../config/ambiente";
 import type { ProdutoComparado } from "../types/comparacao";
-import { buscarIngredientesDaVersao } from "./api/ingredientes";
 import { buscarProdutoComVersaoDaApi } from "./api/produtos";
 import { ErroProdutoNaoEncontrado, ErroServicoIndisponivel } from "./erros";
 import { analisesMock } from "./mocks/analises";
@@ -24,14 +23,14 @@ async function produtoComparado(
     };
   }
 
-  const { produto, versaoId } = await buscarProdutoComVersaoDaApi(slug, sinal);
+  const { produto, ingredientes } = await buscarProdutoComVersaoDaApi(
+    slug,
+    sinal,
+  );
 
   return {
     product: produto,
-    ingredients:
-      versaoId === null
-        ? []
-        : await buscarIngredientesDaVersao(versaoId, sinal),
+    ingredients: ingredientes,
   };
 }
 

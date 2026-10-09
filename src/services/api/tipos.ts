@@ -52,6 +52,7 @@ export interface ProductFullResponse {
   brand: MarcaApi;
   category: CategoriaApi;
   currentVersion: VersaoApi | null;
+  ingredients: unknown;
   claims: ClaimApi[];
   score: NotasApi | null;
 }
