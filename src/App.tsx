@@ -26,6 +26,7 @@ import Enviados from "./pages/Enviados";
 import Historico from "./pages/Historico";
 import Favoritos from "./pages/Favoritos";
 import Comparar from "./pages/Comparar";
+import Escanear from "./pages/Escanear";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
       <Route path="/pesquisa" element={<Pesquisa />} />
       <Route path="/produto/:slug" element={<Produto />} />
       <Route path="/comparar" element={<Comparar />} />
+      <Route path="/escanear" element={<Escanear />} />
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/metodologia" element={<Metodologia />} />
       <Route path="/fontes" element={<Fontes />} />
