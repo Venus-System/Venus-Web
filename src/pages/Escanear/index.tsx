@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { lerFotoDoScan } from "../../services/ocr";
-import { novoScanId } from "../../services/escanear";
+import { enviarScan, novoScanId } from "../../services/escanear";
 import { TIPOS_DE_IMAGEM, validarFoto } from "../../services/avatar";
 import type {
   FotoLida,
@@ -12,15 +12,24 @@ import { gerarImagemDeExemplo } from "../../utils/imagemDeExemplo";
 import { localizarIngredientes } from "../../utils/leituraDoRotulo";
 import { motivoDoBloqueio } from "../../utils/qualidadeDaFoto";
 import { usePreviaDaFoto } from "../../hooks/usePreviaDaFoto";
+import { useProdutosParecidos } from "../../hooks/useProdutosParecidos";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import PhotoDropZone from "../../components/PhotoDropZone";
+import ScanReview from "../../components/ScanReview";
+import type { DadosDaRevisao } from "../../components/ScanReview";
 import styles from "./styles.module.css";
 
 type Leitura =
   | { situacao: "ocioso" }
   | { situacao: "lendo"; lado: LadoDoScan }
   | { situacao: "erro"; mensagem: string };
+
+type Envio =
+  | { situacao: "ocioso" }
+  | { situacao: "enviando" }
+  | { situacao: "erro"; mensagem: string }
+  | { situacao: "enviado" };
 
 interface Escaneamento {
   scanId: string;
@@ -30,19 +39,17 @@ interface Escaneamento {
   usouExemplo: boolean;
   leitura: Leitura;
   avisos: string[];
+  nomeBuscado: string;
+  envio: Envio;
 }
 
-const MENSAGENS_DE_BLOQUEIO: Record<
-  Exclude<MotivoDeBloqueio, "TOO_BRIGHT">,
-  string
-> = {
+const MENSAGENS_DE_BLOQUEIO: Record<MotivoDeBloqueio, string> = {
   BLUR_TOO_HIGH:
     "A foto saiu tremida ou desfocada. Tente de novo com a câmera parada e a lista em foco.",
   TOO_DARK: "A foto ficou escura demais. Tente de novo com mais luz.",
+  TOO_BRIGHT:
+    "A foto ficou clara demais, provavelmente com reflexo ou luz direta. Tente de novo com uma luz mais suave.",
 };
-
-const AVISO_DE_BRILHO =
-  "A foto está muito clara. Se a leitura sair ruim, tente sem luz direta ou reflexo.";
 
 const AVISO_DE_FUNDO =
   "O fundo da foto não está uniforme. Se a leitura sair ruim, tente sobre uma superfície lisa.";
@@ -102,15 +109,13 @@ function novoEscaneamento(): Escaneamento {
     usouExemplo: false,
     leitura: { situacao: "ocioso" },
     avisos: [],
+    nomeBuscado: "",
+    envio: { situacao: "ocioso" },
   };
 }
 
 function avisosDaFoto(foto: FotoLida, lado: LadoDoScan): string[] {
   const avisos: string[] = [];
-
-  if (motivoDoBloqueio(foto.qualidade) === "TOO_BRIGHT") {
-    avisos.push(AVISO_DE_BRILHO);
-  }
 
   if (!foto.qualidade.backgroundOk) {
     avisos.push(AVISO_DE_FUNDO);
@@ -127,6 +132,15 @@ function Escanear() {
   const [estado, setEstado] = useState<Escaneamento>(novoEscaneamento);
   const previaDoVerso = usePreviaDaFoto(estado.verso?.arquivo ?? null);
   const previaDaFrente = usePreviaDaFoto(estado.frente?.arquivo ?? null);
+  const parecidos = useProdutosParecidos(estado.nomeBuscado);
+  const tituloDoEnviadoRef = useRef<HTMLHeadingElement>(null);
+  const enviado = estado.envio.situacao === "enviado";
+
+  useEffect(() => {
+    if (enviado) {
+      tituloDoEnviadoRef.current?.focus();
+    }
+  }, [enviado]);
 
   const lado: LadoDoScan | null =
     estado.verso === null ? "back" : estado.frente === null ? "front" : null;
@@ -148,7 +162,7 @@ function Escanear() {
         const foto = await lerFotoDoScan(arquivo, lado);
         const bloqueio = motivoDoBloqueio(foto.qualidade);
 
-        if (bloqueio !== null && bloqueio !== "TOO_BRIGHT") {
+        if (bloqueio !== null) {
           setEstado((atual) => ({
             ...atual,
             leitura: { situacao: "erro", mensagem: MENSAGENS_DE_BLOQUEIO[bloqueio] },
@@ -244,6 +258,39 @@ function Escanear() {
     setEstado(novoEscaneamento());
   }
 
+  async function enviar(dados: DadosDaRevisao) {
+    const { verso, frente } = estado;
+
+    if (verso === null || frente === null) {
+      return;
+    }
+
+    setEstado((atual) => ({ ...atual, envio: { situacao: "enviando" } }));
+
+    try {
+      await enviarScan({
+        scanId: estado.scanId,
+        startedAt: estado.startedAt,
+        verso,
+        frente,
+        usouExemplo: estado.usouExemplo,
+        ...dados,
+      });
+      setEstado((atual) => ({ ...atual, envio: { situacao: "enviado" } }));
+    } catch (erro) {
+      setEstado((atual) => ({
+        ...atual,
+        envio: {
+          situacao: "erro",
+          mensagem:
+            erro instanceof Error
+              ? erro.message
+              : "Não foi possível enviar o produto.",
+        },
+      }));
+    }
+  }
+
   const trecho =
     estado.verso === null ? null : localizarIngredientes(estado.verso.lines);
 
@@ -332,7 +379,7 @@ function Escanear() {
               </ul>
             ) : null}
 
-            {estado.verso !== null || estado.frente !== null ? (
+            {(estado.verso !== null || estado.frente !== null) && !enviado ? (
               <ul className={styles.lidas} aria-label="Fotos lidas">
                 {estado.verso !== null && previaDoVerso !== null ? (
                   <li className={styles.lida}>
@@ -342,7 +389,11 @@ function Escanear() {
                       alt="Foto da lista de ingredientes que você enviou"
                     />
                     <span className={styles.lidaTexto}>Lista de ingredientes</span>
-                    <Button variant="text" onClick={() => trocar("back")}>
+                    <Button
+                      variant="text"
+                      onClick={() => trocar("back")}
+                      disabled={estado.envio.situacao === "enviando"}
+                    >
                       Trocar a foto da lista
                     </Button>
                   </li>
@@ -356,7 +407,11 @@ function Escanear() {
                       alt="Foto da frente da embalagem que você enviou"
                     />
                     <span className={styles.lidaTexto}>Frente da embalagem</span>
-                    <Button variant="text" onClick={() => trocar("front")}>
+                    <Button
+                      variant="text"
+                      onClick={() => trocar("front")}
+                      disabled={estado.envio.situacao === "enviando"}
+                    >
                       Trocar a foto da frente
                     </Button>
                   </li>
@@ -364,19 +419,45 @@ function Escanear() {
               </ul>
             ) : null}
 
-            {lado === null && trecho !== null ? (
+            {lado === null && trecho !== null && estado.verso !== null && !enviado ? (
+              <ScanReview
+                key={estado.scanId}
+                initialIngredients={trecho.texto}
+                fullText={estado.verso.fullText}
+                similar={parecidos}
+                sending={estado.envio.situacao === "enviando"}
+                errorMessage={
+                  estado.envio.situacao === "erro" ? estado.envio.mensagem : null
+                }
+                onNameBlur={(nome) =>
+                  setEstado((atual) => ({ ...atual, nomeBuscado: nome }))
+                }
+                onSubmit={enviar}
+                onRestart={recomecar}
+              />
+            ) : null}
+
+            {enviado ? (
               <div className={styles.pronto}>
-                <h3 className={styles.prontoTitulo}>Fotos lidas</h3>
+                <h3
+                  ref={tituloDoEnviadoRef}
+                  className={styles.prontoTitulo}
+                  tabIndex={-1}
+                >
+                  Produto enviado para análise!
+                </h3>
 
                 <p className={styles.prontoTexto}>
-                  {trecho.encontrado
-                    ? `Trecho lido: ${trecho.texto}`
-                    : "A lista de ingredientes não foi encontrada no texto lido."}
+                  A equipe Venus confere os ingredientes antes de o produto
+                  entrar no catálogo. Você acompanha a situação em Enviados.
                 </p>
 
-                <Button variant="secondary" onClick={recomecar}>
-                  Começar de novo
-                </Button>
+                <div className={styles.acoes}>
+                  <Button to="/historico/enviados">Ver meus envios</Button>
+                  <Button variant="secondary" onClick={recomecar}>
+                    Enviar outro produto
+                  </Button>
+                </div>
               </div>
             ) : null}
           </section>

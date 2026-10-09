@@ -130,6 +130,12 @@
   overflow-wrap: break-word;
 }
 
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
 .lateral {
   display: flex;
   flex-direction: column;
