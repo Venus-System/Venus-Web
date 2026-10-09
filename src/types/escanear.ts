@@ -23,3 +23,29 @@ export interface IngredienteDaLista {
   rawName: string;
   looksLikePackaging: boolean;
 }
+
+export type LadoDoScan = "front" | "back";
+
+export interface FotoLida {
+  arquivo: Blob;
+  fullText: string;
+  lines: string[];
+  qualidade: QualidadeDaFoto;
+}
+
+export interface RascunhoDoScan {
+  scanId: string;
+  startedAt: string;
+  frente: FotoLida;
+  verso: FotoLida;
+  productName: string;
+  brand: string;
+  ingredientsText: string;
+  ingredientes: IngredienteDaLista[];
+}
+
+export interface ScanEnviado {
+  id: string;
+  scanId: string;
+  status: string;
+}
