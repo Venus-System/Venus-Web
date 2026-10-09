@@ -13,6 +13,7 @@ export interface Ingrediente {
 }
 
 export interface IngredienteAvaliado {
+  id: number;
   inciName: string;
   position: number;
   level: RiskLevel;

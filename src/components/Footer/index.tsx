@@ -9,7 +9,7 @@ interface FooterProps {
 interface LinkColumn {
   id: string;
   title: string;
-  links: { to: string; label: string }[];
+  links: { to: string; label: string; emBreve?: boolean }[];
 }
 
 const COLUMNS: LinkColumn[] = [
@@ -62,9 +62,16 @@ function Footer({ year = new Date().getFullYear() }: FooterProps) {
               >
                 {column.links.map((link) => (
                   <li key={link.to}>
-                    <Link to={link.to} className={styles.link}>
-                      {link.label}
-                    </Link>
+                    {link.emBreve === true ? (
+                      <span className={styles.linkEmBreve}>
+                        {link.label}
+                        <span className={styles.emBreve}>Em breve</span>
+                      </span>
+                    ) : (
+                      <Link to={link.to} className={styles.link}>
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

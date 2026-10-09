@@ -7,18 +7,22 @@ import {
   observarSessao,
   sair as sairDoServico,
   criarConta as criarContaNoServico,
+  atualizarNome as atualizarNomeNoServico,
 } from "../services/autenticacao";
-
+import { buscarFotoDePerfil } from "../services/avatar";
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
   carregando: boolean;
+  fotoUrl: string | null;
+  definirFoto: (url: string | null) => void;
   entrar: (
     email: string,
     senha: string,
     continuarConectado: boolean,
   ) => Promise<void>;
   sair: () => Promise<void>;
+  atualizarNome: (nome: string) => Promise<void>;
   entrarComGoogle: (continuarConectado: boolean) => Promise<void>;
   criarConta: (nome: string, email: string, senha: string) => Promise<void>;
 }
@@ -42,6 +46,9 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     carregando: true,
   });
 
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+  const idUsuario = estado.usuario === null ? null : estado.usuario.id;
+
   useEffect(() => {
     const cancelar = observarSessao((usuario) => {
       setEstado({ usuario, carregando: false });
@@ -49,6 +56,29 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
 
     return cancelar;
   }, []);
+
+  useEffect(() => {
+    if (idUsuario === null) {
+      setFotoUrl(null);
+      return;
+    }
+
+    const controle = new AbortController();
+    let ativo = true;
+
+    buscarFotoDePerfil(controle.signal)
+      .then((url) => {
+        if (ativo) {
+          setFotoUrl(url);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      ativo = false;
+      controle.abort();
+    };
+  }, [idUsuario]);
 
   async function entrar(
     email: string,
@@ -69,6 +99,11 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     setEstado({ usuario: null, carregando: false });
   }
 
+  async function atualizarNome(nome: string) {
+    const usuario = await atualizarNomeNoServico(nome);
+    setEstado({ usuario, carregando: false });
+  }
+
   async function criarConta(nome: string, email: string, senha: string) {
     const usuario = await criarContaNoServico(nome, email, senha);
     setEstado({ usuario, carregando: false });
@@ -76,7 +111,16 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
 
   return (
     <ContextoAutenticacao.Provider
-      value={{ ...estado, entrar, entrarComGoogle, criarConta, sair }}
+      value={{
+        ...estado,
+        fotoUrl,
+        definirFoto: setFotoUrl,
+        entrar,
+        entrarComGoogle,
+        criarConta,
+        sair,
+        atualizarNome,
+      }}
     >
       {children}
     </ContextoAutenticacao.Provider>

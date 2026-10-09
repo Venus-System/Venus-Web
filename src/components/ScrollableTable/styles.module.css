@@ -1,0 +1,32 @@
+.container {
+  max-width: 100%;
+  overflow-x: auto;
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-medio);
+}
+
+.table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: var(--tamanho-pequeno);
+}
+
+.table th,
+.table td {
+  padding: var(--espaco-2) var(--espaco-3);
+  border-bottom: var(--borda-largura) solid var(--borda);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  background-color: var(--superficie-suave);
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-forte);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}

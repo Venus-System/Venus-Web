@@ -1,0 +1,35 @@
+.nav {
+  padding: var(--espaco-3) var(--espaco-4);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--espaco-4);
+  font-size: var(--tamanho-pequeno);
+}
+
+.list li {
+  break-inside: avoid;
+}
+
+.list li + li {
+  margin-top: var(--espaco-2);
+}
+
+.list li::marker {
+  color: var(--texto-suave);
+}
+
+.link {
+  font-weight: var(--peso-forte);
+}
+
+@media (min-width: 48rem) {
+  .list {
+    columns: 2;
+    column-gap: var(--espaco-5);
+  }
+}

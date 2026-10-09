@@ -1,0 +1,74 @@
+.intro {
+  max-width: 60ch;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-radius: var(--raio-medio);
+}
+
+.tom {
+  flex-shrink: 0;
+  width: var(--espaco-4);
+  height: var(--espaco-4);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-pilula);
+}
+
+.numeral {
+  min-width: var(--espaco-4);
+  color: var(--violeta);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}
+
+.descricao {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.nota {
+  max-width: 60ch;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.i {
+  background-color: var(--fototipo-i);
+}
+
+.ii {
+  background-color: var(--fototipo-ii);
+}
+
+.iii {
+  background-color: var(--fototipo-iii);
+}
+
+.iv {
+  background-color: var(--fototipo-iv);
+}
+
+.v {
+  background-color: var(--fototipo-v);
+}
+
+.vi {
+  background-color: var(--fototipo-vi);
+}

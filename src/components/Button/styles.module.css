@@ -11,6 +11,7 @@
   font-weight: var(--peso-forte);
   line-height: 1.2;
   text-align: center;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -19,10 +20,38 @@
   color: var(--texto-invertido);
 }
 
+.violet {
+  background-color: var(--violeta);
+  color: var(--texto-invertido);
+}
+
+.violet:hover:not(:disabled, [aria-disabled="true"]) {
+  background-color: var(--roxo);
+}
+
 .secondary {
   background-color: var(--card);
   border-color: var(--borda-forte);
   color: var(--texto);
+}
+
+.danger {
+  background-color: var(--card);
+  border-color: var(--avoid);
+  color: var(--avoid);
+}
+
+.danger:hover:not(:disabled, [aria-disabled="true"]) {
+  background-color: var(--avoid-fundo);
+}
+
+.soft {
+  background-color: var(--lavanda-clara);
+  color: var(--roxo);
+}
+
+.soft:hover:not(:disabled, [aria-disabled="true"]) {
+  background-color: var(--lavanda-media);
 }
 
 .text {
@@ -33,21 +62,21 @@
   text-decoration: underline;
 }
 
-.primary:hover:not(:disabled) {
-  background-image: none;
-  background-color: var(--crimson-escuro);
+.primary:hover:not(:disabled, [aria-disabled="true"]) {
+  filter: brightness(0.85);
 }
 
-.secondary:hover:not(:disabled) {
+.secondary:hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--violeta);
   color: var(--violeta);
 }
 
-.text:hover:not(:disabled) {
+.text:hover:not(:disabled, [aria-disabled="true"]) {
   color: var(--crimson);
 }
 
-.button:disabled {
+.button:disabled,
+.button[aria-disabled="true"] {
   background-image: none;
   background-color: var(--prata);
   border-color: var(--borda-forte);

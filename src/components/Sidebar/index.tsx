@@ -22,10 +22,17 @@ interface SidebarProps {
   onScan?: () => void;
 }
 
+interface NavLinkItem {
+  to: string;
+  label: string;
+  Icon: LucideIcon;
+  emBreve?: boolean;
+}
+
 interface NavGroup {
   id: string;
   title: string;
-  links: { to: string; label: string; Icon: LucideIcon }[];
+  links: NavLinkItem[];
 }
 
 const GROUPS: NavGroup[] = [
@@ -54,7 +61,7 @@ const GROUPS: NavGroup[] = [
 ];
 
 function Sidebar({ onSearch, onScan }: SidebarProps) {
-  const { usuario } = useAutenticacao();
+  const { usuario, fotoUrl } = useAutenticacao();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -100,17 +107,25 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
           <ul className={styles.list} aria-labelledby={`group-${group.id}`}>
             {group.links.map((link) => (
               <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    [styles.link, isActive ? styles.linkActive : ""]
-                      .filter(Boolean)
-                      .join(" ")
-                  }
-                >
-                  <link.Icon className={styles.linkIcon} aria-hidden="true" />
-                  {link.label}
-                </NavLink>
+                {link.emBreve === true ? (
+                  <span className={styles.linkEmBreve}>
+                    <link.Icon className={styles.linkIcon} aria-hidden="true" />
+                    {link.label}
+                    <span className={styles.emBreve}>Em breve</span>
+                  </span>
+                ) : (
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      [styles.link, isActive ? styles.linkActive : ""]
+                        .filter(Boolean)
+                        .join(" ")
+                    }
+                  >
+                    <link.Icon className={styles.linkIcon} aria-hidden="true" />
+                    {link.label}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>
@@ -120,7 +135,11 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
       {usuario  ? (
         <Link to="/perfil" className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
-            {usuario.name.charAt(0)}
+            {fotoUrl === null ? (
+              usuario.name.charAt(0)
+            ) : (
+              <img className={styles.avatarFoto} src={fotoUrl} alt="" />
+            )}
           </span>
 
           <span className={styles.userInfo}>

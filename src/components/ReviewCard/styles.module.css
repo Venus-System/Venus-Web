@@ -1,0 +1,131 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
+.card > * {
+  margin: 0;
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  background-color: var(--lavanda-media);
+  border-radius: var(--raio-pilula);
+}
+
+.autor {
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.verificado {
+  padding: var(--espaco-1) var(--espaco-3);
+  background-color: var(--safe-fundo);
+  border-radius: var(--raio-pilula);
+  color: var(--safe);
+  font-size: var(--tamanho-pequeno);
+}
+
+.data {
+  margin-left: auto;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.linhaDoTitulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.titulo {
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+}
+
+.comentario {
+  color: var(--texto-suave);
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+}
+
+.pergunta,
+.sua {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.votos {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.voto {
+  min-height: var(--alvo-toque);
+  padding: var(--espaco-1) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-pilula);
+  color: var(--violeta);
+  font: inherit;
+  font-size: var(--tamanho-pequeno);
+  cursor: pointer;
+}
+
+.voto:hover {
+  border-color: var(--violeta);
+}
+
+.voto[aria-pressed="true"] {
+  background-color: var(--violeta);
+  border-color: var(--violeta);
+  color: var(--texto-invertido);
+  font-weight: var(--peso-forte);
+}
+
+.voto[aria-disabled="true"] {
+  cursor: progress;
+}
+
+.denunciar {
+  margin-left: auto;
+  padding: var(--espaco-1) 0;
+  background: none;
+  border: none;
+  color: var(--crimson);
+  font: inherit;
+  font-size: var(--tamanho-pequeno);
+  cursor: pointer;
+}
+
+.denunciar:hover {
+  text-decoration: underline;
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}

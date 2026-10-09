@@ -1,0 +1,42 @@
+.campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.titulo {
+  margin-bottom: var(--espaco-3);
+  padding: 0;
+  color: var(--roxo);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+}
+
+.lido {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.listas {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+@media (min-width: 40rem) {
+  .listas {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,51 @@
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7.5rem;
+  height: 7.5rem;
+  flex-shrink: 0;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.track,
+.fill {
+  fill: none;
+  stroke-width: 10;
+}
+
+.track {
+  stroke: var(--trilha);
+}
+
+.fill {
+  stroke-linecap: round;
+}
+
+.safe {
+  stroke: var(--safe);
+}
+
+.warning {
+  stroke: var(--warning);
+}
+
+.avoid {
+  stroke: var(--avoid);
+}
+
+.no-data {
+  stroke: var(--no-data);
+}
+
+.value {
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-grande);
+}

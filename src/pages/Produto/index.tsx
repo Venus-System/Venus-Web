@@ -1,14 +1,31 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
+import { ordenarPorRisco } from "../../utils/alertas";
 import type { AnaliseExibicao } from "../../types/analise";
+import type {
+  Avaliacao,
+  Denuncia,
+  NovaAvaliacao,
+} from "../../types/avaliacao";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
+import { useAvaliacoes } from "../../hooks/useAvaliacoes";
+import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
+import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
+import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
+import RatingSummary from "../../components/RatingSummary";
+import ReviewCard from "../../components/ReviewCard";
+import ReportReviewModal from "../../components/ReportReviewModal";
+import ReviewsModal from "../../components/ReviewsModal";
+import WriteReviewModal from "../../components/WriteReviewModal";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
 import Chip from "../../components/Chip";
-import RiskBadge from "../../components/RiskBadge";
+import IngredientCard from "../../components/IngredientCard";
+import IngredientsModal from "../../components/IngredientsModal";
 import styles from "./styles.module.css";
 
 type EstadoProduto =
@@ -17,11 +34,112 @@ type EstadoProduto =
   | { situacao: "nao-encontrado" }
   | { situacao: "erro"; mensagem: string };
 
+type AcaoDeAvaliacao =
+  | { tipo: "escrever" }
+  | { tipo: "denunciar"; avaliacao: Avaliacao };
+
+interface ModaisDoProduto {
+  ingredientes: boolean;
+  todas: boolean;
+  acao: AcaoDeAvaliacao | null;
+}
+
+const AVALIACOES_NA_PAGINA = 4;
+const INGREDIENTES_NA_PAGINA = 3;
+
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
   const [estado, setEstado] = useState<EstadoProduto>({
     situacao: "carregando",
   });
+  const { usuario } = useAutenticacao();
+  const navegar = useNavigate();
+  const localizacao = useLocation();
+  const {
+    estado: avaliacoes,
+    recarregar: recarregarAvaliacoes,
+    atualizar: atualizarAvaliacoes,
+  } = useAvaliacoes(slug ?? null);
+  const [modais, setModais] = useState<ModaisDoProduto>({
+    ingredientes: false,
+    todas: false,
+    acao: null,
+  });
+  const {
+    estado: publicacao,
+    publicar,
+    limpar: limparPublicacao,
+  } = usePublicarAvaliacao();
+  const {
+    estado: denuncia,
+    denunciar,
+    limpar: limparDenuncia,
+  } = useDenunciarAvaliacao();
+  const logado = usuario !== null;
+
+  function exigirLogin() {
+    navegar("/login", { state: { de: localizacao.pathname } });
+  }
+
+  function abrirEscrita() {
+    if (!logado) {
+      exigirLogin();
+      return;
+    }
+
+    limparPublicacao();
+    setModais((atual) => ({ ...atual, acao: { tipo: "escrever" } }));
+  }
+
+  function fecharAcao() {
+    setModais((atual) => ({ ...atual, acao: null }));
+  }
+
+  async function enviarAvaliacao(nova: NovaAvaliacao) {
+    if (!slug) {
+      return;
+    }
+
+    const publicou = await publicar(slug, nova);
+
+    if (publicou) {
+      fecharAcao();
+      atualizarAvaliacoes();
+    }
+  }
+
+  async function enviarDenuncia(avaliacaoId: string, nova: Denuncia) {
+    const enviou = await denunciar(avaliacaoId, nova);
+
+    if (enviou) {
+      fecharAcao();
+    }
+  }
+
+  function abrirDenuncia(avaliacao: Avaliacao) {
+    limparDenuncia();
+    setModais((atual) => ({
+      ...atual,
+      acao: { tipo: "denunciar", avaliacao },
+    }));
+  }
+
+  function abrirIngredientes() {
+    setModais((atual) => ({ ...atual, ingredientes: true }));
+  }
+
+  function fecharIngredientes() {
+    setModais((atual) => ({ ...atual, ingredientes: false }));
+  }
+
+  function abrirTodas() {
+    setModais((atual) => ({ ...atual, todas: true }));
+  }
+
+  function fecharTodas() {
+    setModais((atual) => ({ ...atual, todas: false }));
+    atualizarAvaliacoes();
+  }
 
   useEffect(() => {
     if (!slug) {
@@ -115,6 +233,8 @@ function Produto() {
   }
 
   const { product, ingredients, personalized } = estado.analise;
+  const avaliacaoDenunciada =
+    modais.acao?.tipo === "denunciar" ? modais.acao.avaliacao : null;
 
   return (
     <MainLayout>
@@ -199,24 +319,39 @@ function Produto() {
             âmbar pede atenção e vermelho é melhor evitar.
           </p>
 
-          <ul className={styles.ingredients}>
-            {ingredients.map((item) => (
-              <li className={styles.ingredient} key={item.inciName}>
-                <h3 className={styles.ingredientName}>
-                  {item.ingredient?.commonName ?? item.inciName}
-                </h3>
+          {ingredients.length === 0 ? (
+            <p className={styles.sectionText}>
+              Ainda não temos a lista de ingredientes deste produto.
+            </p>
+          ) : (
+            <>
+              <ul className={styles.ingredients}>
+                {ordenarPorRisco(ingredients)
+                  .slice(0, INGREDIENTES_NA_PAGINA)
+                  .map((item) => (
+                    <li key={item.id}>
+                      <IngredientCard item={item} />
+                    </li>
+                  ))}
+              </ul>
 
-                <div className={styles.ingredientRow}>
-                  <RiskBadge level={item.level} />
+              {ingredients.length > INGREDIENTES_NA_PAGINA ? (
+                <Button
+                  variant="secondary"
+                  className={styles.seeAll}
+                  onClick={abrirIngredientes}
+                >
+                  Ver todos os {ingredients.length} ingredientes
+                </Button>
+              ) : null}
 
-                  <p className={styles.ingredientText}>
-                    {item.ingredient?.functionSummary ??
-                      "Ainda não temos informação verificada sobre este ingrediente."}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+              <IngredientsModal
+                open={modais.ingredientes}
+                onClose={fecharIngredientes}
+                ingredients={ingredients}
+              />
+            </>
+          )}
         </section>
 
         <section className={styles.section} aria-labelledby="titulo-avaliacoes">
@@ -224,18 +359,104 @@ function Produto() {
             Avaliações de usuários
           </h2>
 
-          <button
-            type="button"
-            className={styles.reviewButton}
-            aria-disabled="true"
-            aria-describedby="aviso-avaliacoes"
-          >
-            Escrever avaliação
-          </button>
-
-          <p id="aviso-avaliacoes" className={styles.sectionText}>
-            As avaliações de usuários entram em uma próxima etapa do projeto.
+          <p className="texto-oculto" aria-live="polite">
+            {avaliacoes.status === "carregando"
+              ? "Carregando as avaliações."
+              : ""}
+            {publicacao.publicada ? "Sua avaliação foi publicada." : ""}
+            {denuncia.enviada
+              ? "Denúncia enviada. Um moderador vai analisar a avaliação."
+              : ""}
           </p>
+
+          {avaliacoes.status === "carregando" ? (
+            <p className={styles.sectionText}>Carregando as avaliações...</p>
+          ) : null}
+
+          {avaliacoes.status === "erro" ? (
+            <div className={styles.reviewsError}>
+              <p role="alert">{avaliacoes.mensagem}</p>
+
+              <Button variant="secondary" onClick={recarregarAvaliacoes}>
+                Tentar carregar as avaliações de novo
+              </Button>
+            </div>
+          ) : null}
+
+          {avaliacoes.status === "pronto" ? (
+            <>
+              <div className={styles.reviewsSummary}>
+                <RatingSummary summary={avaliacoes.avaliacoes.summary} />
+
+                <Button onClick={abrirEscrita}>Escrever avaliação</Button>
+              </div>
+
+              {avaliacoes.avaliacoes.reviews.length === 0 ? null : (
+                <ul className={styles.reviewList}>
+                  {avaliacoes.avaliacoes.reviews
+                    .slice(0, AVALIACOES_NA_PAGINA)
+                    .map((avaliacao) => (
+                      <li key={`${avaliacao.id}-${avaliacoes.rodada}`}>
+                        <ReviewCard
+                          review={avaliacao}
+                          canInteract={logado}
+                          onRequireLogin={exigirLogin}
+                          onReport={abrirDenuncia}
+                        />
+                      </li>
+                    ))}
+                </ul>
+              )}
+
+              {avaliacoes.avaliacoes.reviews.length > AVALIACOES_NA_PAGINA ? (
+                <Button
+                  variant="secondary"
+                  className={styles.seeAll}
+                  onClick={abrirTodas}
+                >
+                  Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
+                  avaliações
+                </Button>
+              ) : null}
+
+              <ReviewsModal
+                open={modais.todas}
+                onClose={fecharTodas}
+                data={avaliacoes.avaliacoes}
+                canInteract={logado}
+                onRequireLogin={exigirLogin}
+                onReport={abrirDenuncia}
+                onWrite={abrirEscrita}
+              />
+
+              <WriteReviewModal
+                open={modais.acao?.tipo === "escrever"}
+                product={{
+                  slug: product.slug,
+                  name: product.name,
+                  brandName: product.brand.name,
+                  imageUrl: product.imageUrl,
+                }}
+                sending={publicacao.enviando}
+                errorMessage={publicacao.erro}
+                onSubmit={enviarAvaliacao}
+                onClose={fecharAcao}
+              />
+
+              {avaliacaoDenunciada === null ? null : (
+                <ReportReviewModal
+                  open
+                  review={avaliacaoDenunciada}
+                  sending={denuncia.enviando}
+                  errorMessage={denuncia.erro}
+                  onSubmit={(nova) =>
+                    enviarDenuncia(avaliacaoDenunciada.id, nova)
+                  }
+                  onClose={fecharAcao}
+                />
+              )}
+            </>
+          ) : null}
         </section>
       </div>
     </MainLayout>

@@ -1,0 +1,71 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.header > * {
+  margin: 0;
+}
+
+.title {
+  color: var(--texto);
+  font-size: var(--tamanho-enorme);
+  line-height: 1.1;
+}
+
+.destaque {
+  color: var(--violeta);
+}
+
+.subtitle {
+  max-width: 50ch;
+  color: var(--texto-suave);
+}
+
+.estado,
+.vazio {
+  max-width: 60ch;
+  color: var(--texto-suave);
+}
+
+.erro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.secaoTitulo {
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  max-width: 50rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

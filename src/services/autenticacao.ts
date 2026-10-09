@@ -18,7 +18,104 @@ import { autenticacaoFirebase } from "../config/firebase";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
-import { criarUsuarioNaApi } from "./api/usuarios";
+import {
+  atualizarNomeNaApi,
+  buscarIdPorUid,
+  criarUsuarioNaApi,
+  registrarAcessoNaApi,
+} from "./api/usuarios";
+import {
+  esquecerIdDaApi,
+  guardarIdDaApi,
+  lerIdDaApi,
+} from "../utils/idDaApi";
+
+interface CadastroEmAndamento {
+  uid: string;
+  promessa: Promise<number | null>;
+}
+
+let cadastroEmAndamento: CadastroEmAndamento | null = null;
+
+async function registrarNaApi(usuario: Usuario): Promise<number | null> {
+  const encontrado = await buscarIdPorUid(usuario.id);
+
+  if (encontrado !== null) {
+    guardarIdDaApi(usuario.id, encontrado);
+    return encontrado;
+  }
+
+  const criado = await criarUsuarioNaApi(usuario);
+
+  if (criado !== null) {
+    guardarIdDaApi(usuario.id, criado);
+  }
+
+  return criado;
+}
+
+function cadastrarUmaVez(usuario: Usuario): Promise<number | null> {
+  if (cadastroEmAndamento !== null && cadastroEmAndamento.uid === usuario.id) {
+    return cadastroEmAndamento.promessa;
+  }
+
+  const promessa = registrarNaApi(usuario).finally(() => {
+    if (cadastroEmAndamento?.promessa === promessa) {
+      cadastroEmAndamento = null;
+    }
+  });
+
+  cadastroEmAndamento = { uid: usuario.id, promessa };
+
+  return promessa;
+}
+
+export async function garantirIdDoUsuarioNaApi(): Promise<number | null> {
+  const conta = autenticacaoFirebase?.currentUser ?? null;
+
+  if (conta === null) {
+    return null;
+  }
+
+  return lerIdDaApi(conta.uid) ?? cadastrarUmaVez(paraUsuario(conta));
+}
+
+export async function atualizarNome(nome: string): Promise<Usuario> {
+  const limpo = nome.trim();
+  const problema = validarNome(limpo);
+
+  if (problema !== null) {
+    throw new Error(problema);
+  }
+
+  const conta = autenticacaoFirebase?.currentUser ?? null;
+
+  if (conta === null) {
+    throw new Error("Entre de novo para alterar o seu nome.");
+  }
+
+  await updateProfile(conta, { displayName: limpo });
+
+  const id = await garantirIdDoUsuarioNaApi();
+
+  if (id !== null) {
+    await atualizarNomeNaApi(id, limpo);
+  }
+
+  return { ...paraUsuario(conta), name: limpo };
+}
+
+export async function renovarIdDoUsuarioNaApi(): Promise<number | null> {
+  const conta = autenticacaoFirebase?.currentUser ?? null;
+
+  if (conta === null) {
+    return null;
+  }
+
+  esquecerIdDaApi(conta.uid);
+
+  return cadastrarUmaVez(paraUsuario(conta));
+}
 
 function paraUsuario(conta: User): Usuario {
   const email = conta.email ?? "";
@@ -92,7 +189,7 @@ export async function entrarComGoogle(
 
   if (informacoes?.isNewUser === true) {
     try {
-      await criarUsuarioNaApi(usuario);
+      await cadastrarUmaVez(usuario);
     } catch {
       return usuario;
     }
@@ -150,7 +247,20 @@ export function observarSessao(
   }
 
   return onAuthStateChanged(autenticacaoFirebase, (conta) => {
-    aoMudar(conta === null ? null : paraUsuario(conta));
+    const usuario = conta === null ? null : paraUsuario(conta);
+
+    aoMudar(usuario);
+
+    if (usuario === null) {
+      return;
+    }
+
+    const registro =
+      lerIdDaApi(usuario.id) === null
+        ? cadastrarUmaVez(usuario)
+        : Promise.resolve(null);
+
+    void registro.then(registrarAcessoNaApi).catch(() => undefined);
   });
 }
 
@@ -231,7 +341,7 @@ export async function criarConta(
   };
 
   try {
-    await criarUsuarioNaApi(usuario);
+    await cadastrarUmaVez(usuario);
   } catch {
     return usuario;
   }

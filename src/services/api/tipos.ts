@@ -1,4 +1,4 @@
-export interface ProdutoApi {
+export interface ProdutoBaseApi {
   id: number;
   name: string;
   description: string | null;
@@ -15,6 +15,11 @@ export interface MarcaApi {
   isBrazilian: boolean;
 }
 
+export interface AlergiaApi {
+  id: number;
+  allergyName: string;
+}
+
 export interface CategoriaApi {
   id: number;
   name: string;
@@ -29,28 +34,30 @@ export interface ClaimApi {
 }
 
 export interface NotasApi {
-  overallScore: number;
-  healthScore: number;
-  environmentalScore: number;
-  ethicalScore: number;
-  performanceScore: number;
-  transparencyScore: number;
-  confidenceScore: number;
+  overallScore: number | null;
+  healthScore: number | null;
+  environmentalScore: number | null;
+  ethicalScore: number | null;
+  performanceScore: number | null;
+  transparencyScore: number | null;
+  confidenceScore: number | null;
+}
+
+export interface VersaoApi {
+  id: number;
 }
 
 export interface ProductFullResponse {
-  product: ProdutoApi;
+  product: ProdutoBaseApi;
   brand: MarcaApi;
   category: CategoriaApi;
+  currentVersion: VersaoApi | null;
+  ingredients: unknown;
   claims: ClaimApi[];
   score: NotasApi | null;
 }
 
-export interface ProdutoApi {
-  id: number;
-  name: string;
-  description: string | null;
-  slug: string;
+export interface ProdutoApi extends ProdutoBaseApi {
   brandId: number;
   productCategoryId: number;
   isActive: boolean;

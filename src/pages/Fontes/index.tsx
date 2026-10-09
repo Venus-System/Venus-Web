@@ -130,7 +130,7 @@ function Fontes() {
                   <p className={styles.cardText}>{fonte.texto}</p>
 
                   <p className={styles.source}>
-                    <span className={styles.sourceLabel}>Fonte: </span>
+                    <span className="texto-oculto">Fonte: </span>
                     {fonte.origem}
                   </p>
                 </li>

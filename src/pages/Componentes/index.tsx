@@ -3,15 +3,24 @@ import { useState } from "react";
 import logo from "../../assets/Logo.svg";
 import Button from "../../components/Button";
 import Chip from "../../components/Chip";
+import FavoriteButton from "../../components/FavoriteButton";
 import Input from "../../components/Input";
 import MainLayout from "../../components/MainLayout";
 import ProductCard from "../../components/ProductCard";
 import ProductRow from "../../components/ProductRow";
+import RatingSummary from "../../components/RatingSummary";
+import ReviewCard from "../../components/ReviewCard";
 import RiskBadge from "../../components/RiskBadge";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
+import SegmentedNav from "../../components/SegmentedNav";
+import StarRating from "../../components/StarRating";
+import SubmissionRow from "../../components/SubmissionRow";
+import { avaliacoesDoMock } from "../../services/mocks/avaliacoes";
+import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
 import type { RiskLevel } from "../../types/ingrediente";
+import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
 import styles from "./styles.module.css";
 
 const LEVELS: RiskLevel[] = ["safe", "warning", "avoid", "no-data"];
@@ -20,6 +29,7 @@ const CHIPS_INICIAIS = ["Lanolina", "Óleo de amêndoas", "Vegano"];
 
 function Componentes() {
   const [alergias, setAlergias] = useState<string[]>(CHIPS_INICIAIS);
+  const [favorito, setFavorito] = useState(false);
 
   const aprovado = produtosMock[0];
   const semDados = produtosMock[4];
@@ -153,12 +163,118 @@ function Componentes() {
         <h2>ProductRow</h2>
 
         <div className={styles.rows}>
-          <ProductRow produto={comImagem} realizadaEm="2026-08-26T14:32:00Z" />
-          <ProductRow
-            produto={produtosMock[2]}
-            realizadaEm="2026-08-25T09:05:00Z"
+          {[comImagem, produtosMock[2], semDados].map((produto) => (
+            <ProductRow
+              key={produto.slug}
+              produto={{
+                slug: produto.slug,
+                name: produto.name,
+                brandName: produto.brand.name,
+                imageUrl: produto.imageUrl,
+              }}
+              nota={produto.scores.overallScore}
+              nivel={produto.level}
+              realizadaEm="2026-08-26T14:32:00Z"
+              action={
+                produto.slug === comImagem.slug ? (
+                  <FavoriteButton
+                    productName={produto.name}
+                    isFavorite={favorito}
+                    isPending={false}
+                    onToggle={() => setFavorito((atual) => !atual)}
+                  />
+                ) : undefined
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>FavoriteButton</h2>
+
+        <div className={styles.row}>
+          <FavoriteButton
+            productName="Produto de exemplo"
+            isFavorite={favorito}
+            isPending={false}
+            onToggle={() => setFavorito((atual) => !atual)}
           />
-          <ProductRow produto={semDados} realizadaEm="2026-07-05T18:40:00Z" />
+          <FavoriteButton
+            productName="Produto já favoritado"
+            isFavorite
+            isPending={false}
+            onToggle={() => undefined}
+          />
+          <FavoriteButton
+            productName="Produto aguardando a API"
+            isFavorite={false}
+            isPending
+            onToggle={() => undefined}
+          />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>SegmentedNav</h2>
+
+        <SegmentedNav
+          label="Exemplo de navegação"
+          items={[
+            { to: "/componentes", label: "Esta página" },
+            { to: "/dashboard", label: "Dashboard" },
+            { to: "/favoritos", label: "Favoritos", emBreve: true },
+          ]}
+        />
+      </section>
+
+      <section className={styles.section}>
+        <h2>SubmissionRow</h2>
+
+        <div className={styles.rows}>
+          {enviosDoMock().map((envio) => (
+            <SubmissionRow key={envio.id} envio={envio} />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>StarRating</h2>
+
+        <div className={styles.row}>
+          <StarRating rating={5} />
+          <StarRating rating={3.5} />
+          <StarRating rating={2.5} size="medium" />
+          <StarRating rating={0} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>RatingSummary</h2>
+
+        <div className={styles.grid}>
+          <RatingSummary
+            summary={resumirAvaliacoes(avaliacoesDoMock(aprovado.slug), false)}
+          />
+          <RatingSummary summary={resumirAvaliacoes([], false)} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>ReviewCard</h2>
+
+        <div className={styles.rows}>
+          {avaliacoesDoMock(aprovado.slug)
+            .slice(0, 3)
+            .map((avaliacao) => (
+              <ReviewCard
+                key={avaliacao.id}
+                review={avaliacao}
+                canInteract
+                onRequireLogin={() => undefined}
+                onReport={() => undefined}
+              />
+            ))}
         </div>
       </section>
     </MainLayout>

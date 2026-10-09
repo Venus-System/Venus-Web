@@ -123,44 +123,34 @@
   list-style: none;
 }
 
-.ingredient {
+.reviewsSummary {
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-2);
-  padding: var(--espaco-3);
-  background-color: var(--card);
-  border: var(--borda-largura) solid var(--borda);
-  border-radius: var(--raio-medio);
+  align-items: flex-start;
+  gap: var(--espaco-4);
 }
 
-.ingredientName {
-  font-size: var(--tamanho-base);
-  font-weight: var(--peso-forte);
-}
-
-.ingredientRow {
+.reviewsError {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--espaco-2);
-  align-items: center;
-}
-
-.ingredientText {
-  flex: 1 1 20rem;
-  color: var(--texto-suave);
-  font-size: var(--tamanho-pequeno);
-}
-
-.reviewButton {
-  align-self: flex-start;
-  padding: var(--espaco-2) var(--espaco-4);
-  min-height: var(--alvo-toque);
-  background-color: var(--no-data-fundo);
-  border: var(--borda-largura) solid var(--borda-forte);
-  border-radius: var(--raio-pilula);
-  color: var(--no-data);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  color: var(--avoid);
   font-weight: var(--peso-forte);
-  cursor: not-allowed;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seeAll {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (min-width: 48rem) {

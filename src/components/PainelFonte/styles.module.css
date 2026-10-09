@@ -1,0 +1,104 @@
+.painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  min-width: 0;
+  padding: var(--espaco-4);
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+}
+
+.titulo {
+  color: var(--roxo);
+  font-size: var(--tamanho-medio);
+}
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.figura {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+}
+
+.caixaTexto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  background-color: var(--lavanda-clara);
+  border-radius: var(--raio-grande);
+}
+
+.rotuloTexto {
+  color: var(--roxo);
+  font-size: var(--tamanho-pequeno);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.texto {
+  margin: 0;
+  color: var(--roxo);
+  font-family: var(--fonte-mono);
+  font-size: var(--tamanho-pequeno);
+  line-height: 2;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.marca {
+  padding: 0 var(--espaco-1);
+  background-color: var(--card);
+  outline: var(--borda-largura) solid var(--violeta);
+  border-radius: var(--raio-pequeno);
+  color: var(--roxo);
+}
+
+.vazio {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.legenda {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.foto {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background-color: var(--lavanda-clara);
+  border-radius: var(--raio-grande);
+}
+
+.semFoto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-5) var(--espaco-4);
+  background-color: var(--lavanda-clara);
+  border-radius: var(--raio-grande);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  text-align: center;
+}
+
+.semFotoTitulo {
+  color: var(--roxo);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-forte);
+}

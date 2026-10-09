@@ -1,0 +1,45 @@
+.estrelas {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.estrela {
+  position: relative;
+  display: inline-flex;
+}
+
+.vazia,
+.icone {
+  flex-shrink: 0;
+}
+
+.small .vazia,
+.small .icone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+}
+
+.medium .vazia,
+.medium .icone {
+  width: var(--tamanho-medio);
+  height: var(--tamanho-medio);
+}
+
+.vazia {
+  color: var(--lavanda);
+}
+
+.cheia {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.icone {
+  color: var(--violeta);
+  fill: currentColor;
+}

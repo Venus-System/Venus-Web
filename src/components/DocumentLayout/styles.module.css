@@ -1,0 +1,16 @@
+.document {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-4);
+}
+
+.title {
+  max-width: 20ch;
+}
+
+.updated {
+  margin-top: calc(var(--espaco-3) * -1);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}

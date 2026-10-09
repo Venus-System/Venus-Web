@@ -2,7 +2,7 @@ import type { AnaliseExibicao } from "../types/analise";
 import { analisesMock } from "./mocks/analises";
 import { simularLatencia } from "./mocks/atraso";
 import { ErroProdutoNaoEncontrado } from "./erros";
-import { buscarProdutoDaApi } from "./api/produtos";
+import { buscarProdutoComVersaoDaApi } from "./api/produtos";
 import { USAR_MOCK } from "../config/ambiente";
 
 export async function buscarAnalisePublica(
@@ -21,11 +21,14 @@ export async function buscarAnalisePublica(
       return { ...encontrada, personalized: null };
     }
 
-    const produto = await buscarProdutoDaApi(slug, sinal);
+    const { produto, ingredientes } = await buscarProdutoComVersaoDaApi(
+      slug,
+      sinal,
+    );
 
     return {
       product: produto,
-      ingredients: [],
+      ingredients: ingredientes,
       personalized: null,
     };
   } catch (erro) {

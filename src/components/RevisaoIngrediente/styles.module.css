@@ -1,0 +1,7 @@
+.decisao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3) 0;
+  border-top: var(--borda-largura) solid var(--borda);
+}

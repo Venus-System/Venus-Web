@@ -3,7 +3,7 @@ import type { NotasProduto } from "../../types/produto";
 import styles from "./styles.module.css";
 
 interface ScoreBarsProps {
-  notas: NotasProduto;
+  notas: Pick<NotasProduto, "healthScore" | "environmentalScore" | "ethicalScore">;
 }
 
 const DIMENSIONS = [

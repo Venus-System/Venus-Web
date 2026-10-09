@@ -1,0 +1,75 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.formulario p {
+  margin: 0;
+}
+
+.trecho {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: var(--borda-largura) solid var(--borda);
+  border-left: var(--espaco-1) solid var(--crimson);
+  border-radius: var(--raio-grande);
+}
+
+.autor {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.titulo {
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.comentario {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.campoComentario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.rotulo {
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.campo {
+  width: 100%;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  resize: vertical;
+}
+
+.aviso {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}

@@ -41,3 +41,31 @@ function lerUrlApi(bruto: unknown): string {
 }
 
 export const URL_API = lerUrlApi(import.meta.env.VITE_API_URL);
+
+function lerUrlApiScans(bruto: unknown): string {
+  if (USAR_MOCK) {
+    return "";
+  }
+
+  const valor = typeof bruto === "string" ? bruto.trim() : "";
+
+  return valor === "" ? URL_API : valor.replace(/\/+$/, "");
+}
+
+export const URL_API_SCANS = lerUrlApiScans(
+  import.meta.env.VITE_API_SCANS_URL,
+);
+
+function lerUrlOpcional(bruto: unknown): string {
+  if (USAR_MOCK) {
+    return "";
+  }
+
+  const valor = typeof bruto === "string" ? bruto.trim() : "";
+
+  return valor.replace(/\/+$/, "");
+}
+
+export const URL_CLASSIFICACAO = lerUrlOpcional(
+  import.meta.env.VITE_CLASSIFICACAO_URL,
+);

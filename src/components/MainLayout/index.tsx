@@ -2,12 +2,15 @@ import type { ReactNode } from "react";
 import Footer from "../Footer";
 import Sidebar from "../Sidebar";
 import styles from "./styles.module.css";
+import { useRolagemDaRota } from "../../hooks/useRolagemDaRota";
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
 function MainLayout({ children }: MainLayoutProps) {
+  useRolagemDaRota();
+
   return (
     <div className={styles.layout}>
       <a href="#main-content" className={styles.skipLink}>

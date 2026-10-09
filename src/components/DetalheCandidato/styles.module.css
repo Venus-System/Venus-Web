@@ -1,0 +1,122 @@
+.detalhe {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  border-bottom: var(--borda-largura) solid var(--borda);
+}
+
+.identidade {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.titulo {
+  color: var(--roxo);
+  font-size: var(--tamanho-grande);
+}
+
+.titulo:focus-visible {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
+.meta {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.paineis {
+  display: grid;
+  flex: 1;
+}
+
+.revisao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+  padding: var(--espaco-4);
+  border-top: var(--borda-largura) solid var(--borda);
+}
+
+.subtitulo {
+  margin-bottom: var(--espaco-2);
+  color: var(--roxo);
+  font-size: var(--tamanho-medio);
+}
+
+.dica {
+  margin-bottom: var(--espaco-2);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.detalhes {
+  margin: var(--espaco-1) 0 0;
+  padding-left: var(--espaco-4);
+  font-weight: var(--peso-titulo);
+}
+
+.rodape {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3) var(--espaco-4);
+  background-color: var(--card);
+  border-top: var(--borda-largura) solid var(--borda);
+}
+
+.rodapeTexto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  max-width: 40rem;
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.icone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  flex-shrink: 0;
+}
+
+@media (min-width: 72rem) {
+  .paineis {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .paineis > :last-child {
+    border-left: var(--borda-largura) solid var(--borda);
+  }
+}
