@@ -47,6 +47,12 @@ function dispositivo(): DispositivoApi {
 }
 
 async function enviarNaApi(rascunho: RascunhoDoScan): Promise<ScanEnviado> {
+  if (rascunho.usouExemplo) {
+    throw new ErroDeOrientacao(
+      "A imagem de exemplo serve só para conhecer a tela. Para enviar um produto, use fotos de um rótulo de verdade.",
+    );
+  }
+
   const conta = autenticacaoFirebase?.currentUser ?? null;
 
   if (conta === null) {

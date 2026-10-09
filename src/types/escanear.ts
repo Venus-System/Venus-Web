@@ -42,6 +42,7 @@ export interface RascunhoDoScan {
   brand: string;
   ingredientsText: string;
   ingredientes: IngredienteDaLista[];
+  usouExemplo: boolean;
 }
 
 export interface ScanEnviado {

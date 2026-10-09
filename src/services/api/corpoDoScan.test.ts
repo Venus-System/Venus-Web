@@ -73,6 +73,7 @@ const rascunho: RascunhoDoScan = {
     { position: 1, rawName: "AQUA", looksLikePackaging: false },
     { position: 2, rawName: "GLYCERIN", looksLikePackaging: false },
   ],
+  usouExemplo: false,
 };
 
 const dispositivo = {
