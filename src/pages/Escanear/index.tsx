@@ -36,7 +36,7 @@ interface Escaneamento {
   startedAt: string;
   verso: FotoLida | null;
   frente: FotoLida | null;
-  usouExemplo: boolean;
+  exemplos: Record<LadoDoScan, boolean>;
   leitura: Leitura;
   avisos: string[];
   nomeBuscado: string;
@@ -106,7 +106,7 @@ function novoEscaneamento(): Escaneamento {
     startedAt: new Date().toISOString(),
     verso: null,
     frente: null,
-    usouExemplo: false,
+    exemplos: { back: false, front: false },
     leitura: { situacao: "ocioso" },
     avisos: [],
     nomeBuscado: "",
@@ -145,6 +145,24 @@ function Escanear() {
   const lado: LadoDoScan | null =
     estado.verso === null ? "back" : estado.frente === null ? "front" : null;
   const lendo = estado.leitura.situacao === "lendo";
+  const ladoAnteriorRef = useRef<LadoDoScan | null>(lado);
+
+  useEffect(() => {
+    if (ladoAnteriorRef.current === lado) {
+      return;
+    }
+
+    ladoAnteriorRef.current = lado;
+
+    const destino =
+      lado === "back"
+        ? "foto-do-verso"
+        : lado === "front"
+          ? "foto-da-frente"
+          : "nome-do-produto";
+
+    document.getElementById(destino)?.focus();
+  }, [lado]);
 
   const ler = useCallback(
     async (arquivo: Blob, exemplo: boolean) => {
@@ -174,7 +192,7 @@ function Escanear() {
           ...atual,
           verso: lado === "back" ? foto : atual.verso,
           frente: lado === "front" ? foto : atual.frente,
-          usouExemplo: atual.usouExemplo || exemplo,
+          exemplos: { ...atual.exemplos, [lado]: exemplo },
           leitura: { situacao: "ocioso" },
           avisos: avisosDaFoto(foto, lado),
         }));
@@ -196,6 +214,10 @@ function Escanear() {
 
   const receberArquivo = useCallback(
     (arquivo: File) => {
+      if (lado === null) {
+        return;
+      }
+
       const problema = validarFoto(arquivo);
 
       if (problema !== null) {
@@ -208,7 +230,7 @@ function Escanear() {
 
       void ler(arquivo, false);
     },
-    [ler],
+    [lado, ler],
   );
 
   useEffect(() => {
@@ -249,6 +271,7 @@ function Escanear() {
       ...atual,
       verso: ladoParaTrocar === "back" ? null : atual.verso,
       frente: ladoParaTrocar === "front" ? null : atual.frente,
+      exemplos: { ...atual.exemplos, [ladoParaTrocar]: false },
       leitura: { situacao: "ocioso" },
       avisos: [],
     }));
@@ -273,7 +296,7 @@ function Escanear() {
         startedAt: estado.startedAt,
         verso,
         frente,
-        usouExemplo: estado.usouExemplo,
+        usouExemplo: estado.exemplos.back || estado.exemplos.front,
         ...dados,
       });
       setEstado((atual) => ({ ...atual, envio: { situacao: "enviado" } }));
@@ -392,7 +415,7 @@ function Escanear() {
                     <Button
                       variant="text"
                       onClick={() => trocar("back")}
-                      disabled={estado.envio.situacao === "enviando"}
+                      disabled={lendo || estado.envio.situacao === "enviando"}
                     >
                       Trocar a foto da lista
                     </Button>
@@ -410,7 +433,7 @@ function Escanear() {
                     <Button
                       variant="text"
                       onClick={() => trocar("front")}
-                      disabled={estado.envio.situacao === "enviando"}
+                      disabled={lendo || estado.envio.situacao === "enviando"}
                     >
                       Trocar a foto da frente
                     </Button>
