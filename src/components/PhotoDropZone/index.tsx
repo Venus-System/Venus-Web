@@ -33,7 +33,7 @@ function PhotoDropZone({
 
     evento.target.value = "";
 
-    if (arquivo !== undefined) {
+    if (arquivo !== undefined && !busy) {
       onFile(arquivo);
     }
   }
@@ -79,7 +79,6 @@ function PhotoDropZone({
         className="texto-oculto"
         accept={accept}
         aria-describedby={dicaId}
-        disabled={busy}
         onChange={handleEscolher}
       />
 
@@ -88,8 +87,12 @@ function PhotoDropZone({
       <Button
         variant="secondary"
         className={styles.exemplo}
-        onClick={onExample}
-        disabled={busy}
+        onClick={() => {
+          if (!busy) {
+            onExample();
+          }
+        }}
+        aria-disabled={busy}
       >
         Usar imagem de exemplo
         <ArrowRight className={styles.seta} aria-hidden="true" />
