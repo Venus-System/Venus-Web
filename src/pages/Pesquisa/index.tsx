@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { pesquisarProdutos } from "../../services/pesquisa";
@@ -265,6 +266,12 @@ function Pesquisa() {
           <p className={styles.subtitle}>
             Digite o nome do produto ou filtre por categoria e marca. A Venus
             traduz cada ingrediente e avisa o que importa para a sua pele.
+          </p>
+
+          <p className={styles.subtitle}>
+            <Link to="/reacao">
+              Um produto te fez mal? Veja o que pode ter causado
+            </Link>
           </p>
         </header>
 

@@ -7,6 +7,7 @@ import {
   LayoutGrid,
   ScanLine,
   Search,
+  ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { FormEvent } from "react";
@@ -41,6 +42,7 @@ const GROUPS: NavGroup[] = [
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
       { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
+      { to: "/reacao", label: "Um produto me fez mal", Icon: ShieldAlert },
     ],
   },
   {
