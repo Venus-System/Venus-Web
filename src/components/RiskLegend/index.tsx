@@ -12,9 +12,9 @@ interface ItemDaLegenda {
 }
 
 const ITENS: ItemDaLegenda[] = [
-  { level: "safe", meaning: "sem risco conhecido" },
-  { level: "warning", meaning: "pode incomodar algumas peles" },
-  { level: "avoid", meaning: "tem contraindicação conhecida" },
+  { level: "safe", meaning: "risco baixo para a pele" },
+  { level: "warning", meaning: "pode irritar ou entupir os poros" },
+  { level: "avoid", meaning: "risco alto de irritar ou entupir os poros" },
   { level: "no-data", meaning: "está fora da nossa base" },
 ];
 

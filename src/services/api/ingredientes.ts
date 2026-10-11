@@ -28,22 +28,24 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
   };
 }
 
+const RISCO_PARA_ATENCAO = 4;
+const RISCO_PARA_EVITAR = 7;
+
 function nivelDoIngrediente(ingrediente: Ingrediente): RiskLevel {
   if (ingrediente.scientificConfidence === 0) {
     return "no-data";
   }
 
-  const maiorRisco = Math.max(
+  const riscoParaAPele = Math.max(
     ingrediente.irritationRiskLevel,
     ingrediente.comedogenicityScore,
-    ingrediente.environmentalRiskLevel,
   );
 
-  if (maiorRisco >= 3) {
+  if (riscoParaAPele >= RISCO_PARA_EVITAR) {
     return "avoid";
   }
 
-  return maiorRisco === 2 ? "warning" : "safe";
+  return riscoParaAPele >= RISCO_PARA_ATENCAO ? "warning" : "safe";
 }
 
 function lerItemDoProduto(valor: unknown): IngredienteAvaliado | null {
