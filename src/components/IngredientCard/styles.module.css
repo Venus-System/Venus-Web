@@ -25,3 +25,9 @@
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
 }
+
+.note {
+  color: var(--warning);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}

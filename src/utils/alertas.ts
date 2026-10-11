@@ -1,4 +1,5 @@
 import type { IngredienteAvaliado, RiskLevel } from "../types/ingrediente";
+import { ehFragrancia } from "./selos";
 
 const PRIORIDADE: Record<RiskLevel, number> = {
   avoid: 0,
@@ -18,6 +19,36 @@ export function ordenarPorRisco(
 ): IngredienteAvaliado[] {
   return ordenarPorRotulo(ingredientes).sort(
     (a, b) => PRIORIDADE[a.level] - PRIORIDADE[b.level],
+  );
+}
+
+export function ehAlertaPessoal(
+  item: IngredienteAvaliado,
+  nomesEmAlerta: string[],
+): boolean {
+  return nomesEmAlerta.some(
+    (nome) => nome.toLowerCase() === item.inciName.toLowerCase(),
+  );
+}
+
+function ordemDeDestaque(
+  item: IngredienteAvaliado,
+  nomesEmAlerta: string[],
+): number {
+  if (ehAlertaPessoal(item, nomesEmAlerta)) {
+    return 0;
+  }
+
+  return ehFragrancia(item.inciName) ? 1 : 2;
+}
+
+export function ordenarPorDestaque(
+  ingredientes: IngredienteAvaliado[],
+  nomesEmAlerta: string[],
+): IngredienteAvaliado[] {
+  return ordenarPorRisco(ingredientes).sort(
+    (a, b) =>
+      ordemDeDestaque(a, nomesEmAlerta) - ordemDeDestaque(b, nomesEmAlerta),
   );
 }
 

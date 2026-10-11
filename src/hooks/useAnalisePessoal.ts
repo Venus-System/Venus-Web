@@ -30,7 +30,7 @@ function paraEstado(resultado: AnalisePessoal): EstadoDaAnalisePessoal {
 }
 
 export function useAnalisePessoal(slug: string | null, versaoId: number | null) {
-  const { usuario } = useAutenticacao();
+  const { usuario, carregando } = useAutenticacao();
   const usuarioId = usuario?.id ?? null;
   const [estado, setEstado] = useState<EstadoDaAnalisePessoal>({
     status: "sem-conta",
@@ -38,6 +38,11 @@ export function useAnalisePessoal(slug: string | null, versaoId: number | null) 
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
+    if (carregando) {
+      setEstado({ status: "calculando" });
+      return;
+    }
+
     if (slug === null || usuarioId === null) {
       setEstado({ status: "sem-conta" });
       return;
@@ -67,7 +72,7 @@ export function useAnalisePessoal(slug: string | null, versaoId: number | null) 
       ativo = false;
       controle.abort();
     };
-  }, [slug, versaoId, usuarioId, tentativa]);
+  }, [slug, versaoId, usuarioId, carregando, tentativa]);
 
   const tentarDeNovo = useCallback(() => {
     setTentativa((atual) => atual + 1);
