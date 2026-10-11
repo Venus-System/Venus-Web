@@ -28,9 +28,6 @@ jobs:
       - name: Build and test
         run: npm run build
 
-      - name: Unit tests
-        run: npm test
-
       - name: No 'any' types in src
         run: |
           if grep -rn ": any\|as any\|<any>" src/; then

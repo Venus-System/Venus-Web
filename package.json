@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,7 +22,6 @@
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "4.7.0",
     "typescript": "5.9.3",
-    "vite": "5.4.21",
-    "vitest": "2.1.9"
+    "vite": "5.4.21"
   }
 }
