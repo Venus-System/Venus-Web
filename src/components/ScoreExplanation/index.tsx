@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CircleHelp } from "lucide-react";
 import type { NotasDaAnalise } from "../../types/analise";
 import {
   FAIXAS,
@@ -41,9 +42,14 @@ function ScoreExplanation({ breakdown }: ScoreExplanationProps) {
 
   return (
     <>
-      <Button variant="text" onClick={() => setAberto(true)}>
+      <button
+        type="button"
+        className={styles.gatilho}
+        onClick={() => setAberto(true)}
+      >
+        <CircleHelp className={styles.gatilhoIcone} aria-hidden="true" />
         Como a nota é calculada
-      </Button>
+      </button>
 
       <Modal
         open={aberto}

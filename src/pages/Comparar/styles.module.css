@@ -133,6 +133,15 @@
   object-fit: contain;
 }
 
+.nomeLink {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.nomeLink:hover {
+  color: var(--violeta);
+}
+
 .nome {
   display: flex;
   align-items: center;

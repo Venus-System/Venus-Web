@@ -1,5 +1,5 @@
 import { AlertTriangle, Check, X } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import type { SelectOption } from "../../components/ListaSuspensa";
@@ -422,7 +422,12 @@ function Comparar() {
                         {comparado === null ? null : (
                           <>
                             <span className={styles.nome}>
-                              {comparado.product.name}
+                              <Link
+                                to={`/produto/${comparado.product.slug}`}
+                                className={styles.nomeLink}
+                              >
+                                {comparado.product.name}
+                              </Link>
                               {vencedor === lado ? (
                                 <span className={styles.vencedor}>
                                   <Check
