@@ -65,28 +65,6 @@
   font-weight: var(--peso-forte);
 }
 
-.avisos {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-2);
-  margin: 0;
-  padding: var(--espaco-3) var(--espaco-3) var(--espaco-3) var(--espaco-5);
-  background-color: var(--warning-fundo);
-  border: var(--borda-largura) solid var(--warning);
-  border-radius: var(--raio-medio);
-  color: var(--warning);
-  font-size: var(--tamanho-pequeno);
-}
-
-.lidas {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .lida {
   display: flex;
   flex-wrap: wrap;
@@ -118,7 +96,12 @@
   border-radius: var(--raio-pequeno);
 }
 
-.catalogo {
+.lidaTexto {
+  flex: 1 1 8rem;
+  font-weight: var(--peso-forte);
+}
+
+.resultado {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -127,6 +110,15 @@
   background-color: var(--superficie-suave);
   border: var(--borda-largura) solid var(--lavanda);
   border-radius: var(--raio-grande);
+}
+
+.resultadoTitulo {
+  font-size: var(--tamanho-medio);
+}
+
+.resultadoTexto {
+  color: var(--texto-suave);
+  overflow-wrap: break-word;
 }
 
 .candidatos {
@@ -139,43 +131,34 @@
   list-style: none;
 }
 
-.ampliada {
-  display: block;
-  max-width: 100%;
-  max-height: 75vh;
-  margin-inline: auto;
-  object-fit: contain;
-}
-
-.lidaTexto {
-  flex: 1 1 8rem;
-  font-weight: var(--peso-forte);
-}
-
-.pronto {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--espaco-3);
-  padding: var(--espaco-4);
-  background-color: var(--superficie-suave);
-  border: var(--borda-largura) solid var(--lavanda);
-  border-radius: var(--raio-grande);
-}
-
-.prontoTitulo {
-  font-size: var(--tamanho-medio);
-}
-
-.prontoTexto {
-  color: var(--texto-suave);
-  overflow-wrap: break-word;
-}
-
 .acoes {
   display: flex;
   flex-wrap: wrap;
   gap: var(--espaco-3);
+}
+
+.textoLido {
+  width: 100%;
+}
+
+.textoLido summary {
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  cursor: pointer;
+}
+
+.textoLidoConteudo {
+  max-height: 12rem;
+  margin-top: var(--espaco-2);
+  padding: var(--espaco-3);
+  overflow: auto;
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-medio);
+  font-family: var(--fonte-mono);
+  font-size: var(--tamanho-pequeno);
+  white-space: pre-wrap;
 }
 
 .lateral {
@@ -267,6 +250,14 @@
   height: 1rem;
   margin-top: 0.15em;
   color: var(--violeta);
+}
+
+.ampliada {
+  display: block;
+  max-width: 100%;
+  max-height: 75vh;
+  margin-inline: auto;
+  object-fit: contain;
 }
 
 @media (min-width: 64rem) {

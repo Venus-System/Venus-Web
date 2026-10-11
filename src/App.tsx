@@ -52,14 +52,7 @@ function App() {
       <Route path="/pesquisa" element={<Pesquisa />} />
       <Route path="/produto/:slug" element={<Produto />} />
       <Route path="/comparar" element={<Comparar />} />
-      <Route
-        path="/escanear"
-        element={
-          <RotaPrivada>
-            <Escanear />
-          </RotaPrivada>
-        }
-      />
+      <Route path="/escanear" element={<Escanear />} />
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/metodologia" element={<Metodologia />} />
       <Route path="/fontes" element={<Fontes />} />

@@ -1,5 +1,4 @@
 import type { Produto } from "../types/produto";
-import { compactarEspacos, semAcento } from "./textoDoRotulo";
 
 export const CANDIDATOS_MOSTRADOS = 3;
 
@@ -8,11 +7,12 @@ const PARTE_DO_NOME_COM_A_MARCA = 1 / 2;
 const PARTE_DO_NOME_SEM_A_MARCA = 2 / 3;
 
 function palavras(texto: string): string[] {
-  return compactarEspacos(
-    semAcento(texto)
-      .toUpperCase()
-      .replace(/[^A-Z0-9 ]/g, " "),
-  )
+  return texto
+    .normalize("NFD")
+    .replace(/\p{M}+/gu, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, " ")
+    .trim()
     .split(" ")
     .filter((palavra) => palavra.length >= TAMANHO_MINIMO_DA_PALAVRA);
 }

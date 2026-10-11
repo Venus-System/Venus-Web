@@ -11,9 +11,9 @@ function slugs(linhas: string[]): string[] {
   return candidatosDoCatalogo(linhas, produtosMock).map((produto) => produto.slug);
 }
 
-describe("identificação do produto pela frente", () => {
+describe("identificação do produto pelo texto da imagem", () => {
   it("acha o produto do exemplo pela marca e pelo nome", () => {
-    expect(slugs(TEXTO_DE_EXEMPLO.front)[0]).toBe("serum-calmante-aveia");
+    expect(slugs(TEXTO_DE_EXEMPLO)[0]).toBe("serum-calmante-aveia");
   });
 
   it("ignora acento, caixa e palavras curtas", () => {
@@ -43,7 +43,7 @@ describe("identificação do produto pela frente", () => {
     }));
 
     expect(
-      candidatosDoCatalogo(TEXTO_DE_EXEMPLO.front, repetidos),
+      candidatosDoCatalogo(TEXTO_DE_EXEMPLO, repetidos),
     ).toHaveLength(CANDIDATOS_MOSTRADOS);
   });
 });

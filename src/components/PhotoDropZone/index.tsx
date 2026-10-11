@@ -6,7 +6,6 @@ import styles from "./styles.module.css";
 
 interface PhotoDropZoneProps {
   inputId: string;
-  step: string;
   title: string;
   description: ReactNode;
   accept: string;
@@ -18,7 +17,6 @@ interface PhotoDropZoneProps {
 
 function PhotoDropZone({
   inputId,
-  step,
   title,
   description,
   accept,
@@ -67,7 +65,6 @@ function PhotoDropZone({
           <Crosshair />
         </span>
 
-        <span className={styles.etapa}>{step}</span>
         <span className={styles.titulo}>{title}</span>
       </label>
 

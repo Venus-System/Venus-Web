@@ -45,12 +45,6 @@
   height: 2rem;
 }
 
-.etapa {
-  color: var(--crimson);
-  font-size: var(--tamanho-pequeno);
-  font-weight: var(--peso-forte);
-}
-
 .titulo {
   color: var(--texto);
   font-family: var(--fonte-titulo);
