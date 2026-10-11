@@ -281,9 +281,9 @@ function idPeloNome<T extends { id: number; name: string }>(
 const POR_NOME = new Intl.Collator("pt-BR");
 
 function nomesOrdenados(itens: Map<number, { name: string }>): string[] {
-  return [...itens.values()]
-    .map((item) => item.name)
-    .sort((a, b) => POR_NOME.compare(a, b));
+  const nomes = new Set([...itens.values()].map((item) => item.name));
+
+  return [...nomes].sort((a, b) => POR_NOME.compare(a, b));
 }
 
 export async function listarOpcoesDaPesquisaNaApi(): Promise<OpcoesDaPesquisa> {
