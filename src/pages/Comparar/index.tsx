@@ -10,9 +10,10 @@ import { useComparacao } from "../../hooks/useComparacao";
 import type { EstadoComparacao } from "../../hooks/useComparacao";
 import { useOpcoesDeProduto } from "../../hooks/useOpcoesDeProduto";
 import type { ProdutoComparado } from "../../types/comparacao";
-import type { NotasProduto, Produto } from "../../types/produto";
+import type { Produto } from "../../types/produto";
 import { alertasDe, semAvaliacao } from "../../utils/alertas";
 import { nivelDaNota } from "../../utils/niveis";
+import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import { tomDoProduto } from "../../utils/tomDoProduto";
 import styles from "./styles.module.css";
 
@@ -25,30 +26,9 @@ interface Coluna {
   rotulo: string;
 }
 
-interface LinhaDeNota {
-  id: string;
-  titulo: string;
-  campo: keyof Pick<
-    NotasProduto,
-    "healthScore" | "environmentalScore" | "ethicalScore"
-  >;
-  cor: "saude" | "ambiental" | "etica";
-}
-
 const COLUNAS: Coluna[] = [
   { parametro: "a", id: "produto-a", rotulo: "Primeiro produto" },
   { parametro: "b", id: "produto-b", rotulo: "Segundo produto" },
-];
-
-const LINHAS_DE_NOTA: LinhaDeNota[] = [
-  { id: "saude", titulo: "Saúde", campo: "healthScore", cor: "saude" },
-  {
-    id: "ambiental",
-    titulo: "Ambiental",
-    campo: "environmentalScore",
-    cor: "ambiental",
-  },
-  { id: "etico", titulo: "Ético", campo: "ethicalScore", cor: "etica" },
 ];
 
 function maiorNota(a: number | null, b: number | null): Lado | null {
@@ -378,15 +358,15 @@ function Comparar() {
                       ))}
                     </tr>
 
-                    {LINHAS_DE_NOTA.map((linha) => {
+                    {NOTAS_DE_QUALIDADE.map((linha) => {
                       const melhor = maiorNota(
                         produtos[0].product.scores[linha.campo],
                         produtos[1].product.scores[linha.campo],
                       );
 
                       return (
-                        <tr key={linha.id}>
-                          <th scope="row">{linha.titulo}</th>
+                        <tr key={linha.campo}>
+                          <th scope="row">{linha.rotulo}</th>
                           {produtos.map(({ product }, lado) => {
                             const nota = product.scores[linha.campo];
 
@@ -409,7 +389,7 @@ function Comparar() {
                                     aria-hidden="true"
                                   >
                                     <span
-                                      className={`${styles.preenchida} ${styles[linha.cor]}`}
+                                      className={styles.preenchida}
                                       style={{ width: `${nota ?? 0}%` }}
                                     />
                                   </span>

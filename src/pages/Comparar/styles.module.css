@@ -200,19 +200,8 @@
 .preenchida {
   display: block;
   height: 100%;
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
-}
-
-.saude {
-  background-color: var(--saude);
-}
-
-.ambiental {
-  background-color: var(--ambiental);
-}
-
-.etica {
-  background-color: var(--etica);
 }
 
 .melhor,

@@ -37,29 +37,6 @@
 
 .fill {
   height: 100%;
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
-}
-
-.health {
-  background-color: var(--saude);
-}
-
-.environment {
-  background-color: var(--ambiental);
-}
-
-.ethics {
-  background-color: var(--etica);
-}
-
-.toneHealth {
-  color: var(--saude);
-}
-
-.toneEnvironment {
-  color: var(--ambiental);
-}
-
-.toneEthics {
-  color: var(--etica);
 }
