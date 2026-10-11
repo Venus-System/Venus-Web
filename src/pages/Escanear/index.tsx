@@ -10,7 +10,7 @@ import {
   gerarImagemDeExemplo,
 } from "../../utils/imagemDeExemplo";
 import {
-  candidatosDoCatalogo,
+  procurarPeloTexto,
   temTextoLegivel,
 } from "../../utils/identificacaoDoProduto";
 import { usePreviaDaFoto } from "../../hooks/usePreviaDaFoto";
@@ -31,7 +31,12 @@ type Busca =
   | { situacao: "lendo" }
   | { situacao: "procurando"; imagem: ImagemLida }
   | { situacao: "encontrados"; imagem: ImagemLida; produtos: Produto[] }
-  | { situacao: "nenhum"; imagem: ImagemLida }
+  | {
+      situacao: "nenhum";
+      imagem: ImagemLida;
+      daMesmaMarca: Produto[];
+      parecidos: Produto[];
+    }
   | { situacao: "erro"; mensagem: string; imagem: ImagemLida | null };
 
 interface Ampliada {
@@ -162,7 +167,7 @@ function Escanear() {
           busca: { situacao: "procurando", imagem: imagemLida },
         }));
 
-        const produtos = candidatosDoCatalogo(
+        const { candidatos, daMesmaMarca, parecidos } = procurarPeloTexto(
           imagemLida.texto.lines,
           await buscarProdutos(),
         );
@@ -170,9 +175,9 @@ function Escanear() {
         setEstado((atual) => ({
           ...atual,
           busca:
-            produtos.length > 0
-              ? { situacao: "encontrados", imagem: imagemLida, produtos }
-              : { situacao: "nenhum", imagem: imagemLida },
+            candidatos.length > 0
+              ? { situacao: "encontrados", imagem: imagemLida, produtos: candidatos }
+              : { situacao: "nenhum", imagem: imagemLida, daMesmaMarca, parecidos },
         }));
       } catch (erro) {
         const imagemComErro = lida;
@@ -424,6 +429,44 @@ function Escanear() {
                   imagem. Se ele não estiver lá, adicione pelo app Venus no
                   celular.
                 </p>
+
+                {busca.daMesmaMarca.length > 0 ? (
+                  <section
+                    className={styles.sugestoes}
+                    aria-labelledby="titulo-da-mesma-marca"
+                  >
+                    <h4 id="titulo-da-mesma-marca" className={styles.sugestoesTitulo}>
+                      Outros produtos da {busca.daMesmaMarca[0].brand.name}
+                    </h4>
+
+                    <ul className={styles.candidatos}>
+                      {busca.daMesmaMarca.map((produto) => (
+                        <li key={produto.slug}>
+                          <ProductCard produto={produto} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+
+                {busca.parecidos.length > 0 ? (
+                  <section
+                    className={styles.sugestoes}
+                    aria-labelledby="titulo-dos-parecidos"
+                  >
+                    <h4 id="titulo-dos-parecidos" className={styles.sugestoesTitulo}>
+                      Com nome parecido
+                    </h4>
+
+                    <ul className={styles.candidatos}>
+                      {busca.parecidos.map((produto) => (
+                        <li key={produto.slug}>
+                          <ProductCard produto={produto} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
 
                 <div className={styles.acoes}>
                   <Button variant="secondary" to="/pesquisa">
