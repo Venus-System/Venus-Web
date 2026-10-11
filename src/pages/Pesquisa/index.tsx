@@ -268,10 +268,9 @@ function Pesquisa() {
             traduz cada ingrediente e avisa o que importa para a sua pele.
           </p>
 
-          <p className={styles.subtitle}>
-            <Link to="/reacao">
-              Um produto te fez mal? Veja o que pode ter causado
-            </Link>
+          <p className={styles.reacao}>
+            Um produto te fez mal?{" "}
+            <Link to="/reacao">Veja o que pode ter causado</Link>
           </p>
         </header>
 

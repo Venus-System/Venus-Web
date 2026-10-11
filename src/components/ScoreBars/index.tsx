@@ -19,21 +19,19 @@ function ScoreBars({ notas }: ScoreBarsProps) {
       {NOTAS_DE_QUALIDADE.map((nota) => {
         const value = notas[nota.campo];
         const labelId = `${baseId}-${nota.campo}`;
-        const trackClasses = [styles.track, value === null ? styles.empty : ""]
-          .filter(Boolean)
-          .join(" ");
 
         return (
           <div className={styles.row} key={nota.campo}>
-            <span className={styles.label} id={labelId}>
-              {nota.rotulo}
+            <span className={styles.label}>
+              <span id={labelId}>{nota.rotulo}</span>
+              <span className={styles.hint}>{nota.resumo}</span>
             </span>
 
             <span className={styles.value}>
               {value === null ? "Sem dado" : `${value}%`}
             </span>
 
-            <div className={trackClasses}>
+            <div className={styles.track}>
               <div
                 className={styles.fill}
                 style={{ width: `${value === null ? 0 : limitar(value)}%` }}

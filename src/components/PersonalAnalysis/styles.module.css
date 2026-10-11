@@ -54,6 +54,10 @@
 }
 
 .texto {
+  color: var(--texto-suave);
+}
+
+.motivoTexto {
   flex: 1 1 16rem;
   color: var(--texto-suave);
 }

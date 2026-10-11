@@ -129,7 +129,7 @@ function PersonalAnalysis({
                   <li className={styles.motivo} key={motivo.id}>
                     <RiskBadge level={selo.level} label={selo.label} />
 
-                    <p className={styles.texto}>
+                    <p className={styles.motivoTexto}>
                       {motivo.ingredientName !== null ? (
                         <strong className={styles.ingrediente}>
                           {motivo.ingredientName}.{" "}
@@ -145,7 +145,7 @@ function PersonalAnalysis({
                 <li className={styles.motivo}>
                   <RiskBadge level="safe" label="Sem alérgenos seus" />
 
-                  <p className={styles.texto}>
+                  <p className={styles.motivoTexto}>
                     Nenhum ingrediente desta fórmula bate com as alergias do seu
                     perfil.
                   </p>

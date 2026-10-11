@@ -11,9 +11,18 @@
 }
 
 .label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--espaco-2);
   color: var(--texto);
   font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
+}
+
+.hint {
+  color: var(--texto-suave);
+  font-weight: var(--peso-titulo);
 }
 
 .value {
@@ -29,10 +38,6 @@
   background-color: var(--trilha);
   border-radius: var(--raio-pilula);
   overflow: hidden;
-}
-
-.empty {
-  border: var(--borda-largura) dashed var(--borda-forte);
 }
 
 .fill {
