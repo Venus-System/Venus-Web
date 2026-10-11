@@ -1,6 +1,7 @@
 import type { IngredienteAvaliado } from "../../types/ingrediente";
 import { ordenarPorRotulo } from "../../utils/alertas";
 import IngredientCard from "../IngredientCard";
+import RiskLegend from "../RiskLegend";
 import Modal from "../Modal";
 import styles from "./styles.module.css";
 
@@ -14,10 +15,9 @@ function IngredientsModal({ open, onClose, ingredients }: IngredientsModalProps)
   return (
     <Modal open={open} title="Ingredientes" onClose={onClose}>
       <div className={styles.corpo}>
-        <p className={styles.texto}>
-          Na ordem em que aparecem no rótulo. Verde é aprovado, âmbar pede
-          atenção e vermelho é melhor evitar.
-        </p>
+        <p className={styles.texto}>Na ordem em que aparecem no rótulo.</p>
+
+        <RiskLegend label="Legenda do semáforo" />
 
         <ul className={styles.lista}>
           {ordenarPorRotulo(ingredients).map((item) => (

@@ -26,6 +26,7 @@ import ScoreBars from "../../components/ScoreBars";
 import Chip from "../../components/Chip";
 import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
+import RiskLegend from "../../components/RiskLegend";
 import styles from "./styles.module.css";
 
 type EstadoProduto =
@@ -315,9 +316,10 @@ function Produto() {
           </h2>
 
           <p className={styles.sectionText}>
-            Cada ingrediente classificado pelo semáforo Venus: verde é aprovado,
-            âmbar pede atenção e vermelho é melhor evitar.
+            Cada ingrediente classificado pelo semáforo Venus.
           </p>
+
+          <RiskLegend label="Legenda do semáforo" />
 
           {ingredients.length === 0 ? (
             <p className={styles.sectionText}>
