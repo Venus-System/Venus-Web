@@ -3,13 +3,20 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
-import { ordenarPorRisco } from "../../utils/alertas";
+import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
+import {
+  ROTULO_DA_FAIXA,
+  ROTULO_DO_RISCO,
+  nivelDaRecomendacao,
+  nivelDoRisco,
+} from "../../utils/niveis";
 import type { AnaliseExibicao } from "../../types/analise";
 import type {
   Avaliacao,
   Denuncia,
   NovaAvaliacao,
 } from "../../types/avaliacao";
+import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
 import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
@@ -23,9 +30,12 @@ import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreBars from "../../components/ScoreBars";
+import ScoreExplanation from "../../components/ScoreExplanation";
 import Chip from "../../components/Chip";
 import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
+import PersonalAnalysis from "../../components/PersonalAnalysis";
+import RiskBadge from "../../components/RiskBadge";
 import RiskLegend from "../../components/RiskLegend";
 import styles from "./styles.module.css";
 
@@ -77,6 +87,15 @@ function Produto() {
     limpar: limparDenuncia,
   } = useDenunciarAvaliacao();
   const logado = usuario !== null;
+  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
+  const {
+    estado: analisePessoal,
+    tentarDeNovo: tentarAnaliseDeNovo,
+    recalcular,
+  } = useAnalisePessoal(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
 
   function exigirLogin() {
     navegar("/login", { state: { de: localizacao.pathname } });
@@ -233,9 +252,18 @@ function Produto() {
     );
   }
 
-  const { product, ingredients, personalized } = estado.analise;
+  const { product, ingredients } = estado.analise;
   const avaliacaoDenunciada =
     modais.acao?.tipo === "denunciar" ? modais.acao.avaliacao : null;
+  const pessoal =
+    analisePessoal.status === "pronta" ? analisePessoal.analise : null;
+  const alertas =
+    pessoal === null
+      ? []
+      : pessoal.reasons.filter((motivo) => motivo.warning);
+  const nomesEmAlerta = alertas.flatMap((motivo) =>
+    motivo.ingredientName === null ? [] : [motivo.ingredientName],
+  );
 
   return (
     <MainLayout>
@@ -262,17 +290,90 @@ function Produto() {
 
             <h1 className={styles.title}>{product.name}</h1>
 
-            <div className={styles.scoreRow}>
-              <ScoreBadge
-                score={product.scores.overallScore}
-                level={product.level}
-              />
-              <p className={styles.scoreCaption}>
-                Avaliação geral da Venus, de 0 a 100.
-              </p>
-            </div>
+            {pessoal === null ? (
+              <div className={styles.scoreRow}>
+                <ScoreBadge
+                  score={product.scores.overallScore}
+                  level={product.level}
+                />
+                <p className={styles.scoreCaption}>
+                  Avaliação geral da Venus, de 0 a 100. É a mesma para todo
+                  mundo.
+                </p>
+              </div>
+            ) : (
+              <div className={styles.scoreRow}>
+                <ScoreBadge
+                  score={pessoal.finalScore}
+                  level={nivelDaRecomendacao(pessoal.recommendationLevel)}
+                />
 
-            <ScoreBars notas={product.scores} />
+                <div className={styles.veredito}>
+                  <div className={styles.chips}>
+                    <RiskBadge
+                      level={nivelDaRecomendacao(pessoal.recommendationLevel)}
+                      label={ROTULO_DA_FAIXA[pessoal.recommendationLevel]}
+                    />
+                    <RiskBadge
+                      level={nivelDoRisco(pessoal.riskLevel)}
+                      label={ROTULO_DO_RISCO[pessoal.riskLevel]}
+                    />
+                  </div>
+
+                  <p className={styles.scoreCaption}>
+                    Nota cruzada com o seu perfil, de 0 a 100
+                    {alertas.length === 0
+                      ? "."
+                      : alertas.length === 1
+                        ? ", com 1 alerta."
+                        : `, com ${alertas.length} alertas.`}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {analisePessoal.status === "sem-conta" ? (
+              <div className={styles.convite}>
+                <p className={styles.conviteTexto}>
+                  <strong>Quer a nota para a sua pele?</strong> Com um perfil, a
+                  Venus cruza esta fórmula com a sua pele, as suas alergias e as
+                  suas preferências. É opcional: a avaliação geral continua
+                  aqui.
+                </p>
+
+                <div className={styles.conviteAcoes}>
+                  <Button to="/criar-conta">Criar perfil</Button>
+                  <Button
+                    variant="text"
+                    to="/login"
+                    state={{ de: localizacao.pathname }}
+                  >
+                    Já tenho conta
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            {analisePessoal.status === "sem-perfil" ? (
+              <div className={styles.convite}>
+                <p className={styles.conviteTexto}>
+                  <strong>Quer a nota para a sua pele?</strong> Responda o
+                  questionário e a Venus cruza esta fórmula com a sua pele, as
+                  suas alergias e as suas preferências. É opcional: a avaliação
+                  geral continua aqui.
+                </p>
+
+                <div className={styles.conviteAcoes}>
+                  <Button to="/perguntas">Responder o questionário</Button>
+                </div>
+              </div>
+            ) : null}
+
+            <ScoreBars
+              notas={pessoal === null ? product.scores : pessoal.breakdown}
+            />
+
+            <ScoreExplanation breakdown={pessoal?.breakdown} />
 
             <div className={styles.chips}>
               {product.brand.hasCrueltyFreeClaim ? (
@@ -286,24 +387,12 @@ function Produto() {
           </div>
         </header>
 
-        {personalized === null ? (
-          <section className={styles.card} aria-labelledby="titulo-perfil">
-            <h2 id="titulo-perfil" className={styles.cardTitle}>
-              Esta é a avaliação geral
-            </h2>
-            <p className={styles.cardText}>
-              Com um perfil, esta seção mostra como o produto se comporta na sua
-              pele. A criação de perfil entra em uma próxima etapa do projeto.
-            </p>
-          </section>
-        ) : (
-          <section className={styles.card} aria-labelledby="titulo-perfil">
-            <h2 id="titulo-perfil" className={styles.cardTitle}>
-              Para você
-            </h2>
-            <p className={styles.cardText}>{personalized.summary}</p>
-          </section>
-        )}
+        <PersonalAnalysis
+          state={analisePessoal}
+          firstName={usuario?.name.split(" ")[0] ?? ""}
+          onRetry={tentarAnaliseDeNovo}
+          onRecalculate={recalcular}
+        />
 
         <section
           className={styles.section}
@@ -316,7 +405,8 @@ function Produto() {
           </h2>
 
           <p className={styles.sectionText}>
-            Cada ingrediente classificado pelo semáforo Venus.
+            Cada ingrediente classificado pelo semáforo Venus. A fragrância e o
+            que é alerta para o seu perfil aparecem primeiro.
           </p>
 
           <RiskLegend label="Legenda do semáforo" />
@@ -328,11 +418,18 @@ function Produto() {
           ) : (
             <>
               <ul className={styles.ingredients}>
-                {ordenarPorRisco(ingredients)
+                {ordenarPorDestaque(ingredients, nomesEmAlerta)
                   .slice(0, INGREDIENTES_NA_PAGINA)
                   .map((item) => (
                     <li key={item.id}>
-                      <IngredientCard item={item} />
+                      <IngredientCard
+                        item={item}
+                        note={
+                          ehAlertaPessoal(item, nomesEmAlerta)
+                            ? "Alerta para o seu perfil"
+                            : undefined
+                        }
+                      />
                     </li>
                   ))}
               </ul>
@@ -357,9 +454,16 @@ function Produto() {
         </section>
 
         <section className={styles.section} aria-labelledby="titulo-avaliacoes">
+          <p className={styles.eyebrow}>Quem usou</p>
+
           <h2 id="titulo-avaliacoes" className={styles.sectionTitle}>
             Avaliações de usuários
           </h2>
+
+          <p className={styles.sectionText}>
+            A experiência de outras pessoas com o produto. Elas não entram na
+            nota da Venus, que vem só da fórmula.
+          </p>
 
           <p className="texto-oculto" aria-live="polite">
             {avaliacoes.status === "carregando"

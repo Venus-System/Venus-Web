@@ -18,7 +18,7 @@ export async function buscarAnalisePublica(
         throw new ErroProdutoNaoEncontrado(slug);
       }
 
-      return { ...encontrada, personalized: null };
+      return encontrada;
     }
 
     const { produto, versaoId, ingredientes } =
@@ -28,7 +28,6 @@ export async function buscarAnalisePublica(
       product: produto,
       versionId: versaoId,
       ingredients: ingredientes,
-      personalized: null,
     };
   } catch (erro) {
     if (erro instanceof ErroProdutoNaoEncontrado) {

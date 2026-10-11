@@ -58,5 +58,4 @@ export interface AnaliseExibicao {
   product: Produto;
   versionId: number | null;
   ingredients: IngredienteAvaliado[];
-  personalized: AnalisePersonalizada | null;
 }

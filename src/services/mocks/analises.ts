@@ -234,7 +234,6 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fenoxietanol,
       },
     ],
-    personalized: null,
   },
 
   [hidratanteCeramidas.slug]: {
@@ -284,7 +283,6 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fenoxietanol,
       },
     ],
-    personalized: null,
   },
 
   [gelLimpezaPurificante.slug]: {
@@ -327,7 +325,6 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 
   [locaoClareadoraNoturna.slug]: {
@@ -370,7 +367,6 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 
   [oleoCapilarReparador.slug]: {
@@ -399,6 +395,5 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 };
