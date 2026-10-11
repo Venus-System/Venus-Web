@@ -42,7 +42,7 @@ const GROUPS: NavGroup[] = [
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
       { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
-      { to: "/reacao", label: "Um produto me fez mal", Icon: ShieldAlert },
+      { to: "/reacao", label: "Tive uma reação", Icon: ShieldAlert },
     ],
   },
   {
