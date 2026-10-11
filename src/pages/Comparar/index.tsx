@@ -7,13 +7,22 @@ import MainLayout from "../../components/MainLayout";
 import RiskBadge from "../../components/RiskBadge";
 import ScoreBadge from "../../components/ScoreBadge";
 import ScoreExplanation from "../../components/ScoreExplanation";
+import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
+import type { EstadoDaAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useComparacao } from "../../hooks/useComparacao";
 import type { EstadoComparacao } from "../../hooks/useComparacao";
 import { useOpcoesDeProduto } from "../../hooks/useOpcoesDeProduto";
+import type { AnalisePersonalizada } from "../../types/analise";
 import type { ProdutoComparado } from "../../types/comparacao";
 import type { Produto } from "../../types/produto";
 import { alertasDe, semAvaliacao } from "../../utils/alertas";
-import { nivelDaNota } from "../../utils/niveis";
+import {
+  ROTULO_DA_FAIXA,
+  ROTULO_DO_RISCO,
+  nivelDaNota,
+  nivelDaRecomendacao,
+  nivelDoRisco,
+} from "../../utils/niveis";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import { tomDoProduto } from "../../utils/tomDoProduto";
 import styles from "./styles.module.css";
@@ -83,6 +92,96 @@ function textoDaEscolha(
   return semNota
     ? "Sem nota geral suficiente para comparar os dois."
     : "Mesma nota geral do outro produto.";
+}
+
+function evitarParaAPessoa(analise: AnalisePersonalizada): boolean {
+  return nivelDaRecomendacao(analise.recommendationLevel) === "avoid";
+}
+
+function vencedorPessoal(
+  a: AnalisePersonalizada,
+  b: AnalisePersonalizada,
+): Lado | null {
+  const evitarA = evitarParaAPessoa(a);
+  const evitarB = evitarParaAPessoa(b);
+
+  if (evitarA !== evitarB) {
+    return evitarA ? 1 : 0;
+  }
+
+  if (evitarA && evitarB) {
+    return null;
+  }
+
+  return maiorNota(a.finalScore, b.finalScore);
+}
+
+function textoDaEscolhaPessoal(
+  analise: AnalisePersonalizada,
+  lado: number,
+  vencedor: Lado | null,
+): string {
+  if (evitarParaAPessoa(analise)) {
+    return "Não é recomendado para o seu perfil.";
+  }
+
+  if (vencedor === lado) {
+    return analise.reasons.some((motivo) => motivo.warning)
+      ? "Tem a nota mais alta para o seu perfil, mas confira os alertas."
+      : "Tem a nota mais alta para o seu perfil, sem alertas.";
+  }
+
+  return vencedor === null
+    ? "Mesma nota do outro produto para o seu perfil."
+    : "Nota mais baixa para o seu perfil.";
+}
+
+function celulaPessoal(
+  estado: EstadoDaAnalisePessoal,
+  tentarDeNovo: () => void,
+) {
+  if (estado.status === "pronta") {
+    return (
+      <span className={styles.linhaDaNota}>
+        <span className={styles.notaGrande}>
+          <span aria-hidden="true">
+            {estado.analise.finalScore}
+            <span className={styles.deCem}>/100</span>
+          </span>
+          <span className="texto-oculto">
+            Nota {estado.analise.finalScore} de 100 para o seu perfil
+          </span>
+        </span>
+        <RiskBadge
+          level={nivelDaRecomendacao(estado.analise.recommendationLevel)}
+          label={ROTULO_DA_FAIXA[estado.analise.recommendationLevel]}
+        />
+        <RiskBadge
+          level={nivelDoRisco(estado.analise.riskLevel)}
+          label={ROTULO_DO_RISCO[estado.analise.riskLevel]}
+        />
+      </span>
+    );
+  }
+
+  if (estado.status === "erro") {
+    return (
+      <span className={styles.erro}>
+        <span role="alert">{estado.mensagem}</span>
+        <Button variant="secondary" onClick={tentarDeNovo}>
+          Tentar de novo
+        </Button>
+      </span>
+    );
+  }
+
+  return (
+    <span className={styles.situacao}>
+      {estado.status === "indisponivel"
+        ? estado.mensagem
+        : "Calculando para o seu perfil..."}
+    </span>
+  );
 }
 
 function mensagemDoEstado(estado: EstadoComparacao): string {
@@ -190,10 +289,34 @@ function Comparar() {
   }
 
   const produtos = estado.status === "pronta" ? estado.produtos : null;
-  const vencedor =
-    produtos === null
-      ? null
-      : vencedorGeral(produtos[0].product, produtos[1].product);
+  const pessoalA = useAnalisePessoal(
+    produtos?.[0].product.slug ?? null,
+    produtos?.[0].versionId ?? null,
+  );
+  const pessoalB = useAnalisePessoal(
+    produtos?.[1].product.slug ?? null,
+    produtos?.[1].versionId ?? null,
+  );
+  const pessoais = [pessoalA, pessoalB];
+  const analises: [AnalisePersonalizada, AnalisePersonalizada] | null =
+    pessoalA.estado.status === "pronta" && pessoalB.estado.status === "pronta"
+      ? [pessoalA.estado.analise, pessoalB.estado.analise]
+      : null;
+  const semAnalisePessoal =
+    pessoalA.estado.status === "sem-conta" ||
+    pessoalA.estado.status === "sem-perfil";
+  const calculando =
+    pessoalA.estado.status === "calculando" ||
+    pessoalB.estado.status === "calculando";
+
+  let vencedor: Lado | null = null;
+
+  if (produtos !== null) {
+    vencedor =
+      analises === null
+        ? vencedorGeral(produtos[0].product, produtos[1].product)
+        : vencedorPessoal(analises[0], analises[1]);
+  }
 
   return (
     <MainLayout>
@@ -204,8 +327,12 @@ function Comparar() {
             <span className={styles.destaque}>lado a lado.</span>
           </h1>
           <p className={styles.subtitle}>
-            As quatro notas, os alertas de cada fórmula e qual dos dois tem{" "}
-            <strong>a nota geral mais alta.</strong>
+            As quatro notas, os alertas de cada fórmula e qual dos dois{" "}
+            <strong>
+              {semAnalisePessoal
+                ? "tem a nota geral mais alta."
+                : "combina mais com o seu perfil."}
+            </strong>
           </p>
 
           <ScoreExplanation />
@@ -230,6 +357,10 @@ function Comparar() {
           {produtos === null
             ? ""
             : `Comparação entre ${produtos[0].product.name} e ${produtos[1].product.name} pronta.`}
+          {produtos !== null && calculando
+            ? " Calculando as notas para o seu perfil."
+            : ""}
+          {analises === null ? "" : " Notas para o seu perfil prontas."}
         </p>
 
         {opcoes.status === "pronto" ? (
@@ -299,7 +430,9 @@ function Comparar() {
                                     aria-hidden="true"
                                   />
                                   <span className="texto-oculto">
-                                    , melhor escolha pela nota geral
+                                    {analises === null
+                                      ? ", melhor escolha pela nota geral"
+                                      : ", melhor escolha para o seu perfil"}
                                   </span>
                                 </span>
                               ) : null}
@@ -340,7 +473,9 @@ function Comparar() {
                         <td
                           key={product.slug}
                           className={
-                            vencedor === lado ? styles.celulaMelhor : undefined
+                            analises === null && vencedor === lado
+                              ? styles.celulaMelhor
+                              : undefined
                           }
                         >
                           <span className={styles.linhaDaNota}>
@@ -359,6 +494,47 @@ function Comparar() {
                           </span>
                         </td>
                       ))}
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Para o seu perfil</th>
+                      {semAnalisePessoal ? (
+                        <td colSpan={2}>
+                          <span className={styles.convite}>
+                            {pessoalA.estado.status === "sem-conta"
+                              ? "Com um perfil, a Venus compara os dois para a sua pele. É opcional."
+                              : "Responda o questionário e a Venus compara os dois para a sua pele. É opcional."}
+                            <Button
+                              variant="text"
+                              to={
+                                pessoalA.estado.status === "sem-conta"
+                                  ? "/criar-conta"
+                                  : "/perguntas"
+                              }
+                            >
+                              {pessoalA.estado.status === "sem-conta"
+                                ? "Criar perfil"
+                                : "Responder o questionário"}
+                            </Button>
+                          </span>
+                        </td>
+                      ) : (
+                        produtos.map(({ product }, lado) => (
+                          <td
+                            key={product.slug}
+                            className={
+                              analises !== null && vencedor === lado
+                                ? styles.celulaMelhor
+                                : undefined
+                            }
+                          >
+                            {celulaPessoal(
+                              pessoais[lado].estado,
+                              pessoais[lado].tentarDeNovo,
+                            )}
+                          </td>
+                        ))
+                      )}
                     </tr>
 
                     {NOTAS_DE_QUALIDADE.map((linha) => {
@@ -425,10 +601,18 @@ function Comparar() {
                         >
                           {vencedor === lado ? (
                             <span className={styles.escolhaTitulo}>
-                              Melhor pela nota geral.
+                              {analises === null
+                                ? "Melhor pela nota geral."
+                                : "Melhor para você."}
                             </span>
                           ) : null}
-                          {textoDaEscolha(produtos, lado, vencedor)}
+                          {analises === null
+                            ? textoDaEscolha(produtos, lado, vencedor)
+                            : textoDaEscolhaPessoal(
+                                analises[lado],
+                                lado,
+                                vencedor,
+                              )}
                         </td>
                       ))}
                     </tr>

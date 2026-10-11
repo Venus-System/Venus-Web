@@ -19,17 +19,17 @@ async function produtoComparado(
 
     return {
       product: produto,
+      versionId: analisesMock[slug]?.versionId ?? null,
       ingredients: analisesMock[slug]?.ingredients ?? [],
     };
   }
 
-  const { produto, ingredientes } = await buscarProdutoComVersaoDaApi(
-    slug,
-    sinal,
-  );
+  const { produto, versaoId, ingredientes } =
+    await buscarProdutoComVersaoDaApi(slug, sinal);
 
   return {
     product: produto,
+    versionId: versaoId,
     ingredients: ingredientes,
   };
 }
