@@ -1,4 +1,6 @@
-import fio1 from "../../assets/ilustracoes/fio-1.svg";
+import fio1a from "../../assets/ilustracoes/fio-1a.svg";
+import fio1b from "../../assets/ilustracoes/fio-1b.svg";
+import fio1c from "../../assets/ilustracoes/fio-1c.svg";
 import fio2a from "../../assets/ilustracoes/fio-2a.svg";
 import fio2b from "../../assets/ilustracoes/fio-2b.svg";
 import fio2c from "../../assets/ilustracoes/fio-2c.svg";
@@ -33,7 +35,15 @@ const GRUPOS: GrupoDeCurvatura[] = [
   {
     id: "liso",
     rotulo: "Liso",
-    tipos: [{ id: "1", descricao: "Sem ondas, cai reto.", ilustracao: fio1 }],
+    tipos: [
+      { id: "1a", descricao: "Liso fino, sem ondas, cai reto.", ilustracao: fio1a },
+      { id: "1b", descricao: "Liso com mais corpo e volume.", ilustracao: fio1b },
+      {
+        id: "1c",
+        descricao: "Liso grosso, com leve onda nas pontas.",
+        ilustracao: fio1c,
+      },
+    ],
   },
   {
     id: "ondulado",
