@@ -19,7 +19,6 @@ import styles from "./styles.module.css";
 
 interface SidebarProps {
   onSearch?: (term: string) => void;
-  onScan?: () => void;
 }
 
 interface NavLinkItem {
@@ -60,7 +59,7 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function Sidebar({ onSearch, onScan }: SidebarProps) {
+function Sidebar({ onSearch }: SidebarProps) {
   const { usuario, fotoUrl } = useAutenticacao();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -93,7 +92,7 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
         />
       </form>
 
-      <Button onClick={onScan} className={styles.scan}>
+      <Button to="/escanear" className={styles.scan}>
         <ScanLine className={styles.buttonIcon} aria-hidden="true" />
         Escanear rótulo
       </Button>
