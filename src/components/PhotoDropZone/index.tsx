@@ -13,6 +13,7 @@ interface PhotoDropZoneProps {
   busy: boolean;
   onFile: (arquivo: File) => void;
   onExample: () => void;
+  onPreviewExample: () => void;
 }
 
 function PhotoDropZone({
@@ -24,6 +25,7 @@ function PhotoDropZone({
   busy,
   onFile,
   onExample,
+  onPreviewExample,
 }: PhotoDropZoneProps) {
   const [arrastando, setArrastando] = useState(false);
   const dicaId = `${inputId}-dica`;
@@ -96,6 +98,10 @@ function PhotoDropZone({
       >
         Usar imagem de exemplo
         <ArrowRight className={styles.seta} aria-hidden="true" />
+      </Button>
+
+      <Button variant="text" onClick={onPreviewExample}>
+        Ver a imagem de exemplo
       </Button>
     </div>
   );

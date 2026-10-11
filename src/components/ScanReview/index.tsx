@@ -1,8 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
-import type { EstadoDosParecidos } from "../../hooks/useProdutosParecidos";
 import type { IngredienteDaLista } from "../../types/escanear";
 import {
   montarListaDeIngredientes,
@@ -20,12 +18,12 @@ export interface DadosDaRevisao {
 }
 
 interface ScanReviewProps {
+  initialName: string;
+  initialBrand: string;
   initialIngredients: string;
   fullText: string;
-  similar: EstadoDosParecidos;
   sending: boolean;
   errorMessage: string | null;
-  onNameBlur: (nome: string) => void;
   onSubmit: (dados: DadosDaRevisao) => void;
   onRestart: () => void;
 }
@@ -46,18 +44,18 @@ interface CamposDaRevisao {
 const SEM_ERROS: ErrosDaRevisao = { nome: null, marca: null, ingredientes: null };
 
 function ScanReview({
+  initialName,
+  initialBrand,
   initialIngredients,
   fullText,
-  similar,
   sending,
   errorMessage,
-  onNameBlur,
   onSubmit,
   onRestart,
 }: ScanReviewProps) {
   const [campos, setCampos] = useState<CamposDaRevisao>({
-    nome: "",
-    marca: "",
+    nome: initialName,
+    marca: initialBrand,
     texto: initialIngredients,
     erros: SEM_ERROS,
   });
@@ -107,7 +105,6 @@ function ScanReview({
             erros: { ...atual.erros, nome: null },
           }))
         }
-        onBlur={() => onNameBlur(campos.nome)}
         error={campos.erros.nome ?? undefined}
         autoComplete="off"
         required
@@ -128,42 +125,6 @@ function ScanReview({
         autoComplete="off"
         required
       />
-
-      <div className={styles.parecidos} aria-live="polite">
-        {similar.status === "carregando" ? (
-          <p className={styles.texto}>Procurando esse nome no catálogo...</p>
-        ) : null}
-
-        {similar.status === "erro" ? (
-          <p className={styles.texto}>{similar.mensagem}</p>
-        ) : null}
-
-        {similar.status === "pronto" && similar.produtos.length === 0 ? (
-          <p className={styles.texto}>
-            Nenhum produto com esse nome no catálogo. Ele vai entrar como
-            novo.
-          </p>
-        ) : null}
-
-        {similar.status === "pronto" && similar.produtos.length > 0 ? (
-          <>
-            <p className={styles.texto}>
-              <strong>Já está no catálogo?</strong> Se for um destes, a análise
-              completa já existe:
-            </p>
-
-            <ul className={styles.listaDeParecidos}>
-              {similar.produtos.map((produto) => (
-                <li key={produto.slug}>
-                  <Link to={`/produto/${produto.slug}`}>
-                    {produto.name} · {produto.brand.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : null}
-      </div>
 
       <div className={styles.campo}>
         <label className={styles.rotulo} htmlFor="ingredientes-lidos">

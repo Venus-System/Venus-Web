@@ -1,7 +1,12 @@
 import type { LadoDoScan } from "../types/escanear";
 
+export const PRODUTO_DE_EXEMPLO = {
+  productName: "Sérum Calmante de Aveia",
+  brand: "Flora Nativa",
+};
+
 export const TEXTO_DE_EXEMPLO: Record<LadoDoScan, string[]> = {
-  front: ["Flora Nativa", "Sérum Calmante de Aveia", "30 ml"],
+  front: [PRODUTO_DE_EXEMPLO.brand, PRODUTO_DE_EXEMPLO.productName, "30 ml"],
   back: [
     "INGREDIENTES: AQUA, GLYCERIN, NIACINAMIDE,",
     "AVENA SATIVA KERNEL EXTRACT, PANTHENOL,",
