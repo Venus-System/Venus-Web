@@ -63,7 +63,7 @@ export async function lerPaginas(
   return { itens, truncated: true };
 }
 
-function lerNivel(valor: unknown): NivelRecomendacao | null {
+export function lerNivel(valor: unknown): NivelRecomendacao | null {
   const minusculo = typeof valor === "string" ? valor.toLowerCase() : "";
 
   return NIVEIS.find((nivel) => nivel === minusculo) ?? null;

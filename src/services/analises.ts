@@ -21,13 +21,12 @@ export async function buscarAnalisePublica(
       return { ...encontrada, personalized: null };
     }
 
-    const { produto, ingredientes } = await buscarProdutoComVersaoDaApi(
-      slug,
-      sinal,
-    );
+    const { produto, versaoId, ingredientes } =
+      await buscarProdutoComVersaoDaApi(slug, sinal);
 
     return {
       product: produto,
+      versionId: versaoId,
       ingredients: ingredientes,
       personalized: null,
     };

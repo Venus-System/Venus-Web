@@ -1,0 +1,177 @@
+import { URL_CLASSIFICACAO } from "../../config/ambiente";
+import type {
+  AnalisePersonalizada,
+  MotivoDaAnalise,
+  OrigemDoMotivo,
+  PersonalRiskLevel,
+} from "../../types/analise";
+import { ErroDeOrientacao } from "../erros";
+import { lerNivel } from "./analises";
+import { comoObjeto, lerTodos, numero, texto } from "./leitura";
+import { pedir, verificarResposta } from "./requisicao";
+
+const RECUSAS = [
+  "ANALYSIS_NOT_FOUND",
+  "PROFILE_NOT_FOUND",
+  "VERSION_UNDER_REVIEW",
+  "NO_INGREDIENTS",
+] as const;
+
+export type RecusaDaClassificacao = (typeof RECUSAS)[number];
+
+export type LeituraDaClassificacao =
+  | { codigo: "OK"; analise: AnalisePersonalizada }
+  | { codigo: RecusaDaClassificacao };
+
+const RISCOS: PersonalRiskLevel[] = ["low", "medium", "high", "critical"];
+
+const ORIGENS: OrigemDoMotivo[] = [
+  "ingredient_rule",
+  "allergy",
+  "preference",
+  "base_score",
+];
+
+function emMinusculas(valor: unknown): string {
+  return typeof valor === "string" ? valor.toLowerCase() : "";
+}
+
+function lerMotivo(valor: unknown): MotivoDaAnalise | null {
+  const dados = comoObjeto(valor);
+  const text = texto(dados.text);
+
+  if (text === null) {
+    return null;
+  }
+
+  const origem = emMinusculas(dados.source);
+  const source = ORIGENS.find((item) => item === origem) ?? "other";
+  const ingredientName = texto(dados.ingredientName);
+  const profileTagSlug = texto(dados.profileTagSlug);
+
+  return {
+    id: [source, ingredientName ?? "", profileTagSlug ?? "", text].join("|"),
+    source,
+    text,
+    warning: dados.warning === true,
+    ingredientName,
+    profileTagSlug,
+  };
+}
+
+function semRepetidos(motivos: MotivoDaAnalise[]): MotivoDaAnalise[] {
+  const vistos = new Set<string>();
+
+  return motivos.filter((motivo) => {
+    if (vistos.has(motivo.id)) {
+      return false;
+    }
+
+    vistos.add(motivo.id);
+
+    return true;
+  });
+}
+
+export function lerClassificacao(valor: unknown): AnalisePersonalizada | null {
+  const dados = comoObjeto(valor);
+  const notas = comoObjeto(dados.breakdown);
+  const finalScore = numero(dados.finalScore);
+  const recommendationLevel = lerNivel(dados.recommendationLevel);
+  const risco = emMinusculas(dados.riskLevel);
+  const riskLevel = RISCOS.find((item) => item === risco) ?? null;
+
+  if (finalScore === null || recommendationLevel === null || riskLevel === null) {
+    return null;
+  }
+
+  return {
+    finalScore,
+    recommendationLevel,
+    riskLevel,
+    compatibilityPercentage: numero(dados.compatibilityPercentage),
+    summary: texto(dados.summary) ?? "",
+    reasons: semRepetidos(
+      lerTodos(Array.isArray(dados.reasons) ? dados.reasons : [], lerMotivo),
+    ),
+    breakdown: {
+      qualityScore: numero(notas.qualityScore),
+      qualityPoints: numero(notas.qualityPoints),
+      profilePoints: numero(notas.profilePoints),
+      healthScore: numero(notas.healthScore),
+      environmentalScore: numero(notas.environmentalScore),
+      ethicalScore: numero(notas.ethicalScore),
+      performanceScore: numero(notas.performanceScore),
+    },
+    ingredientCount: numero(dados.ingredientCount) ?? 0,
+    unevaluatedIngredientCount: numero(dados.unevaluatedIngredientCount) ?? 0,
+    calculatedAt: texto(dados.calculatedAt) ?? "",
+  };
+}
+
+async function lerCorpo(resposta: Response): Promise<unknown> {
+  try {
+    return await resposta.json();
+  } catch {
+    return null;
+  }
+}
+
+async function interpretar(
+  resposta: Response,
+  caminho: string,
+): Promise<LeituraDaClassificacao> {
+  if (resposta.status === 401 || resposta.status === 403) {
+    throw new ErroDeOrientacao(
+      "Entre de novo para ver a análise feita para o seu perfil.",
+    );
+  }
+
+  if (resposta.status === 404 || resposta.status === 422) {
+    const codigo = comoObjeto(await lerCorpo(resposta)).code;
+    const recusa = RECUSAS.find((item) => item === codigo);
+
+    if (recusa !== undefined) {
+      return { codigo: recusa };
+    }
+  }
+
+  verificarResposta(resposta, caminho);
+
+  const analise = lerClassificacao(await lerCorpo(resposta));
+
+  if (analise === null) {
+    throw new Error("A análise não veio no formato esperado.");
+  }
+
+  return { codigo: "OK", analise };
+}
+
+export async function buscarUltimaClassificacaoNaApi(
+  usuarioId: number,
+  versaoId: number,
+  sinal?: AbortSignal,
+): Promise<LeituraDaClassificacao> {
+  const caminho = `/api/classifications/user/${usuarioId}/product-version/${versaoId}`;
+  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
+    signal: sinal,
+  });
+
+  return interpretar(resposta, caminho);
+}
+
+export async function calcularClassificacaoNaApi(
+  usuarioId: number,
+  versaoId: number,
+  sinal?: AbortSignal,
+): Promise<LeituraDaClassificacao> {
+  const caminho = "/api/classifications";
+  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: usuarioId, productVersionId: versaoId }),
+    signal: sinal,
+  });
+
+  return interpretar(resposta, caminho);
+}

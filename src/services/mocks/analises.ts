@@ -189,6 +189,7 @@ const retinol: Ingrediente = {
 export const analisesMock: Record<string, AnaliseExibicao> = {
   [serumCalmanteAveia.slug]: {
     product: serumCalmanteAveia,
+    versionId: 1,
     ingredients: [
       {
         id: 1,
@@ -238,6 +239,7 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
 
   [hidratanteCeramidas.slug]: {
     product: hidratanteCeramidas,
+    versionId: 2,
     ingredients: [
       {
         id: 1,
@@ -287,6 +289,7 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
 
   [gelLimpezaPurificante.slug]: {
     product: gelLimpezaPurificante,
+    versionId: 3,
     ingredients: [
       {
         id: 1,
@@ -329,6 +332,7 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
 
   [locaoClareadoraNoturna.slug]: {
     product: locaoClareadoraNoturna,
+    versionId: 4,
     ingredients: [
       {
         id: 1,
@@ -371,6 +375,7 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
 
   [oleoCapilarReparador.slug]: {
     product: oleoCapilarReparador,
+    versionId: 5,
     ingredients: [
       {
         id: 15,
