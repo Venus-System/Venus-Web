@@ -76,6 +76,9 @@ function resumir(
       ultimasAnalises.map((analise) => analise.environmentalScore),
     ),
     ethicalScore: media(ultimasAnalises.map((analise) => analise.ethicalScore)),
+    performanceScore: media(
+      ultimasAnalises.map((analise) => analise.performanceScore),
+    ),
     approved: contarNiveis(notas, ["ideal", "recommended"]),
     warning: contarNiveis(notas, ["acceptable"]),
     replace: contarNiveis(notas, ["not_recommended", "contraindicated"]),

@@ -27,6 +27,7 @@ export interface AnaliseLida {
   healthScore: number | null;
   environmentalScore: number | null;
   ethicalScore: number | null;
+  performanceScore: number | null;
   createdAt: string;
 }
 
@@ -85,6 +86,7 @@ export function lerAnalise(valor: unknown): AnaliseLida | null {
     healthScore: numero(dados.healthScore),
     environmentalScore: numero(dados.environmentalScore),
     ethicalScore: numero(dados.ethicalScore),
+    performanceScore: numero(dados.performanceScore),
     createdAt,
   };
 }
