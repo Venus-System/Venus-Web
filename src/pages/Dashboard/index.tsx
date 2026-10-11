@@ -4,6 +4,7 @@ import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import ProductRow from "../../components/ProductRow";
 import ScoreBars from "../../components/ScoreBars";
+import ScoreExplanation from "../../components/ScoreExplanation";
 import ScoreRing from "../../components/ScoreRing";
 import StatCard from "../../components/StatCard";
 import SwapCard from "../../components/SwapCard";
@@ -184,13 +185,15 @@ function Dashboard() {
                   Saúde das suas análises
                 </h2>
                 <p className={styles.cartaoSub}>
-                  Média das três notas nos produtos que você analisou.
+                  Média das quatro notas nos produtos que você analisou.
                 </p>
+
+                <ScoreExplanation />
 
                 {estado.painel.summary.productCount === 0 ? (
                   <p className={styles.vazio}>
-                    Quando você analisar um produto, as notas de saúde, meio
-                    ambiente e ética aparecem aqui.
+                    Quando você analisar um produto, as quatro notas dele
+                    aparecem aqui.
                   </p>
                 ) : (
                   <div className={styles.saude}>

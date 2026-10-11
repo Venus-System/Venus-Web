@@ -126,26 +126,6 @@
   border-radius: var(--raio-grande);
 }
 
-.ruleHealth,
-.ruleEnvironment,
-.ruleEthics {
-  width: var(--espaco-4);
-  height: var(--espaco-1);
-  border-radius: var(--raio-pilula);
-}
-
-.ruleHealth {
-  background-color: var(--saude);
-}
-
-.ruleEnvironment {
-  background-color: var(--ambiental);
-}
-
-.ruleEthics {
-  background-color: var(--etica);
-}
-
 .cardTitle {
   font-size: var(--tamanho-medio);
   font-weight: var(--peso-forte);

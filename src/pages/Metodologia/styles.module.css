@@ -74,26 +74,6 @@
   font-size: var(--tamanho-pequeno);
 }
 
-.ruleHealth,
-.ruleEnvironment,
-.ruleEthics {
-  width: var(--espaco-4);
-  height: var(--espaco-1);
-  border-radius: var(--raio-pilula);
-}
-
-.ruleHealth {
-  background-color: var(--saude);
-}
-
-.ruleEnvironment {
-  background-color: var(--ambiental);
-}
-
-.ruleEthics {
-  background-color: var(--etica);
-}
-
 .steps {
   display: grid;
   gap: var(--espaco-4);

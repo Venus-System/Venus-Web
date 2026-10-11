@@ -6,6 +6,7 @@ import type { SelectOption } from "../../components/ListaSuspensa";
 import MainLayout from "../../components/MainLayout";
 import RiskBadge from "../../components/RiskBadge";
 import ScoreBadge from "../../components/ScoreBadge";
+import ScoreExplanation from "../../components/ScoreExplanation";
 import { useComparacao } from "../../hooks/useComparacao";
 import type { EstadoComparacao } from "../../hooks/useComparacao";
 import { useOpcoesDeProduto } from "../../hooks/useOpcoesDeProduto";
@@ -203,9 +204,11 @@ function Comparar() {
             <span className={styles.destaque}>lado a lado.</span>
           </h1>
           <p className={styles.subtitle}>
-            As três notas, os alertas de cada fórmula e qual dos dois tem{" "}
+            As quatro notas, os alertas de cada fórmula e qual dos dois tem{" "}
             <strong>a nota geral mais alta.</strong>
           </p>
+
+          <ScoreExplanation />
         </header>
 
         {opcoes.status === "carregando" ? (

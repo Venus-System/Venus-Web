@@ -3,6 +3,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import MainLayout from "../../components/MainLayout";
 import SectionNav from "../../components/SectionNav";
 import Button from "../../components/Button";
+import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import styles from "./styles.module.css";
 
 interface Integrante {
@@ -11,30 +12,6 @@ interface Integrante {
   papel: string;
   github: string;
 }
-
-const NOTAS = [
-  {
-    id: "saude",
-    titulo: "Saúde",
-    texto:
-      "Olha a fórmula em relação à sua pele, às suas condições e ao que você precisa evitar.",
-    tom: styles.ruleHealth,
-  },
-  {
-    id: "ambiental",
-    titulo: "Impacto ambiental",
-    texto:
-      "Considera biodegradabilidade, presença de microplásticos e o material da embalagem.",
-    tom: styles.ruleEnvironment,
-  },
-  {
-    id: "etica",
-    titulo: "Ética",
-    texto:
-      "Considera a origem dos ingredientes, testes em animais e a transparência da marca.",
-    tom: styles.ruleEthics,
-  },
-];
 
 const LIMITES = [
   {
@@ -188,20 +165,19 @@ function Sobre() {
           <p className={styles.eyebrow}>O que a Venus faz</p>
 
           <h2 id="titulo-notas" className={styles.sectionTitle}>
-            Três notas, porque são três perguntas
+            Quatro notas, porque são quatro perguntas
           </h2>
 
           <p className={styles.text}>
             A Venus lê a lista de ingredientes, identifica cada um e cruza com o
-            seu perfil. No fim, cada produto recebe três notas independentes.
+            seu perfil. No fim, cada produto recebe quatro notas independentes.
           </p>
 
           <ul className={styles.cards}>
-            {NOTAS.map((nota) => (
-              <li className={styles.card} key={nota.id}>
-                <span className={nota.tom} aria-hidden="true" />
-                <h3 className={styles.cardTitle}>{nota.titulo}</h3>
-                <p className={styles.cardText}>{nota.texto}</p>
+            {NOTAS_DE_QUALIDADE.map((nota) => (
+              <li className={styles.card} key={nota.campo}>
+                <h3 className={styles.cardTitle}>{nota.rotulo}</h3>
+                <p className={styles.cardText}>{nota.descricao}</p>
               </li>
             ))}
           </ul>
