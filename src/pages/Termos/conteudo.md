@@ -57,8 +57,6 @@ privacidade.
 
 ## Conteúdo enviado por você
 
-*Esta seção passa a valer quando as avaliações de usuários existirem.*
-
 Ao publicar uma avaliação, você afirma que ela descreve sua experiência real e
 autoriza o Venus a exibi-la. Não publique conteúdo ofensivo, propaganda ou
 informação que você sabe ser falsa. Podemos remover conteúdo que viole isso.

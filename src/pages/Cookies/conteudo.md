@@ -20,8 +20,8 @@ você conectado e lembrar do seu progresso no questionário de perfil.
 
 **Nenhum desses itens guarda senha.**
 
-A escolha entre `localStorage` e `sessionStorage` é a caixa "continuar
-conectado" da tela de entrada: marcada, a sessão sobrevive ao fechamento do
+A escolha entre `localStorage` e `sessionStorage` é a caixa "Lembrar de mim"
+da tela de entrada: marcada, a sessão sobrevive ao fechamento do
 navegador; desmarcada, ela termina junto com a aba.
 
 Tecnicamente, `localStorage` e `sessionStorage` **não são cookies** — são
