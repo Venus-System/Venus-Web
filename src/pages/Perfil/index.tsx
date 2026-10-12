@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, RotateCcw } from "lucide-react";
 import AllergyPicker from "../../components/AllergyPicker";
 import BuscaComChips from "../../components/BuscaComChips";
@@ -99,6 +99,22 @@ function Perfil() {
     setConta({ nome, situacao: "ocioso", mensagem: "" });
   }, [nome]);
 
+  const { hash } = useLocation();
+  const perfilCarregado = carregamento.status === "pronto";
+
+  useEffect(() => {
+    if (!perfilCarregado || hash === "") {
+      return;
+    }
+
+    const alvo = document.getElementById(hash.slice(1));
+
+    if (alvo !== null) {
+      alvo.scrollIntoView();
+      alvo.focus({ preventScroll: true });
+    }
+  }, [perfilCarregado, hash]);
+
   async function salvarNome() {
     if (conta.nome.trim() === nome) {
       return;
@@ -193,7 +209,11 @@ function Perfil() {
                     className={styles.faltando}
                     aria-labelledby="titulo-faltando"
                   >
-                    <p id="titulo-faltando" className={styles.faltandoTitulo}>
+                    <p
+                      id="titulo-faltando"
+                      className={styles.faltandoTitulo}
+                      tabIndex={-1}
+                    >
                       {faltando.length === 1
                         ? "Falta 1 resposta"
                         : `Faltam ${faltando.length} respostas`}

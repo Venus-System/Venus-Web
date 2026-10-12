@@ -274,7 +274,14 @@ function Dashboard() {
                         : "Seu perfil está completo. Cada análise já leva tudo em conta."}
                     </p>
 
-                    <Button variant="secondary" to="/perfil">
+                    <Button
+                      variant="secondary"
+                      to={
+                        estado.painel.profileCompleteness < 100
+                          ? "/perfil#titulo-faltando"
+                          : "/perfil"
+                      }
+                    >
                       {estado.painel.profileCompleteness < 100
                         ? "Completar agora"
                         : "Ver meu perfil"}
