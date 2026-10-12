@@ -162,6 +162,19 @@
   flex-shrink: 0;
 }
 
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--espaco-3);
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+}
+
 .carouselHeader {
   display: flex;
   flex-wrap: wrap;

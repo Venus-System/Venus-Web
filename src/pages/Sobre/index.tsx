@@ -4,6 +4,8 @@ import MainLayout from "../../components/MainLayout";
 import SectionNav from "../../components/SectionNav";
 import Button from "../../components/Button";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
+import fotoDaEquipeUm from "../../assets/equipe-1.jpg";
+import fotoDaEquipeDois from "../../assets/equipe-2.jpg";
 import styles from "./styles.module.css";
 
 interface Integrante {
@@ -192,6 +194,26 @@ function Sobre() {
             é feita por onze estudantes. Cada nome leva ao perfil da pessoa no
             GitHub.
           </p>
+
+          <div className={styles.photos}>
+            <img
+              className={styles.photo}
+              src={fotoDaEquipeUm}
+              alt="Cinco integrantes da equipe da Venus, lado a lado, com o uniforme preto do Instituto J&F."
+              width={1200}
+              height={675}
+              loading="lazy"
+            />
+
+            <img
+              className={styles.photo}
+              src={fotoDaEquipeDois}
+              alt="Seis integrantes da equipe da Venus, abraçados, com o uniforme preto do Instituto J&F."
+              width={1200}
+              height={675}
+              loading="lazy"
+            />
+          </div>
 
           <div className={styles.carouselHeader}>
             <h3 className={styles.cardTitle}>Integrantes</h3>
