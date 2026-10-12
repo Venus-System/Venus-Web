@@ -38,7 +38,7 @@ export const NOTAS_DE_QUALIDADE: NotaDeQualidade[] = [
     resumo: "vegano, sem teste em animais, selos",
     peso: "cerca de 18%",
     descricao:
-      "O que a marca declara: se é vegana, se não testa em animais, e os selos éticos que foram verificados.",
+      "O que a marca declara: se é vegana, se não testa em animais, e os selos éticos que foram verificados. Sem nenhuma declaração, a nota fica em 50, o meio da escala.",
   },
   {
     campo: "performanceScore",
@@ -46,6 +46,6 @@ export const NOTAS_DE_QUALIDADE: NotaDeQualidade[] = [
     resumo: "benefícios declarados na fórmula",
     peso: "cerca de 24%",
     descricao:
-      "Os benefícios declarados na fórmula: quantos efeitos benéficos conhecidos os ingredientes têm. Não é um resultado medido no uso.",
+      "Os benefícios declarados na fórmula: quantos efeitos benéficos conhecidos os ingredientes têm. Não é um resultado medido no uso. Fórmula sem nenhum benefício cadastrado fica com 0.",
   },
 ];
