@@ -17,6 +17,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { usePerfil } from "../../hooks/usePerfil";
 import { guardarAvatar, lerAvatar } from "../../utils/avatarPerfil";
 import type { Avatar } from "../../utils/avatarPerfil";
+import { camposSemResposta } from "../../utils/progressoPerfil";
 import type { StatusConta } from "../../types/usuario";
 import {
   OPCOES_CABELO,
@@ -125,6 +126,7 @@ function Perfil() {
     void sair().then(() => navegar("/login"));
   }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
+  const faltando = respostas === null ? [] : camposSemResposta(respostas);
 
   return (
     <MainLayout>
@@ -185,6 +187,32 @@ function Perfil() {
                     style={{ width: `${progresso}%` }}
                   />
                 </div>
+
+                {faltando.length > 0 ? (
+                  <nav
+                    className={styles.faltando}
+                    aria-labelledby="titulo-faltando"
+                  >
+                    <p id="titulo-faltando" className={styles.faltandoTitulo}>
+                      {faltando.length === 1
+                        ? "Falta 1 resposta"
+                        : `Faltam ${faltando.length} respostas`}
+                    </p>
+
+                    <ul className={styles.faltandoLista}>
+                      {faltando.map((campo) => (
+                        <li key={campo.id}>
+                          <a
+                            className={styles.faltandoLink}
+                            href={`#${campo.id}`}
+                          >
+                            {campo.rotulo}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                ) : null}
               </div>
             ) : null}
 

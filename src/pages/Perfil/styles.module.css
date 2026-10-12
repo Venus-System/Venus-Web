@@ -129,6 +129,41 @@
   background-image: var(--gradiente-marca);
 }
 
+.faltando {
+  margin-top: var(--espaco-3);
+}
+
+.faltandoTitulo {
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.faltandoLista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+  margin: var(--espaco-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faltandoLink {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espaco-1) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-pilula);
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: none;
+}
+
+.faltandoLink:hover {
+  border-color: var(--violeta);
+}
+
 .conteudo {
   display: flex;
   flex-direction: column;
