@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../../components/Button";
 import IngredientCard from "../../components/IngredientCard";
+import IngredientsModal from "../../components/IngredientsModal";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import MainLayout from "../../components/MainLayout";
 import RiskLegend from "../../components/RiskLegend";
@@ -16,9 +17,10 @@ import styles from "./styles.module.css";
 interface Escolha {
   marca: string;
   slug: string;
+  todosAbertos: boolean;
 }
 
-const SEM_ESCOLHA: Escolha = { marca: "", slug: "" };
+const SEM_ESCOLHA: Escolha = { marca: "", slug: "", todosAbertos: false };
 const POR_NOME = new Intl.Collator("pt-BR");
 
 function mereceAtencao(
@@ -130,7 +132,7 @@ function Reacao() {
               placeholder="Escolha a marca"
               options={marcas.map((marca) => ({ value: marca, label: marca }))}
               value={escolha.marca}
-              onChange={(marca) => setEscolha({ marca, slug: "" })}
+              onChange={(marca) => setEscolha({ ...SEM_ESCOLHA, marca })}
               onClear={() => setEscolha(SEM_ESCOLHA)}
               fullWidth
             />
@@ -244,6 +246,11 @@ function Reacao() {
 
             {emAtencao.length > 0 ? (
               <>
+                <p className={styles.estado}>
+                  Abaixo estão só os ingredientes que merecem atenção. A lista
+                  inteira está no botão no fim.
+                </p>
+
                 <RiskLegend label="Legenda do semáforo" />
 
                 <ul className={styles.ingredientes}>
@@ -259,9 +266,30 @@ function Reacao() {
               </>
             ) : null}
 
-            <Button to={`/produto/${carregada.product.slug}`}>
-              Ver a análise completa do produto
-            </Button>
+            <div className={styles.acoes}>
+              {carregada.ingredients.length > 0 ? (
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    setEscolha((atual) => ({ ...atual, todosAbertos: true }))
+                  }
+                >
+                  Ver todos os {carregada.ingredients.length} ingredientes
+                </Button>
+              ) : null}
+
+              <Button to={`/produto/${carregada.product.slug}`}>
+                Ver a análise completa do produto
+              </Button>
+            </div>
+
+            <IngredientsModal
+              open={escolha.todosAbertos}
+              onClose={() =>
+                setEscolha((atual) => ({ ...atual, todosAbertos: false }))
+              }
+              ingredients={carregada.ingredients}
+            />
           </section>
         )}
       </div>

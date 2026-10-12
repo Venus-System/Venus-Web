@@ -79,6 +79,12 @@
   border-radius: var(--raio-grande);
 }
 
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
 .ingredientes {
   display: flex;
   flex-direction: column;
