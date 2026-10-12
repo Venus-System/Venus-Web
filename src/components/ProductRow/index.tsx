@@ -9,7 +9,8 @@ interface ProductRowProps {
   produto: ProdutoDoPainel;
   nota: number | null;
   nivel: RiskLevel;
-  realizadaEm: string;
+  category?: string;
+  realizadaEm?: string;
   action?: ReactNode;
 }
 
@@ -24,12 +25,16 @@ function ProductRow({
   produto,
   nota,
   nivel,
+  category,
   realizadaEm,
   action,
 }: ProductRowProps) {
   const thumbClasses = [styles.thumb, styles[nivel]].join(" ");
-  const data = new Date(realizadaEm);
+  const data = new Date(realizadaEm ?? "");
   const dataValida = !Number.isNaN(data.getTime());
+  const descricao = [produto.brandName, category ?? ""]
+    .filter((texto) => texto !== "")
+    .join(" · ");
 
   return (
     <div className={styles.row}>
@@ -47,12 +52,17 @@ function ProductRow({
         </Link>
 
         <span className={styles.detail}>
-          {produto.brandName === "" ? null : `${produto.brandName} · `}
+          {descricao}
 
-          {dataValida ? (
-            <time dateTime={realizadaEm}>{FORMATO_DATA.format(data)}</time>
-          ) : (
-            "Data não informada"
+          {realizadaEm === undefined ? null : (
+            <>
+              {descricao === "" ? null : " · "}
+              {dataValida ? (
+                <time dateTime={realizadaEm}>{FORMATO_DATA.format(data)}</time>
+              ) : (
+                "Data não informada"
+              )}
+            </>
           )}
         </span>
       </span>
