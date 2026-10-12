@@ -154,17 +154,7 @@ function Componentes() {
         <h2>ProductCard</h2>
 
         <div className={styles.grid}>
-          <ProductCard
-            produto={comImagem}
-            action={
-              <FavoriteButton
-                productName={comImagem.name}
-                isFavorite={favorito}
-                isPending={false}
-                onToggle={() => setFavorito((atual) => !atual)}
-              />
-            }
-          />
+          <ProductCard produto={comImagem} />
           <ProductCard produto={produtosMock[3]} />
         </div>
       </section>
@@ -184,7 +174,14 @@ function Componentes() {
               }}
               nota={produto.scores.overallScore}
               nivel={produto.level}
-              realizadaEm="2026-08-26T14:32:00Z"
+              category={
+                produto.slug === semDados.slug ? produto.category : undefined
+              }
+              realizadaEm={
+                produto.slug === semDados.slug
+                  ? undefined
+                  : "2026-08-26T14:32:00Z"
+              }
               action={
                 produto.slug === comImagem.slug ? (
                   <FavoriteButton

@@ -1,5 +1,4 @@
 .card {
-  position: relative;
   background-color: var(--card);
   border: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-grande);
@@ -76,13 +75,6 @@
 .meta {
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
-}
-
-.action {
-  position: absolute;
-  top: calc(var(--espaco-3) + var(--espaco-2));
-  right: calc(var(--espaco-3) + var(--espaco-2));
-  display: flex;
 }
 
 .link:focus-visible {
