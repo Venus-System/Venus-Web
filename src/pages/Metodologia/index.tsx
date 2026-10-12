@@ -107,6 +107,18 @@ const LIMITES = [
     texto:
       "Embalagem, certificações e características sensoriais vêm de outras fontes, e nem todo produto tem todas elas.",
   },
+  {
+    id: "preco",
+    titulo: "A Venus não mostra preço.",
+    texto:
+      "A Venus não é loja. O preço muda de loja para loja e não entra na nota.",
+  },
+  {
+    id: "resultado",
+    titulo: "A nota não promete resultado.",
+    texto:
+      "Ela diz o que a fórmula tem e como isso combina com o seu perfil, não como a sua pele ou o seu cabelo vão ficar depois do uso.",
+  },
 ];
 
 function Metodologia() {
@@ -282,8 +294,9 @@ function Metodologia() {
           </h2>
 
           <p className={styles.ctaText}>
-            Toda página de produto tem a opção de reportar. Regras clínicas são
-            revisadas por um profissional antes de valer.
+            Escreva para venussystem2026@gmail.com dizendo qual é o produto e o
+            que está errado. Regras clínicas são revisadas por um profissional
+            antes de valer.
           </p>
 
           <Button to="/fontes">Ver as nossas fontes</Button>
