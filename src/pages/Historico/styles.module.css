@@ -50,6 +50,22 @@
   font-weight: var(--peso-forte);
 }
 
+.busca {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  max-width: 50rem;
+}
+
+.buscaResultado {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.buscaResultado:empty {
+  display: none;
+}
+
 .secao {
   display: flex;
   flex-direction: column;
