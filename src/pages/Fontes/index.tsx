@@ -143,7 +143,7 @@ function Fontes() {
           <p className={styles.eyebrow}>Limites</p>
 
           <h2 id="titulo-limites" className={styles.sectionTitle}>
-            O que ainda não temos
+            Limites dos nossos dados
           </h2>
 
           <p className={styles.text}>
@@ -158,8 +158,7 @@ function Fontes() {
 
             <p className={styles.noticeText}>
               A base de ingredientes é revisada periodicamente para acompanhar
-              mudanças de regulação e novas evidências. Se você encontrar uma
-              informação desatualizada, pode reportar pela página do produto.
+              mudanças de regulação e novas evidências.
             </p>
           </div>
         </section>

@@ -105,10 +105,10 @@ pode — cite a fonte.
 
 ## Se você discordar de uma análise
 
-Toda página de produto tem a opção de reportar erro, e é o caminho mais rápido
-para corrigir. Se você é fabricante e discorda de uma classificação, use o mesmo
-canal: a análise parte de dados públicos e de literatura técnica, e sendo
-demonstrado um erro, ele é corrigido.
+Se você encontrar um erro numa análise, escreva para o e-mail de contato abaixo,
+dizendo qual é o produto e o que está errado. Se você é fabricante e discorda de
+uma classificação, use o mesmo canal: a análise parte de dados públicos e de
+literatura técnica, e sendo demonstrado um erro, ele é corrigido.
 
 ## Contato
 
