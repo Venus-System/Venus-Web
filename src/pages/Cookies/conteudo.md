@@ -14,14 +14,14 @@ você conectado e lembrar do seu progresso no questionário de perfil.
 
 | O quê | Onde | Para quê | Quando some |
 |---|---|---|---|
-| Sessão do Firebase Authentication | `localStorage` ou `IndexedDB` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "continuar conectado" |
+| Sessão do Firebase Authentication | `localStorage` ou `IndexedDB` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "Lembrar de mim" |
 | Nome e e-mail da conta ativa | `localStorage` ou `sessionStorage` | Mostrar seu nome sem consultar o servidor a cada página | Ao sair da conta |
 | Progresso do questionário | `localStorage` | Permitir retomar o questionário depois | Ao concluir o questionário ou limpar os dados do navegador |
 
 **Nenhum desses itens guarda senha.**
 
-A escolha entre `localStorage` e `sessionStorage` é a caixa "continuar
-conectado" da tela de entrada: marcada, a sessão sobrevive ao fechamento do
+A escolha entre `localStorage` e `sessionStorage` é a caixa "Lembrar de mim"
+da tela de entrada: marcada, a sessão sobrevive ao fechamento do
 navegador; desmarcada, ela termina junto com a aba.
 
 Tecnicamente, `localStorage` e `sessionStorage` **não são cookies** — são

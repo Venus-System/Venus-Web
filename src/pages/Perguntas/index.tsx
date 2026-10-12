@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CircleHelp } from "lucide-react";
 import AllergyPicker from "../../components/AllergyPicker";
 import BuscaComChips from "../../components/BuscaComChips";
 import Button from "../../components/Button";
@@ -101,16 +101,17 @@ function Perguntas() {
             options={OPCOES_CABELO}
             value={respostas.hairCurvature}
             onChange={(curvatura) => responder("hairCurvature", curvatura)}
+            help={
+              <button
+                type="button"
+                className={styles.guia}
+                onClick={() => setGuia("cabelo")}
+              >
+                <CircleHelp className={styles.guiaIcone} aria-hidden="true" />
+                Não sei qual é o meu tipo de cabelo
+              </button>
+            }
           />
-
-          <button
-            type="button"
-            className={styles.guia}
-            onClick={() => setGuia("cabelo")}
-          >
-            Saiba qual seu tipo de cabelo
-            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
-          </button>
         </QuestionCard>
 
         <ConsentimentoSaude
@@ -126,16 +127,17 @@ function Perguntas() {
             options={OPCOES_PELE}
             value={respostas.skinType}
             onChange={(skinType) => responder("skinType", skinType)}
+            help={
+              <button
+                type="button"
+                className={styles.guia}
+                onClick={() => setGuia("pele")}
+              >
+                <CircleHelp className={styles.guiaIcone} aria-hidden="true" />
+                Não sei qual é o meu tipo de pele
+              </button>
+            }
           />
-
-          <button
-            type="button"
-            className={styles.guia}
-            onClick={() => setGuia("pele")}
-          >
-            Saiba qual seu tipo de pele
-            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
-          </button>
         </QuestionCard>
 
         <QuestionCard number={4} total={TOTAL_PERGUNTAS}>
@@ -156,16 +158,17 @@ function Perguntas() {
             options={OPCOES_FOTOTIPO}
             value={respostas.skinPhototype}
             onChange={(fototipo) => responder("skinPhototype", fototipo)}
+            help={
+              <button
+                type="button"
+                className={styles.guia}
+                onClick={() => setGuia("fototipo")}
+              >
+                <CircleHelp className={styles.guiaIcone} aria-hidden="true" />
+                Não sei qual é o meu fototipo
+              </button>
+            }
           />
-
-          <button
-            type="button"
-            className={styles.guia}
-            onClick={() => setGuia("fototipo")}
-          >
-            Saiba qual seu fototipo
-            <ArrowRight className={styles.guiaIcone} aria-hidden="true" />
-          </button>
         </QuestionCard>
 
         <QuestionCard number={6} total={TOTAL_PERGUNTAS}>
