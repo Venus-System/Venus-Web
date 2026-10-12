@@ -126,9 +126,17 @@ function textoDaEscolhaPessoal(
   }
 
   if (vencedor === lado) {
-    return analise.reasons.some((motivo) => motivo.warning)
-      ? "Tem a nota mais alta para o seu perfil, mas confira os alertas."
-      : "Tem a nota mais alta para o seu perfil, sem alertas.";
+    const temAviso =
+      analise.riskLevel !== "low" ||
+      analise.reasons.some((motivo) => motivo.warning);
+
+    if (temAviso) {
+      return "Tem a nota mais alta para o seu perfil, mas confira os alertas.";
+    }
+
+    return analise.complete
+      ? "Tem a nota mais alta para o seu perfil, sem alertas."
+      : "Tem a nota mais alta para o seu perfil.";
   }
 
   return vencedor === null
