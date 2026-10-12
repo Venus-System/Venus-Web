@@ -7,9 +7,7 @@ import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import styles from "./styles.module.css";
 
 interface Integrante {
-  id: string;
   nome: string;
-  papel: string;
   github: string;
 }
 
@@ -41,17 +39,17 @@ const LIMITES = [
 ];
 
 const EQUIPE: Integrante[] = [
-  { id: "integrante-01", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-02", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-03", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-04", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-05", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-06", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-07", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-08", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-09", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-10", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-11", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
+  { nome: "Matheus Orestes", github: "matheus-orestes" },
+  { nome: "Rafael Lopes", github: "rafasepol" },
+  { nome: "Sophia Castro", github: "Shhiaa" },
+  { nome: "Laura Gonçalves", github: "Laura-986" },
+  { nome: "Felipe Augusto", github: "FelipeAugustoSan" },
+  { nome: "Akira Komati", github: "Akira-132" },
+  { nome: "Bianca Bazoni", github: "starbias" },
+  { nome: "Bruno Vinicius", github: "brunorisadas" },
+  { nome: "Miguel Oliveira", github: "miguelh19max" },
+  { nome: "Sarah Delatorre", github: "sarahdelatorre" },
+  { nome: "Gustavo Herance", github: "GAHerance" },
 ];
 
 const NO_FRASCO =
@@ -78,28 +76,6 @@ function Sobre() {
       left: trilha.clientWidth * 0.8 * direcao,
       behavior: "smooth",
     });
-  }
-
-  function conteudoDoIntegrante(pessoa: Integrante) {
-    return (
-      <>
-        {pessoa.github === "" ? (
-          <span className={styles.avatar} aria-hidden="true">
-            VN
-          </span>
-        ) : (
-          <img
-            className={styles.avatar}
-            src={`https://github.com/${pessoa.github}.png?size=200`}
-            alt=""
-            loading="lazy"
-          />
-        )}
-
-        <span className={styles.memberName}>{pessoa.nome}</span>
-        <span className={styles.memberRole}>{pessoa.papel}</span>
-      </>
-    );
   }
 
   return (
@@ -212,12 +188,10 @@ function Sobre() {
           </h2>
 
           <p className={styles.text}>
-            A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F.
-            Estamos em fase de construção, e preferimos dizer isso abertamente a
-            passar a impressão de um produto pronto.
+            A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F e
+            é feita por onze estudantes. Cada nome leva ao perfil da pessoa no
+            GitHub.
           </p>
-
-          <p className={styles.photo}>Espaço reservado para a foto da equipe.</p>
 
           <div className={styles.carouselHeader}>
             <h3 className={styles.cardTitle}>Integrantes</h3>
@@ -248,22 +222,24 @@ function Sobre() {
             aria-label="Integrantes da equipe"
           >
             {EQUIPE.map((pessoa) => (
-              <li className={styles.member} key={pessoa.id}>
-                {pessoa.github === "" ? (
-                  <div className={styles.memberInner}>
-                    {conteudoDoIntegrante(pessoa)}
-                  </div>
-                ) : (
-                  <a
-                    className={styles.memberLink}
-                    href={`https://github.com/${pessoa.github}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Perfil de ${pessoa.nome} no GitHub, abre em nova aba`}
-                  >
-                    {conteudoDoIntegrante(pessoa)}
-                  </a>
-                )}
+              <li className={styles.member} key={pessoa.github}>
+                <a
+                  className={styles.memberLink}
+                  href={`https://github.com/${pessoa.github}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Perfil de ${pessoa.nome} no GitHub, abre em nova aba`}
+                >
+                  <img
+                    className={styles.avatar}
+                    src={`https://github.com/${pessoa.github}.png?size=200`}
+                    alt=""
+                    loading="lazy"
+                  />
+
+                  <span className={styles.memberName}>{pessoa.nome}</span>
+                  <span className={styles.memberHandle}>@{pessoa.github}</span>
+                </a>
               </li>
             ))}
           </ul>
