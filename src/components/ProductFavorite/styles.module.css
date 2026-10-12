@@ -1,0 +1,18 @@
+.favorito,
+.aviso {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.aviso {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.erro {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
