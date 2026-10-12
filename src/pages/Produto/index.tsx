@@ -269,7 +269,9 @@ function Produto() {
   return (
     <MainLayout>
       <div className={styles.page}>
-        <BackButton fallback="/pesquisa" />
+        <div className={styles.voltar}>
+          <BackButton fallback="/pesquisa" />
+        </div>
 
         <header className={styles.hero}>
           <div className={styles.frame}>

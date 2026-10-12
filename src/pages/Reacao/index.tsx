@@ -97,7 +97,9 @@ function Reacao() {
   return (
     <MainLayout>
       <div className={styles.page}>
-        <BackButton fallback="/pesquisa" />
+        <div className={styles.voltar}>
+          <BackButton fallback="/pesquisa" />
+        </div>
 
         <header className={styles.header}>
           <h1 className={styles.title}>

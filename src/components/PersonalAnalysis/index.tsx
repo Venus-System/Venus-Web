@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { EstadoDaAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import type {
   AnalisePersonalizada,
@@ -192,19 +193,20 @@ function PersonalAnalysis({
                 <p className={styles.data}>Calculada {calculadaEm}.</p>
               ) : null}
 
-              <Button
-                variant="secondary"
+              <button
+                type="button"
+                className={styles.acao}
                 onClick={onRecalculate}
                 disabled={state.recalculo === "calculando"}
               >
                 {state.recalculo === "calculando"
                   ? "Recalculando..."
                   : "Recalcular"}
-              </Button>
+              </button>
 
-              <Button variant="text" to="/perfil">
+              <Link className={styles.acao} to="/perfil">
                 Ver meu perfil
-              </Button>
+              </Link>
             </div>
 
             {state.recalculo === "erro" ? (
