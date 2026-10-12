@@ -19,6 +19,7 @@ import { alertasDe, semAvaliacao } from "../../utils/alertas";
 import {
   ROTULO_DA_FAIXA,
   ROTULO_DO_RISCO,
+  faixaDaNota,
   nivelDaNota,
   nivelDaRecomendacao,
   nivelDoRisco,
@@ -61,7 +62,35 @@ function vencedorGeral(a: Produto, b: Produto): Lado | null {
     return null;
   }
 
+  if (
+    faixaDaNota(a.scores.overallScore) === faixaDaNota(b.scores.overallScore)
+  ) {
+    return null;
+  }
+
   return maiorNota(a.scores.overallScore, b.scores.overallScore);
+}
+
+function rotuloDaNotaGeral(produto: Produto): string | undefined {
+  const faixa = faixaDaNota(produto.scores.overallScore);
+
+  if (faixa === null || nivelDaRecomendacao(faixa) !== produto.level) {
+    return undefined;
+  }
+
+  return ROTULO_DA_FAIXA[faixa];
+}
+
+function fraseDosAlertas({ ingredients }: ProdutoComparado): string {
+  const total = alertasDe(ingredients).length;
+
+  if (total === 0) {
+    return "";
+  }
+
+  return total === 1
+    ? "A fórmula tem 1 ingrediente com alerta."
+    : `A fórmula tem ${total} ingredientes com alerta.`;
 }
 
 function textoDaEscolha(
@@ -69,20 +98,18 @@ function textoDaEscolha(
   lado: number,
   vencedor: Lado | null,
 ): string {
-  const { product, ingredients } = produtos[lado];
+  const { product } = produtos[lado];
 
   if (product.level === "avoid") {
     return "Nota de evitar. Não é a escolha recomendada.";
   }
 
   if (vencedor === lado) {
-    return alertasDe(ingredients).length > 0
-      ? "Tem a nota geral mais alta, mas confira os alertas da fórmula."
-      : "Tem a nota geral mais alta dos dois.";
+    return "Fica numa faixa mais alta pela nota geral.";
   }
 
   if (vencedor !== null) {
-    return "Nota geral mais baixa que a do outro produto.";
+    return "Fica numa faixa mais baixa pela nota geral.";
   }
 
   const semNota = produtos.some(
@@ -91,7 +118,7 @@ function textoDaEscolha(
 
   return semNota
     ? "Sem nota geral suficiente para comparar os dois."
-    : "Mesma nota geral do outro produto.";
+    : "Fica na mesma faixa do outro produto pela nota geral.";
 }
 
 function evitarParaAPessoa(analise: AnalisePersonalizada): boolean {
@@ -113,6 +140,10 @@ function vencedorPessoal(
     return null;
   }
 
+  if (a.recommendationLevel === b.recommendationLevel) {
+    return null;
+  }
+
   return maiorNota(a.finalScore, b.finalScore);
 }
 
@@ -125,23 +156,23 @@ function textoDaEscolhaPessoal(
     return "Não é recomendado para o seu perfil.";
   }
 
-  if (vencedor === lado) {
-    const temAviso =
-      analise.riskLevel !== "low" ||
-      analise.reasons.some((motivo) => motivo.warning);
+  const faixa = ROTULO_DA_FAIXA[analise.recommendationLevel];
 
-    if (temAviso) {
-      return "Tem a nota mais alta para o seu perfil, mas confira os alertas.";
-    }
-
-    return analise.complete
-      ? "Tem a nota mais alta para o seu perfil, sem alertas."
-      : "Tem a nota mais alta para o seu perfil.";
+  if (vencedor === null) {
+    return `Fica na mesma faixa do outro produto para o seu perfil: ${faixa}.`;
   }
 
-  return vencedor === null
-    ? "Mesma nota do outro produto para o seu perfil."
-    : "Nota mais baixa para o seu perfil.";
+  if (vencedor !== lado) {
+    return `Fica numa faixa mais baixa para o seu perfil: ${faixa}.`;
+  }
+
+  const temAviso =
+    analise.riskLevel !== "low" ||
+    analise.reasons.some((motivo) => motivo.warning);
+
+  return temAviso
+    ? `Fica numa faixa mais alta para o seu perfil (${faixa}), mas confira os alertas.`
+    : `Fica numa faixa mais alta para o seu perfil: ${faixa}.`;
 }
 
 function celulaPessoal(
@@ -503,7 +534,10 @@ function Comparar() {
                                   : `Nota ${product.scores.overallScore} de 100`}
                               </span>
                             </span>
-                            <RiskBadge level={product.level} />
+                            <RiskBadge
+                              level={product.level}
+                              label={rotuloDaNotaGeral(product)}
+                            />
                           </span>
                         </td>
                       ))}
@@ -625,7 +659,8 @@ function Comparar() {
                                 analises[lado],
                                 lado,
                                 vencedor,
-                              )}
+                              )}{" "}
+                          {fraseDosAlertas(produtos[lado])}
                         </td>
                       ))}
                     </tr>

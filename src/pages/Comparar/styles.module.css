@@ -59,6 +59,7 @@
 .tabela {
   width: 100%;
   min-width: 44rem;
+  table-layout: fixed;
   border-collapse: collapse;
   color: var(--texto);
 }
@@ -232,6 +233,13 @@
 .selo {
   background-color: var(--safe-fundo);
   color: var(--safe);
+}
+
+.alerta,
+.alertaEvitar {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .alerta {
