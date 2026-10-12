@@ -5,13 +5,14 @@ import {
   Heart,
   History,
   LayoutGrid,
+  LogOut,
   ScanLine,
   Search,
   ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { FormEvent } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
@@ -62,7 +63,12 @@ const GROUPS: NavGroup[] = [
 ];
 
 function Sidebar({ onSearch }: SidebarProps) {
-  const { usuario, fotoUrl } = useAutenticacao();
+  const { usuario, fotoUrl, sair } = useAutenticacao();
+  const navegar = useNavigate();
+
+  function handleSair() {
+    void sair().then(() => navegar("/login"));
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -133,24 +139,31 @@ function Sidebar({ onSearch }: SidebarProps) {
         </div>
       ))}
 
-      {usuario  ? (
-        <Link to="/perfil" className={styles.user}>
-          <span className={styles.avatar} aria-hidden="true">
-            {fotoUrl === null ? (
-              usuario.name.charAt(0)
-            ) : (
-              <img className={styles.avatarFoto} src={fotoUrl} alt="" />
-            )}
-          </span>
-
-          <span className={styles.userInfo}>
-            <span className={styles.userName}>{usuario .name}</span>
-            <span className={styles.userAction}>
-              Ver meu perfil
-              <ArrowRight className={styles.userIcon} aria-hidden="true" />
+      {usuario ? (
+        <div className={styles.conta}>
+          <Link to="/perfil" className={styles.user}>
+            <span className={styles.avatar} aria-hidden="true">
+              {fotoUrl === null ? (
+                usuario.name.charAt(0)
+              ) : (
+                <img className={styles.avatarFoto} src={fotoUrl} alt="" />
+              )}
             </span>
-          </span>
-        </Link>
+
+            <span className={styles.userInfo}>
+              <span className={styles.userName}>{usuario.name}</span>
+              <span className={styles.userAction}>
+                Ver meu perfil
+                <ArrowRight className={styles.userIcon} aria-hidden="true" />
+              </span>
+            </span>
+          </Link>
+
+          <button type="button" className={styles.sair} onClick={handleSair}>
+            <LogOut className={styles.linkIcon} aria-hidden="true" />
+            Sair da conta
+          </button>
+        </div>
       ) : null}
     </nav>
   );

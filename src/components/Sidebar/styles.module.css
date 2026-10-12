@@ -110,16 +110,36 @@
   white-space: nowrap;
 }
 
+.conta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin-top: auto;
+  padding-top: var(--espaco-2);
+  border-top: var(--borda-largura) solid var(--borda);
+}
+
 .user {
   display: flex;
   align-items: center;
   gap: var(--espaco-2);
-  margin-top: auto;
   padding: var(--espaco-2);
-  border-top: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-medio);
   color: var(--texto);
   text-decoration: none;
+}
+
+.sair {
+  composes: link;
+  width: 100%;
+  background-color: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+  text-align: left;
+  cursor: pointer;
 }
 
 .user:hover {
