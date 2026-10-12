@@ -52,7 +52,7 @@ function Componentes() {
         <h2>Button</h2>
 
         <div className={styles.row}>
-          <Button variant="primary">Escanear rótulo</Button>
+          <Button variant="primary">Buscar por foto</Button>
           <Button variant="secondary">Continuar com e-mail</Button>
           <Button variant="text">Fazer depois</Button>
           <Button variant="primary" disabled>

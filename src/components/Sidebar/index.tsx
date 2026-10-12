@@ -4,8 +4,8 @@ import {
   BookOpen,
   Heart,
   History,
+  ImageUp,
   LayoutGrid,
-  ScanLine,
   Search,
   ShieldAlert,
 } from "lucide-react";
@@ -47,7 +47,7 @@ const GROUPS: NavGroup[] = [
   },
   {
     id: "my-space",
-    title: "Meu Espaço",
+    title: "Meu espaço",
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
       { to: "/historico", label: "Histórico", Icon: History },
@@ -56,8 +56,8 @@ const GROUPS: NavGroup[] = [
   },
   {
     id: "about",
-    title: "Sobre Venus",
-    links: [{ to: "/metodologia", label: "Como funciona", Icon: BookOpen }],
+    title: "Sobre a Venus",
+    links: [{ to: "/metodologia", label: "Metodologia", Icon: BookOpen }],
   },
 ];
 
@@ -95,8 +95,8 @@ function Sidebar({ onSearch }: SidebarProps) {
       </form>
 
       <Button to="/escanear" className={styles.scan}>
-        <ScanLine className={styles.buttonIcon} aria-hidden="true" />
-        Escanear rótulo
+        <ImageUp className={styles.buttonIcon} aria-hidden="true" />
+        Buscar por foto
       </Button>
 
       {GROUPS.map((group) => (
