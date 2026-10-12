@@ -85,6 +85,27 @@
   gap: var(--espaco-3);
 }
 
+.alergias {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alergia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+  padding: var(--espaco-3);
+  background-color: var(--avoid-fundo);
+  border-radius: var(--raio-medio);
+  color: var(--texto);
+}
+
 .ingredientes {
   display: flex;
   flex-direction: column;

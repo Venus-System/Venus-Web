@@ -4,6 +4,7 @@ import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import MainLayout from "../../components/MainLayout";
+import RiskBadge from "../../components/RiskBadge";
 import RiskLegend from "../../components/RiskLegend";
 import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useAnalisePublica } from "../../hooks/useAnalisePublica";
@@ -41,7 +42,8 @@ function notaDoIngrediente(
 ): string | undefined {
   const motivo = alertas.find(
     (alerta) =>
-      alerta.ingredientName?.toLowerCase() === item.inciName.toLowerCase(),
+      alerta.ingredientName !== null &&
+      ehAlertaPessoal(item, [alerta.ingredientName]),
   );
 
   if (motivo !== undefined) {
@@ -74,12 +76,13 @@ function Reacao() {
     (produto) => produto.brand.name === escolha.marca,
   );
 
-  const alertas =
-    pessoal.status === "pronta"
-      ? pessoal.analise.reasons.filter(
-          (motivo) => motivo.warning && motivo.ingredientName !== null,
-        )
-      : [];
+  const analisePessoal = pessoal.status === "pronta" ? pessoal.analise : null;
+  const avisos =
+    analisePessoal === null
+      ? []
+      : analisePessoal.reasons.filter((motivo) => motivo.warning);
+  const alergias = avisos.filter((motivo) => motivo.source === "allergy");
+  const alertas = avisos.filter((motivo) => motivo.ingredientName !== null);
   const nomesEmAlerta = alertas.flatMap((motivo) =>
     motivo.ingredientName === null ? [] : [motivo.ingredientName],
   );
@@ -223,10 +226,30 @@ function Reacao() {
               </div>
             ) : null}
 
-            {pessoal.status === "pronta" && alertas.length === 0 ? (
+            {analisePessoal !== null && !analisePessoal.complete ? (
+              <p className={styles.estado} role="status">
+                Não conseguimos calcular agora. O que aparece abaixo vem da
+                última análise salva, que não traz as suas alergias.
+              </p>
+            ) : null}
+
+            {analisePessoal !== null &&
+            analisePessoal.complete &&
+            avisos.length === 0 ? (
               <p className={styles.estado}>
                 Nenhum ingrediente desta fórmula é alerta para o seu perfil.
               </p>
+            ) : null}
+
+            {alergias.length > 0 ? (
+              <ul className={styles.alergias}>
+                {alergias.map((alergia) => (
+                  <li className={styles.alergia} key={alergia.id}>
+                    <RiskBadge level="avoid" label="Alergia" />
+                    <span>{alergia.text}</span>
+                  </li>
+                ))}
+              </ul>
             ) : null}
 
             {carregada.ingredients.length === 0 ? (
