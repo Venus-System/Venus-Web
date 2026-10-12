@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import type { Produto } from "../../types/produto";
 import { tomDoProduto } from "../../utils/tomDoProduto";
@@ -6,9 +7,10 @@ import styles from "./styles.module.css";
 
 interface ProductCardProps {
   produto: Produto;
+  action?: ReactNode;
 }
 
-function ProductCard({ produto }: ProductCardProps) {
+function ProductCard({ produto, action }: ProductCardProps) {
   const frameClasses = [styles.frame, styles[tomDoProduto(produto.slug)]].join(
     " ",
   );
@@ -35,6 +37,10 @@ function ProductCard({ produto }: ProductCardProps) {
 
         <ScoreBadge score={produto.scores.overallScore} level={produto.level} />
       </Link>
+
+      {action === undefined ? null : (
+        <span className={styles.action}>{action}</span>
+      )}
     </article>
   );
 }

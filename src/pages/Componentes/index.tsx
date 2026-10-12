@@ -154,7 +154,17 @@ function Componentes() {
         <h2>ProductCard</h2>
 
         <div className={styles.grid}>
-          <ProductCard produto={comImagem} />
+          <ProductCard
+            produto={comImagem}
+            action={
+              <FavoriteButton
+                productName={comImagem.name}
+                isFavorite={favorito}
+                isPending={false}
+                onToggle={() => setFavorito((atual) => !atual)}
+              />
+            }
+          />
           <ProductCard produto={produtosMock[3]} />
         </div>
       </section>

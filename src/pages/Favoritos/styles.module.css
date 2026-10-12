@@ -45,6 +45,17 @@
   font-weight: var(--peso-forte);
 }
 
+.aviso {
+  max-width: 60ch;
+  color: var(--texto);
+  font-weight: var(--peso-forte);
+}
+
+.erroAoAlternar {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
 .grade {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));

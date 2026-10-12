@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Button from "../../components/Button";
+import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
 import MySpaceNav from "../../components/MySpaceNav";
 import ProductCard from "../../components/ProductCard";
@@ -7,7 +9,16 @@ import { useFavoritos } from "../../hooks/useFavoritos";
 import styles from "./styles.module.css";
 
 function Favoritos() {
-  const { estado, recarregar } = useFavoritos();
+  const { estado, recarregar, alternar } = useFavoritos();
+  const avisoRef = useRef<HTMLParagraphElement>(null);
+
+  const ultimaAcao = estado.status === "pronto" ? estado.ultimaAcao : null;
+
+  useEffect(() => {
+    if (ultimaAcao !== null) {
+      avisoRef.current?.focus();
+    }
+  }, [ultimaAcao]);
 
   return (
     <MainLayout>
@@ -42,11 +53,25 @@ function Favoritos() {
           </div>
         ) : null}
 
+        {ultimaAcao === null ? null : (
+          <p ref={avisoRef} tabIndex={-1} className={styles.aviso}>
+            Você tirou {ultimaAcao.nome} dos favoritos.
+          </p>
+        )}
+
+        {estado.status === "pronto" && estado.erroAoAlternar !== null ? (
+          <p role="alert" className={styles.erroAoAlternar}>
+            {estado.erroAoAlternar}
+          </p>
+        ) : null}
+
         {estado.status === "pronto" && estado.produtos.length === 0 ? (
           <p className={styles.vazio}>
-            Você ainda não favoritou nenhum produto. Marque o coração de uma
-            análise no seu <Link to="/historico">histórico</Link> para guardar
-            aqui.
+            {ultimaAcao === null
+              ? "Você ainda não favoritou nenhum produto."
+              : "Sua prateleira ficou vazia."}{" "}
+            Marque o coração de uma análise no seu{" "}
+            <Link to="/historico">histórico</Link> para guardar aqui.
           </p>
         ) : null}
 
@@ -54,7 +79,17 @@ function Favoritos() {
           <ul className={styles.grade} aria-label="Produtos favoritos">
             {estado.produtos.map((produto) => (
               <li key={produto.slug}>
-                <ProductCard produto={produto} />
+                <ProductCard
+                  produto={produto}
+                  action={
+                    <FavoriteButton
+                      productName={produto.name}
+                      isFavorite
+                      isPending={estado.pendentes.includes(produto.slug)}
+                      onToggle={() => alternar(produto)}
+                    />
+                  }
+                />
               </li>
             ))}
           </ul>
