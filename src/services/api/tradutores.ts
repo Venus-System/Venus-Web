@@ -53,7 +53,10 @@ export function paraProdutoDaListagem(
   item: ProdutoApi,
   marca: MarcaApi,
   categoria: CategoriaApi,
+  score: NotasApi | null,
 ): Produto {
+  const notas = paraNotas(score);
+
   return {
     slug: item.slug,
     name: item.name,
@@ -61,7 +64,7 @@ export function paraProdutoDaListagem(
     category: categoria.name,
     brand: marca,
     imageUrl: null,
-    level: "no-data",
-    scores: NOTAS_VAZIAS,
+    level: nivelDaNota(notas.overallScore),
+    scores: notas,
   };
 }
