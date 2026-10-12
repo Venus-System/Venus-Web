@@ -18,7 +18,7 @@ function IngredientCard({ item, note }: IngredientCardProps) {
         <RiskBadge level={item.level} />
 
         <p className={styles.text}>
-          {item.ingredient?.functionSummary ??
+          {item.ingredient?.description ??
             "Ainda não temos informação verificada sobre este ingrediente."}
         </p>
       </div>

@@ -16,8 +16,8 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
   return {
     inciName,
     commonName: texto(dados.commonName) ?? inciName,
-    functionSummary:
-      texto(dados.functionSummary) ??
+    description:
+      texto(dados.description) ??
       "Ainda não temos a descrição deste ingrediente.",
     safetySummary: texto(dados.safetySummary) ?? "",
     biodegradability: numero(dados.biodegradabilityLevel) ?? 0,
