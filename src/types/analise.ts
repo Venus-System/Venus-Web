@@ -44,9 +44,10 @@ export interface AnalisePersonalizada {
   summary: string;
   reasons: MotivoDaAnalise[];
   breakdown: NotasDaAnalise;
-  ingredientCount: number;
-  unevaluatedIngredientCount: number;
+  ingredientCount: number | null;
+  unevaluatedIngredientCount: number | null;
   calculatedAt: string;
+  complete: boolean;
 }
 
 export type AnalisePessoal =

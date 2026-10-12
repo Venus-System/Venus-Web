@@ -73,7 +73,10 @@ function semRepetidos(motivos: MotivoDaAnalise[]): MotivoDaAnalise[] {
   });
 }
 
-export function lerClassificacao(valor: unknown): AnalisePersonalizada | null {
+export function lerClassificacao(
+  valor: unknown,
+  complete: boolean,
+): AnalisePersonalizada | null {
   const dados = comoObjeto(valor);
   const notas = comoObjeto(dados.breakdown);
   const finalScore = numero(dados.finalScore);
@@ -103,9 +106,10 @@ export function lerClassificacao(valor: unknown): AnalisePersonalizada | null {
       ethicalScore: numero(notas.ethicalScore),
       performanceScore: numero(notas.performanceScore),
     },
-    ingredientCount: numero(dados.ingredientCount) ?? 0,
-    unevaluatedIngredientCount: numero(dados.unevaluatedIngredientCount) ?? 0,
+    ingredientCount: numero(dados.ingredientCount),
+    unevaluatedIngredientCount: numero(dados.unevaluatedIngredientCount),
     calculatedAt: texto(dados.calculatedAt) ?? "",
+    complete,
   };
 }
 
@@ -120,6 +124,7 @@ async function lerCorpo(resposta: Response): Promise<unknown> {
 async function interpretar(
   resposta: Response,
   caminho: string,
+  complete: boolean,
 ): Promise<LeituraDaClassificacao> {
   if (resposta.status === 401 || resposta.status === 403) {
     throw new ErroDeOrientacao(
@@ -138,7 +143,7 @@ async function interpretar(
 
   verificarResposta(resposta, caminho);
 
-  const analise = lerClassificacao(await lerCorpo(resposta));
+  const analise = lerClassificacao(await lerCorpo(resposta), complete);
 
   if (analise === null) {
     throw new Error("A análise não veio no formato esperado.");
@@ -150,28 +155,23 @@ async function interpretar(
 export async function buscarUltimaClassificacaoNaApi(
   usuarioId: number,
   versaoId: number,
-  sinal?: AbortSignal,
 ): Promise<LeituraDaClassificacao> {
   const caminho = `/api/classifications/user/${usuarioId}/product-version/${versaoId}`;
-  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
-    signal: sinal,
-  });
+  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`);
 
-  return interpretar(resposta, caminho);
+  return interpretar(resposta, caminho, false);
 }
 
 export async function calcularClassificacaoNaApi(
   usuarioId: number,
   versaoId: number,
-  sinal?: AbortSignal,
 ): Promise<LeituraDaClassificacao> {
   const caminho = "/api/classifications";
   const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId: usuarioId, productVersionId: versaoId }),
-    signal: sinal,
   });
 
-  return interpretar(resposta, caminho);
+  return interpretar(resposta, caminho, true);
 }

@@ -68,6 +68,7 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     ingredientCount: 6,
     unevaluatedIngredientCount: 0,
     calculatedAt: CALCULADA_EM,
+    complete: true,
   },
 
   [hidratanteCeramidas.slug]: {
@@ -106,6 +107,7 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     ingredientCount: 6,
     unevaluatedIngredientCount: 0,
     calculatedAt: CALCULADA_EM,
+    complete: true,
   },
 
   [gelLimpezaPurificante.slug]: {
@@ -150,6 +152,7 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     ingredientCount: 5,
     unevaluatedIngredientCount: 0,
     calculatedAt: CALCULADA_EM,
+    complete: true,
   },
 
   [locaoClareadoraNoturna.slug]: {
@@ -188,6 +191,7 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     ingredientCount: 5,
     unevaluatedIngredientCount: 0,
     calculatedAt: CALCULADA_EM,
+    complete: true,
   },
 
   [oleoCapilarReparador.slug]: {
@@ -215,5 +219,6 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     ingredientCount: 3,
     unevaluatedIngredientCount: 1,
     calculatedAt: CALCULADA_EM,
+    complete: true,
   },
 };

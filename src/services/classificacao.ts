@@ -22,6 +22,16 @@ const FORA_DO_AR =
 
 const FALHA = "Não foi possível calcular a análise para o seu perfil.";
 
+const calculos = new Map<string, Promise<AnalisePessoal>>();
+
+export function esquecerAnalisesPessoais(): void {
+  calculos.clear();
+}
+
+function chaveDoCalculo(usuarioId: number, versaoId: number): string {
+  return `${usuarioId}:${versaoId}`;
+}
+
 function paraSituacao(leitura: LeituraDaClassificacao): AnalisePessoal {
   switch (leitura.codigo) {
     case "OK":
@@ -68,7 +78,6 @@ async function usuarioDaApi(): Promise<number> {
 
 function repassarOuTrocar(erro: unknown): never {
   if (
-    (erro instanceof DOMException && erro.name === "AbortError") ||
     erro instanceof ErroDeOrientacao ||
     erro instanceof ErroServicoIndisponivel
   ) {
@@ -78,10 +87,75 @@ function repassarOuTrocar(erro: unknown): never {
   throw new Error(FALHA);
 }
 
+async function lerSalva(
+  usuarioId: number,
+  versaoId: number,
+): Promise<AnalisePessoal | null> {
+  try {
+    const leitura = await buscarUltimaClassificacaoNaApi(usuarioId, versaoId);
+
+    return leitura.codigo === "OK"
+      ? { situacao: "pronta", analise: leitura.analise }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+async function calcularOuLerSalva(
+  usuarioId: number,
+  versaoId: number,
+): Promise<AnalisePessoal> {
+  try {
+    return paraSituacao(await calcularClassificacaoNaApi(usuarioId, versaoId));
+  } catch (erro) {
+    if (erro instanceof ErroDeOrientacao) {
+      throw erro;
+    }
+
+    const salva = await lerSalva(usuarioId, versaoId);
+
+    if (salva === null) {
+      throw erro;
+    }
+
+    return salva;
+  }
+}
+
+function calcularUmaVez(
+  usuarioId: number,
+  versaoId: number,
+): Promise<AnalisePessoal> {
+  const chave = chaveDoCalculo(usuarioId, versaoId);
+  const guardado = calculos.get(chave);
+
+  if (guardado !== undefined) {
+    return guardado;
+  }
+
+  const calculo = calcularOuLerSalva(usuarioId, versaoId).then(
+    (resultado) => {
+      if (resultado.situacao !== "pronta" || !resultado.analise.complete) {
+        calculos.delete(chave);
+      }
+
+      return resultado;
+    },
+    (erro: unknown) => {
+      calculos.delete(chave);
+      throw erro;
+    },
+  );
+
+  calculos.set(chave, calculo);
+
+  return calculo;
+}
+
 export async function buscarAnalisePessoal(
   slug: string,
   versaoId: number | null,
-  sinal?: AbortSignal,
 ): Promise<AnalisePessoal> {
   try {
     if (USAR_MOCK) {
@@ -98,20 +172,7 @@ export async function buscarAnalisePessoal(
       return { situacao: "indisponivel", mensagem: SEM_FORMULA };
     }
 
-    const usuarioId = await usuarioDaApi();
-    const ultima = await buscarUltimaClassificacaoNaApi(
-      usuarioId,
-      versaoId,
-      sinal,
-    );
-
-    if (ultima.codigo !== "ANALYSIS_NOT_FOUND") {
-      return paraSituacao(ultima);
-    }
-
-    return paraSituacao(
-      await calcularClassificacaoNaApi(usuarioId, versaoId, sinal),
-    );
+    return await calcularUmaVez(await usuarioDaApi(), versaoId);
   } catch (erro) {
     return repassarOuTrocar(erro);
   }
@@ -136,9 +197,11 @@ export async function recalcularAnalisePessoal(
       return { situacao: "indisponivel", mensagem: SEM_FORMULA };
     }
 
-    return paraSituacao(
-      await calcularClassificacaoNaApi(await usuarioDaApi(), versaoId),
-    );
+    const usuarioId = await usuarioDaApi();
+
+    calculos.delete(chaveDoCalculo(usuarioId, versaoId));
+
+    return await calcularUmaVez(usuarioId, versaoId);
   } catch (erro) {
     return repassarOuTrocar(erro);
   }
