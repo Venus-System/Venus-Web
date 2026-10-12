@@ -65,7 +65,11 @@ function PersonalAnalysis({
   onRetry,
   onRecalculate,
 }: PersonalAnalysisProps) {
-  if (state.status === "sem-conta" || state.status === "sem-perfil") {
+  if (
+    state.status === "sem-produto" ||
+    state.status === "sem-conta" ||
+    state.status === "sem-perfil"
+  ) {
     return null;
   }
 
@@ -141,7 +145,7 @@ function PersonalAnalysis({
                 );
               })}
 
-              {temAlergia ? null : (
+              {temAlergia || !state.analise.complete ? null : (
                 <li className={styles.motivo}>
                   <RiskBadge level="safe" label="Sem alérgenos seus" />
 
@@ -153,7 +157,16 @@ function PersonalAnalysis({
               )}
             </ul>
 
-            {state.analise.breakdown.profilePoints === null ? (
+            {state.analise.complete ? null : (
+              <p className={styles.aviso}>
+                Não conseguimos calcular agora, então esta é a última análise
+                salva. Ela não traz os motivos de alergia e de preferência.
+                Recalcule para ver a análise completa.
+              </p>
+            )}
+
+            {state.analise.complete &&
+            state.analise.breakdown.profilePoints === null ? (
               <p className={styles.aviso}>
                 Nenhuma resposta do seu perfil entrou nesta conta, então a nota
                 é só a qualidade do produto. Um perfil mais completo dá mais o
@@ -161,7 +174,8 @@ function PersonalAnalysis({
               </p>
             ) : null}
 
-            {state.analise.unevaluatedIngredientCount > 0 ? (
+            {state.analise.unevaluatedIngredientCount !== null &&
+            state.analise.unevaluatedIngredientCount > 0 ? (
               <p className={styles.aviso}>
                 {state.analise.unevaluatedIngredientCount} de{" "}
                 {state.analise.ingredientCount} ingredientes estão sem avaliação
