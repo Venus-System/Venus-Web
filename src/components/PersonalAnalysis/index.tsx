@@ -27,6 +27,10 @@ function seloDoMotivo(motivo: MotivoDaAnalise): SeloDoMotivo {
     return { level: "avoid", label: "Alergia" };
   }
 
+  if (motivo.blocking) {
+    return { level: "avoid", label: "Contraindicado" };
+  }
+
   return motivo.warning
     ? { level: "warning", label: "Atenção" }
     : { level: "safe", label: "A favor" };

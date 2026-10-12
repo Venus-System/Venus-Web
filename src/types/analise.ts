@@ -22,6 +22,7 @@ export interface MotivoDaAnalise {
   source: OrigemDoMotivo;
   text: string;
   warning: boolean;
+  blocking: boolean;
   ingredientName: string | null;
   profileTagSlug: string | null;
 }

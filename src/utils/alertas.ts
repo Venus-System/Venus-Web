@@ -22,13 +22,19 @@ export function ordenarPorRisco(
   );
 }
 
+function nomesDoIngrediente(item: IngredienteAvaliado): string[] {
+  return [item.inciName, item.ingredient?.commonName ?? ""]
+    .filter((nome) => nome !== "")
+    .map((nome) => nome.toLowerCase());
+}
+
 export function ehAlertaPessoal(
   item: IngredienteAvaliado,
   nomesEmAlerta: string[],
 ): boolean {
-  return nomesEmAlerta.some(
-    (nome) => nome.toLowerCase() === item.inciName.toLowerCase(),
-  );
+  const nomes = nomesDoIngrediente(item);
+
+  return nomesEmAlerta.some((nome) => nomes.includes(nome.toLowerCase()));
 }
 
 function ordemDeDestaque(

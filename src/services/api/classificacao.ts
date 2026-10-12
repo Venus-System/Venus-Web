@@ -36,7 +36,10 @@ function emMinusculas(valor: unknown): string {
   return typeof valor === "string" ? valor.toLowerCase() : "";
 }
 
-function lerMotivo(valor: unknown): MotivoDaAnalise | null {
+function lerMotivo(
+  valor: unknown,
+  riscoCritico: boolean,
+): MotivoDaAnalise | null {
   const dados = comoObjeto(valor);
   const text = texto(dados.text);
 
@@ -46,6 +49,7 @@ function lerMotivo(valor: unknown): MotivoDaAnalise | null {
 
   const origem = emMinusculas(dados.source);
   const source = ORIGENS.find((item) => item === origem) ?? "other";
+  const warning = dados.warning === true;
   const ingredientName = texto(dados.ingredientName);
   const profileTagSlug = texto(dados.profileTagSlug);
 
@@ -53,7 +57,12 @@ function lerMotivo(valor: unknown): MotivoDaAnalise | null {
     id: [source, ingredientName ?? "", profileTagSlug ?? "", text].join("|"),
     source,
     text,
-    warning: dados.warning === true,
+    warning,
+    blocking:
+      riscoCritico &&
+      warning &&
+      source === "ingredient_rule" &&
+      numero(dados.impact) === 0,
     ingredientName,
     profileTagSlug,
   };
@@ -95,7 +104,9 @@ export function lerClassificacao(
     compatibilityPercentage: numero(dados.compatibilityPercentage),
     summary: texto(dados.summary) ?? "",
     reasons: semRepetidos(
-      lerTodos(Array.isArray(dados.reasons) ? dados.reasons : [], lerMotivo),
+      lerTodos(Array.isArray(dados.reasons) ? dados.reasons : [], (motivo) =>
+        lerMotivo(motivo, riskLevel === "critical"),
+      ),
     ),
     breakdown: {
       qualityScore: numero(notas.qualityScore),
