@@ -57,8 +57,6 @@ privacidade.
 
 ## Conteúdo enviado por você
 
-*Esta seção passa a valer quando as avaliações de usuários existirem.*
-
 Ao publicar uma avaliação, você afirma que ela descreve sua experiência real e
 autoriza o Venus a exibi-la. Não publique conteúdo ofensivo, propaganda ou
 informação que você sabe ser falsa. Podemos remover conteúdo que viole isso.
@@ -105,10 +103,10 @@ pode — cite a fonte.
 
 ## Se você discordar de uma análise
 
-Toda página de produto tem a opção de reportar erro, e é o caminho mais rápido
-para corrigir. Se você é fabricante e discorda de uma classificação, use o mesmo
-canal: a análise parte de dados públicos e de literatura técnica, e sendo
-demonstrado um erro, ele é corrigido.
+Se você encontrar um erro numa análise, escreva para o e-mail de contato abaixo,
+dizendo qual é o produto e o que está errado. Se você é fabricante e discorda de
+uma classificação, use o mesmo canal: a análise parte de dados públicos e de
+literatura técnica, e sendo demonstrado um erro, ele é corrigido.
 
 ## Contato
 

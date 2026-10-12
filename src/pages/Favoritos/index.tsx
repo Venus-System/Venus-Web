@@ -1,13 +1,27 @@
 import { Link } from "react-router-dom";
 import Button from "../../components/Button";
+import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
 import MySpaceNav from "../../components/MySpaceNav";
-import ProductCard from "../../components/ProductCard";
+import ProductRow from "../../components/ProductRow";
 import { useFavoritos } from "../../hooks/useFavoritos";
+import type { EstadoFavoritos } from "../../hooks/useFavoritos";
 import styles from "./styles.module.css";
 
+function avisoDoFavorito(estado: EstadoFavoritos): string {
+  if (estado.status !== "pronto" || estado.ultimaAcao === null) {
+    return "";
+  }
+
+  const { nome, favoritado } = estado.ultimaAcao;
+
+  return favoritado
+    ? `${nome} voltou para os seus favoritos.`
+    : `Você tirou ${nome} dos favoritos. O produto continua nesta lista até você sair da página, e o coração coloca de volta.`;
+}
+
 function Favoritos() {
-  const { estado, recarregar } = useFavoritos();
+  const { estado, recarregar, alternar } = useFavoritos();
 
   return (
     <MainLayout>
@@ -42,6 +56,16 @@ function Favoritos() {
           </div>
         ) : null}
 
+        <p className={styles.aviso} aria-live="polite">
+          {avisoDoFavorito(estado)}
+        </p>
+
+        {estado.status === "pronto" && estado.erroAoAlternar !== null ? (
+          <p role="alert" className={styles.erroAoAlternar}>
+            {estado.erroAoAlternar}
+          </p>
+        ) : null}
+
         {estado.status === "pronto" && estado.produtos.length === 0 ? (
           <p className={styles.vazio}>
             Você ainda não favoritou nenhum produto. Marque o coração de uma
@@ -51,10 +75,28 @@ function Favoritos() {
         ) : null}
 
         {estado.status === "pronto" && estado.produtos.length > 0 ? (
-          <ul className={styles.grade} aria-label="Produtos favoritos">
+          <ul className={styles.lista} aria-label="Produtos favoritos">
             {estado.produtos.map((produto) => (
               <li key={produto.slug}>
-                <ProductCard produto={produto} />
+                <ProductRow
+                  produto={{
+                    slug: produto.slug,
+                    name: produto.name,
+                    brandName: produto.brand.name,
+                    imageUrl: produto.imageUrl,
+                  }}
+                  nota={produto.scores.overallScore}
+                  nivel={produto.level}
+                  category={produto.category}
+                  action={
+                    <FavoriteButton
+                      productName={produto.name}
+                      isFavorite={estado.slugs.includes(produto.slug)}
+                      isPending={estado.pendentes.includes(produto.slug)}
+                      onToggle={() => alternar(produto)}
+                    />
+                  }
+                />
               </li>
             ))}
           </ul>

@@ -111,11 +111,6 @@ export function useFavoritos() {
                   slugs: eraFavorito
                     ? atual.slugs.filter((slug) => slug !== produto.slug)
                     : [...atual.slugs, produto.slug],
-                  produtos: eraFavorito
-                    ? atual.produtos.filter(
-                        (item) => item.slug !== produto.slug,
-                      )
-                    : atual.produtos,
                   pendentes: atual.pendentes.filter(
                     (slug) => slug !== produto.slug,
                   ),

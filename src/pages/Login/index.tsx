@@ -190,7 +190,7 @@ function Login() {
               type="checkbox"
               className={styles.caixa}
             />
-            Continuar conectado
+            Lembrar de mim
           </label>
 
           <Link className={styles.link} to="/esqueci-senha">
