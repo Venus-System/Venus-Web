@@ -13,20 +13,31 @@ import {
 
 const CALCULADA_EM = "2026-10-10T14:03:22Z";
 
-function motivo(
-  source: OrigemDoMotivo,
-  text: string,
+interface DadosDoMotivo {
+  source: OrigemDoMotivo;
+  text: string;
+  warning?: boolean;
+  blocking?: boolean;
+  ingredientName?: string;
+  profileTagSlug?: string;
+}
+
+function motivo({
+  source,
+  text,
   warning = false,
-  ingredientName: string | null = null,
-  profileTagSlug: string | null = null,
-): MotivoDaAnalise {
+  blocking = false,
+  ingredientName,
+  profileTagSlug,
+}: DadosDoMotivo): MotivoDaAnalise {
   return {
     id: [source, ingredientName ?? "", profileTagSlug ?? "", text].join("|"),
     source,
     text,
     warning,
-    ingredientName,
-    profileTagSlug,
+    blocking,
+    ingredientName: ingredientName ?? null,
+    profileTagSlug: profileTagSlug ?? null,
   };
 }
 
@@ -37,24 +48,28 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     riskLevel: "low",
     compatibilityPercentage: 85,
     summary:
-      "Nota 86 de 100 - Ideal. A aveia acalma pele sensível e a marca é vegana, como você prefere.",
+      "Nota 86 de 100 - Ideal. A marca declara ser vegana, como você prefere. Aveia coloidal acalma pele sensível.",
     reasons: [
-      motivo(
-        "ingredient_rule",
-        "Aveia coloidal acalma pele sensível.",
-        false,
-        "Avena Sativa Kernel Extract",
-        "reativa",
-      ),
-      motivo(
-        "ingredient_rule",
-        "Niacinamida ajuda a controlar a oleosidade.",
-        false,
-        "Niacinamide",
-        "controle-de-oleosidade",
-      ),
-      motivo("preference", "A marca declara ser vegana, como você prefere."),
-      motivo("base_score", "Qualidade do produto: 88 de 100."),
+      motivo({
+        source: "preference",
+        text: "A marca declara ser vegana, como você prefere.",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Aveia coloidal acalma pele sensível.",
+        ingredientName: "Extrato de aveia",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Niacinamida ajuda a controlar a oleosidade.",
+        ingredientName: "Niacinamida",
+        profileTagSlug: "controle-de-oleosidade",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 88 de 100.",
+      }),
     ],
     breakdown: {
       qualityScore: 88,
@@ -77,23 +92,24 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     riskLevel: "low",
     compatibilityPercentage: 72,
     summary:
-      "Nota 75 de 100 - Recomendado. As ceramidas reforçam a barreira da pele seca.",
+      "Nota 75 de 100 - Recomendado. Ceramidas reforçam a barreira da pele seca. Glicerina é de origem natural.",
     reasons: [
-      motivo(
-        "ingredient_rule",
-        "Ceramidas reforçam a barreira da pele seca.",
-        false,
-        "Ceramide NP",
-        "muito-seca",
-      ),
-      motivo(
-        "ingredient_rule",
-        "Glicerina é de origem natural.",
-        false,
-        "Glycerin",
-        "ingredientes-naturais",
-      ),
-      motivo("base_score", "Qualidade do produto: 81 de 100."),
+      motivo({
+        source: "ingredient_rule",
+        text: "Ceramidas reforçam a barreira da pele seca.",
+        ingredientName: "Ceramida NP",
+        profileTagSlug: "muito-seca",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Glicerina é de origem natural.",
+        ingredientName: "Glicerina",
+        profileTagSlug: "ingredientes-naturais",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 81 de 100.",
+      }),
     ],
     breakdown: {
       qualityScore: 81,
@@ -116,29 +132,30 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     riskLevel: "medium",
     compatibilityPercentage: 50,
     summary:
-      "Nota 38 de 100 - Não recomendado. Atenção: a fórmula tem um sulfato, e você declarou alergia leve a sulfatos.",
+      "Nota 38 de 100 - Não recomendado. Atenção: Contém Lauril sulfato de sódio, ligado à sua alergia a Sulfatos (gravidade leve). Atenção: Fragrância pode irritar pele sensível.",
     reasons: [
-      motivo(
-        "allergy",
-        "Contém Sodium Lauryl Sulfate, ligado à sua alergia a sulfatos (leve). A nota perdeu 15 pontos.",
-        true,
-        "Sodium Lauryl Sulfate",
-      ),
-      motivo(
-        "ingredient_rule",
-        "Fragrância pode irritar pele sensível.",
-        true,
-        "Parfum",
-        "reativa",
-      ),
-      motivo(
-        "ingredient_rule",
-        "Glicerina é de origem natural.",
-        false,
-        "Glycerin",
-        "ingredientes-naturais",
-      ),
-      motivo("base_score", "Qualidade do produto: 58 de 100."),
+      motivo({
+        source: "allergy",
+        text: "Contém Lauril sulfato de sódio, ligado à sua alergia a Sulfatos (gravidade leve).",
+        warning: true,
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Fragrância pode irritar pele sensível.",
+        warning: true,
+        ingredientName: "Fragrância",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Glicerina é de origem natural.",
+        ingredientName: "Glicerina",
+        profileTagSlug: "ingredientes-naturais",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 58 de 100.",
+      }),
     ],
     breakdown: {
       qualityScore: 58,
@@ -161,23 +178,27 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     riskLevel: "critical",
     compatibilityPercentage: 20,
     summary:
-      "Nota 0 de 100 - Contraindicado. A fórmula tem retinol, que é contraindicado na gestação.",
+      "Nota 0 de 100 - Contraindicado. Atenção: Retinol é contraindicado na gestação. Atenção: Álcool desnaturado resseca pele sensível.",
     reasons: [
-      motivo(
-        "ingredient_rule",
-        "Retinol é contraindicado na gestação.",
-        true,
-        "Retinol",
-        "gravidez",
-      ),
-      motivo(
-        "ingredient_rule",
-        "Álcool desnaturado resseca pele sensível.",
-        true,
-        "Alcohol Denat.",
-        "reativa",
-      ),
-      motivo("base_score", "Qualidade do produto: 31 de 100."),
+      motivo({
+        source: "ingredient_rule",
+        text: "Retinol é contraindicado na gestação.",
+        warning: true,
+        blocking: true,
+        ingredientName: "Retinol",
+        profileTagSlug: "gravidez",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Álcool desnaturado resseca pele sensível.",
+        warning: true,
+        ingredientName: "Álcool desnaturado",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 31 de 100.",
+      }),
     ],
     breakdown: {
       qualityScore: 31,
@@ -201,11 +222,14 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     compatibilityPercentage: null,
     summary: "Nota 40 de 100 - Não recomendado.",
     reasons: [
-      motivo("base_score", "Qualidade do produto: 40 de 100."),
-      motivo(
-        "base_score",
-        "1 de 3 ingredientes ainda sem avaliação de saúde e ambiental.",
-      ),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 40 de 100.",
+      }),
+      motivo({
+        source: "base_score",
+        text: "1 de 3 ingredientes ainda sem avaliação de saúde e ambiental.",
+      }),
     ],
     breakdown: {
       qualityScore: 40,
