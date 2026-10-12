@@ -46,13 +46,15 @@ function ProductRow({
           {produto.name}
         </Link>
 
-        {dataValida ? (
-          <time dateTime={realizadaEm} className={styles.detail}>
-            {FORMATO_DATA.format(data)}
-          </time>
-        ) : (
-          <span className={styles.detail}>Data não informada</span>
-        )}
+        <span className={styles.detail}>
+          {produto.brandName === "" ? null : `${produto.brandName} · `}
+
+          {dataValida ? (
+            <time dateTime={realizadaEm}>{FORMATO_DATA.format(data)}</time>
+          ) : (
+            "Data não informada"
+          )}
+        </span>
       </span>
 
       <ScoreBadge score={nota} level={nivel} />
