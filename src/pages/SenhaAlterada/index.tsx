@@ -17,7 +17,7 @@ function SenhaAlterada() {
 
       <h1 className={styles.titulo} ref={tituloRef} tabIndex={-1}>
         Senha trocada.{" "}
-        <span className={styles.destaque}>Bem-vindo de volta</span>
+        <span className={styles.destaque}>Que bom te ver de volta</span>
       </h1>
 
       <p className={styles.texto}>
