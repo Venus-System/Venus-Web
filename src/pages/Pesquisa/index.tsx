@@ -367,21 +367,46 @@ function Pesquisa() {
             </p>
           ) : null}
 
-          {estado.situacao === "sucesso" && lista.length === 0 ? (
+          {estado.situacao === "sucesso" &&
+          lista.length === 0 &&
+          semFiltro(busca.filtros) ? (
             <div className={styles.empty}>
-              <h3 className={styles.emptyTitle}>Nada por aqui ainda</h3>
+              <h3 className={styles.emptyTitle}>Nada por aqui</h3>
 
               <p className={styles.emptyText}>
-                {semFiltro(busca.filtros)
-                  ? "O catálogo ainda não tem produtos."
-                  : "Confira a grafia do nome do produto ou tire algum filtro. Também é possível voltar e olhar o catálogo inteiro."}
+                O catálogo não tem produtos no momento.
+              </p>
+            </div>
+          ) : null}
+
+          {estado.situacao === "sucesso" &&
+          lista.length === 0 &&
+          !semFiltro(busca.filtros) ? (
+            <div className={styles.empty}>
+              <h3 className={styles.emptyTitle}>Não achamos esse produto</h3>
+
+              <p className={styles.emptyText}>
+                Confira a grafia do nome, com os acentos, ou tire algum filtro.
               </p>
 
-              {semFiltro(busca.filtros) ? null : (
-                <Button type="button" onClick={voltarAoCatalogo}>
+              <p className={styles.emptyText}>
+                <strong>Está com o produto em mãos?</strong> Busque pela foto
+                do rótulo. Se ele não estiver no catálogo, instale o app Venus
+                no celular e escaneie o produto com ele na mão: ele entra no
+                catálogo para toda a comunidade.
+              </p>
+
+              <div className={styles.emptyActions}>
+                <Button to="/escanear">Buscar pela foto do rótulo</Button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={voltarAoCatalogo}
+                >
                   Ver catálogo completo
                 </Button>
-              )}
+              </div>
             </div>
           ) : null}
 
