@@ -206,6 +206,11 @@ function Perfil() {
               <RotateCcw className={styles.refazerIcone} aria-hidden="true" />
               Refazer questionário
             </Button>
+
+            <p className={styles.refazerNota}>
+              As respostas que você já deu voltam preenchidas. Nada muda até
+              você concluir o questionário.
+            </p>
           </aside>
 
           <div className={styles.conteudo}>

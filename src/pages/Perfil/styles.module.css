@@ -214,6 +214,11 @@
   width: 100%;
 }
 
+.refazerNota {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .avatarFoto {
   width: 100%;
   height: 100%;
