@@ -1,24 +1,27 @@
-import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Button from "../../components/Button";
 import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
 import MySpaceNav from "../../components/MySpaceNav";
-import ProductCard from "../../components/ProductCard";
+import ProductRow from "../../components/ProductRow";
 import { useFavoritos } from "../../hooks/useFavoritos";
+import type { EstadoFavoritos } from "../../hooks/useFavoritos";
 import styles from "./styles.module.css";
+
+function avisoDoFavorito(estado: EstadoFavoritos): string {
+  if (estado.status !== "pronto" || estado.ultimaAcao === null) {
+    return "";
+  }
+
+  const { nome, favoritado } = estado.ultimaAcao;
+
+  return favoritado
+    ? `${nome} voltou para os seus favoritos.`
+    : `Você tirou ${nome} dos favoritos. O produto continua nesta lista até você sair da página, e o coração coloca de volta.`;
+}
 
 function Favoritos() {
   const { estado, recarregar, alternar } = useFavoritos();
-  const avisoRef = useRef<HTMLParagraphElement>(null);
-
-  const ultimaAcao = estado.status === "pronto" ? estado.ultimaAcao : null;
-
-  useEffect(() => {
-    if (ultimaAcao !== null) {
-      avisoRef.current?.focus();
-    }
-  }, [ultimaAcao]);
 
   return (
     <MainLayout>
@@ -53,11 +56,9 @@ function Favoritos() {
           </div>
         ) : null}
 
-        {ultimaAcao === null ? null : (
-          <p ref={avisoRef} tabIndex={-1} className={styles.aviso}>
-            Você tirou {ultimaAcao.nome} dos favoritos.
-          </p>
-        )}
+        <p className={styles.aviso} aria-live="polite">
+          {avisoDoFavorito(estado)}
+        </p>
 
         {estado.status === "pronto" && estado.erroAoAlternar !== null ? (
           <p role="alert" className={styles.erroAoAlternar}>
@@ -67,24 +68,30 @@ function Favoritos() {
 
         {estado.status === "pronto" && estado.produtos.length === 0 ? (
           <p className={styles.vazio}>
-            {ultimaAcao === null
-              ? "Você ainda não favoritou nenhum produto."
-              : "Sua prateleira ficou vazia."}{" "}
-            Marque o coração de uma análise no seu{" "}
-            <Link to="/historico">histórico</Link> para guardar aqui.
+            Você ainda não favoritou nenhum produto. Marque o coração de uma
+            análise no seu <Link to="/historico">histórico</Link> para guardar
+            aqui.
           </p>
         ) : null}
 
         {estado.status === "pronto" && estado.produtos.length > 0 ? (
-          <ul className={styles.grade} aria-label="Produtos favoritos">
+          <ul className={styles.lista} aria-label="Produtos favoritos">
             {estado.produtos.map((produto) => (
               <li key={produto.slug}>
-                <ProductCard
-                  produto={produto}
+                <ProductRow
+                  produto={{
+                    slug: produto.slug,
+                    name: produto.name,
+                    brandName: produto.brand.name,
+                    imageUrl: produto.imageUrl,
+                  }}
+                  nota={produto.scores.overallScore}
+                  nivel={produto.level}
+                  category={produto.category}
                   action={
                     <FavoriteButton
                       productName={produto.name}
-                      isFavorite
+                      isFavorite={estado.slugs.includes(produto.slug)}
                       isPending={estado.pendentes.includes(produto.slug)}
                       onToggle={() => alternar(produto)}
                     />
