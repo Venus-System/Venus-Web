@@ -36,6 +36,11 @@
   font-weight: var(--peso-forte);
 }
 
+.pontos {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .motivos {
   display: flex;
   flex-direction: column;

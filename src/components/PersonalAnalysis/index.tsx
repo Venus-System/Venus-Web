@@ -32,9 +32,22 @@ function seloDoMotivo(motivo: MotivoDaAnalise): SeloDoMotivo {
     return { level: "avoid", label: "Contraindicado" };
   }
 
-  return motivo.warning
-    ? { level: "warning", label: "Atenção" }
-    : { level: "safe", label: "A favor" };
+  if (motivo.warning) {
+    return { level: "warning", label: "Atenção" };
+  }
+
+  if (motivo.bonus) {
+    return { level: "safe", label: "A favor" };
+  }
+
+  return {
+    level: "no-data",
+    label: motivo.source === "preference" ? "Preferência" : "Informação",
+  };
+}
+
+function emPontos(pontos: number): string {
+  return pontos.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 }
 
 function motivosDoPerfil(analise: AnalisePersonalizada): MotivoDaAnalise[] {
@@ -128,6 +141,17 @@ function PersonalAnalysis({
           <>
             {state.analise.summary !== "" ? (
               <p className={styles.resumo}>{state.analise.summary}</p>
+            ) : null}
+
+            {state.analise.breakdown.qualityPoints !== null &&
+            state.analise.breakdown.profilePoints !== null ? (
+              <p className={styles.pontos}>
+                De onde vem a nota:{" "}
+                {emPontos(state.analise.breakdown.qualityPoints)} de 35 pontos
+                pela qualidade do produto e{" "}
+                {emPontos(state.analise.breakdown.profilePoints)} de 65 pelo que
+                a fórmula combina com o seu perfil.
+              </p>
             ) : null}
 
             <ul className={styles.motivos}>

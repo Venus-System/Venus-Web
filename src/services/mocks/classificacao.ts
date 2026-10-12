@@ -36,6 +36,7 @@ function motivo({
     text,
     warning,
     blocking,
+    bonus: source === "ingredient_rule" && !warning,
     ingredientName: ingredientName ?? null,
     profileTagSlug: profileTagSlug ?? null,
   };
@@ -151,6 +152,10 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
         text: "Glicerina é de origem natural.",
         ingredientName: "Glicerina",
         profileTagSlug: "ingredientes-naturais",
+      }),
+      motivo({
+        source: "preference",
+        text: "A marca não declara ser vegana, e você prefere produtos veganos.",
       }),
       motivo({
         source: "base_score",

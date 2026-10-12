@@ -52,6 +52,7 @@ function lerMotivo(
   const warning = dados.warning === true;
   const ingredientName = texto(dados.ingredientName);
   const profileTagSlug = texto(dados.profileTagSlug);
+  const impacto = numero(dados.impact);
 
   return {
     id: [source, ingredientName ?? "", profileTagSlug ?? "", text].join("|"),
@@ -62,7 +63,8 @@ function lerMotivo(
       riscoCritico &&
       warning &&
       source === "ingredient_rule" &&
-      numero(dados.impact) === 0,
+      impacto === 0,
+    bonus: !warning && impacto !== null && impacto > 0,
     ingredientName,
     profileTagSlug,
   };
