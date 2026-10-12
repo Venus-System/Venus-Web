@@ -21,6 +21,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
 import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
 import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
+import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import RatingSummary from "../../components/RatingSummary";
@@ -268,6 +269,8 @@ function Produto() {
   return (
     <MainLayout>
       <div className={styles.page}>
+        <BackButton fallback="/pesquisa" />
+
         <header className={styles.hero}>
           <div className={styles.frame}>
             {product.imageUrl ? (
