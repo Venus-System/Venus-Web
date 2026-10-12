@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeftRight } from "lucide-react";
 import { ErroProdutoNaoEncontrado } from "../../services/erros";
 import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
@@ -23,7 +25,9 @@ import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
 import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
 import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
+import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
+import ProductFavorite from "../../components/ProductFavorite";
 import RatingSummary from "../../components/RatingSummary";
 import ReviewCard from "../../components/ReviewCard";
 import ReportReviewModal from "../../components/ReportReviewModal";
@@ -64,7 +68,7 @@ function Produto() {
   const [estado, setEstado] = useState<EstadoProduto>({
     situacao: "carregando",
   });
-  const { usuario } = useAutenticacao();
+  const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
   const {
@@ -266,6 +270,21 @@ function Produto() {
     motivo.ingredientName === null ? [] : [motivo.ingredientName],
   );
 
+  let favorito: ReactNode = null;
+
+  if (logado) {
+    favorito = <ProductFavorite slug={product.slug} name={product.name} />;
+  } else if (!carregandoConta) {
+    favorito = (
+      <FavoriteButton
+        productName={product.name}
+        isFavorite={false}
+        isPending={false}
+        onToggle={exigirLogin}
+      />
+    );
+  }
+
   return (
     <MainLayout>
       <div className={styles.page}>
@@ -388,6 +407,18 @@ function Produto() {
               {temFragrancia(ingredients) ? (
                 <Chip label="Contém fragrância" level="warning" />
               ) : null}
+            </div>
+
+            <div className={styles.acoes}>
+              <Button variant="secondary" to={`/comparar?a=${product.slug}`}>
+                <ArrowLeftRight
+                  className={styles.acaoIcone}
+                  aria-hidden="true"
+                />
+                Comparar com outro produto
+              </Button>
+
+              {favorito}
             </div>
           </div>
         </header>

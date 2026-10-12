@@ -82,6 +82,19 @@
   gap: var(--espaco-2);
 }
 
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.acaoIcone {
+  width: var(--tamanho-base);
+  height: var(--tamanho-base);
+  flex-shrink: 0;
+}
+
 .veredito {
   display: flex;
   flex-direction: column;
