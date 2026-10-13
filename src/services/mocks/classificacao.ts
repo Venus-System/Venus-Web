@@ -19,6 +19,7 @@ interface DadosDoMotivo {
   warning?: boolean;
   blocking?: boolean;
   ingredientName?: string;
+  allergenNames?: string[];
   profileTagSlug?: string;
 }
 
@@ -28,6 +29,7 @@ function motivo({
   warning = false,
   blocking = false,
   ingredientName,
+  allergenNames = [],
   profileTagSlug,
 }: DadosDoMotivo): MotivoDaAnalise {
   return {
@@ -38,6 +40,8 @@ function motivo({
     blocking,
     bonus: source === "ingredient_rule" && !warning,
     ingredientName: ingredientName ?? null,
+    ingredientNames:
+      ingredientName === undefined ? allergenNames : [ingredientName],
     profileTagSlug: profileTagSlug ?? null,
   };
 }
@@ -139,6 +143,7 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
         source: "allergy",
         text: "Contém Lauril sulfato de sódio, ligado à sua alergia a Sulfatos (gravidade leve).",
         warning: true,
+        allergenNames: ["Lauril sulfato de sódio"],
       }),
       motivo({
         source: "ingredient_rule",

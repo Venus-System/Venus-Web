@@ -32,8 +32,37 @@ const ORIGENS: OrigemDoMotivo[] = [
   "base_score",
 ];
 
+const INICIO_DA_ALERGIA = "Contém ";
+const FIM_DA_ALERGIA = ", ligado à sua alergia";
+
 function emMinusculas(valor: unknown): string {
   return typeof valor === "string" ? valor.toLowerCase() : "";
+}
+
+function nomesNaFraseDeAlergia(frase: string): string[] {
+  const fim = frase.indexOf(FIM_DA_ALERGIA);
+
+  if (!frase.startsWith(INICIO_DA_ALERGIA) || fim === -1) {
+    return [];
+  }
+
+  return frase
+    .slice(INICIO_DA_ALERGIA.length, fim)
+    .split(", ")
+    .map((nome) => nome.trim())
+    .filter((nome) => nome !== "");
+}
+
+function nomesDoMotivo(
+  source: OrigemDoMotivo,
+  text: string,
+  ingredientName: string | null,
+): string[] {
+  if (source === "allergy") {
+    return nomesNaFraseDeAlergia(text);
+  }
+
+  return ingredientName === null ? [] : [ingredientName];
 }
 
 function lerMotivo(
@@ -66,6 +95,7 @@ function lerMotivo(
       impacto === 0,
     bonus: !warning && impacto !== null && impacto > 0,
     ingredientName,
+    ingredientNames: nomesDoMotivo(source, text, ingredientName),
     profileTagSlug,
   };
 }

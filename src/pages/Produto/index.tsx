@@ -266,9 +266,7 @@ function Produto() {
     pessoal === null
       ? []
       : pessoal.reasons.filter((motivo) => motivo.warning);
-  const nomesEmAlerta = alertas.flatMap((motivo) =>
-    motivo.ingredientName === null ? [] : [motivo.ingredientName],
-  );
+  const nomesEmAlerta = alertas.flatMap((motivo) => motivo.ingredientNames);
 
   let favorito: ReactNode = null;
 
@@ -449,7 +447,7 @@ function Produto() {
 
           {ingredients.length === 0 ? (
             <p className={styles.sectionText}>
-              Ainda não temos a lista de ingredientes deste produto.
+              Não temos a lista de ingredientes deste produto.
             </p>
           ) : (
             <>
@@ -484,6 +482,7 @@ function Produto() {
                 open={modais.ingredientes}
                 onClose={fecharIngredientes}
                 ingredients={ingredients}
+                alertNames={nomesEmAlerta}
               />
             </>
           )}

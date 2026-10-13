@@ -72,6 +72,13 @@
   overflow-wrap: break-word;
 }
 
+.conviteAcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
 .convite {
   display: flex;
   flex-direction: column;

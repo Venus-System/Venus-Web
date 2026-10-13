@@ -25,6 +25,7 @@ export interface MotivoDaAnalise {
   blocking: boolean;
   bonus: boolean;
   ingredientName: string | null;
+  ingredientNames: string[];
   profileTagSlug: string | null;
 }
 

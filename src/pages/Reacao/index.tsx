@@ -41,10 +41,8 @@ function notaDoIngrediente(
   item: IngredienteAvaliado,
   alertas: MotivoDaAnalise[],
 ): string | undefined {
-  const motivo = alertas.find(
-    (alerta) =>
-      alerta.ingredientName !== null &&
-      ehAlertaPessoal(item, [alerta.ingredientName]),
+  const motivo = alertas.find((alerta) =>
+    ehAlertaPessoal(item, alerta.ingredientNames),
   );
 
   if (motivo !== undefined) {
@@ -83,10 +81,8 @@ function Reacao() {
       ? []
       : analisePessoal.reasons.filter((motivo) => motivo.warning);
   const alergias = avisos.filter((motivo) => motivo.source === "allergy");
-  const alertas = avisos.filter((motivo) => motivo.ingredientName !== null);
-  const nomesEmAlerta = alertas.flatMap((motivo) =>
-    motivo.ingredientName === null ? [] : [motivo.ingredientName],
-  );
+  const alertas = avisos.filter((motivo) => motivo.ingredientNames.length > 0);
+  const nomesEmAlerta = alertas.flatMap((motivo) => motivo.ingredientNames);
   const emAtencao =
     carregada === null
       ? []
@@ -169,7 +165,11 @@ function Reacao() {
           {analise.status === "carregando" ? "Carregando a fórmula." : ""}
           {carregada === null
             ? ""
-            : `Fórmula de ${carregada.product.name} pronta: ${emAtencao.length} ingredientes merecem atenção.`}
+            : `Fórmula de ${carregada.product.name} pronta: ${
+                emAtencao.length === 1
+                  ? "1 ingrediente merece atenção."
+                  : `${emAtencao.length} ingredientes merecem atenção.`
+              }`}
           {pessoal.status === "calculando" && carregada !== null
             ? " Cruzando com o seu perfil."
             : ""}
@@ -212,9 +212,15 @@ function Reacao() {
                   sua pele e para as suas alergias. É opcional.
                 </p>
 
-                <Button variant="secondary" to="/criar-conta">
-                  Criar perfil
-                </Button>
+                <div className={styles.conviteAcoes}>
+                  <Button variant="secondary" to="/criar-conta">
+                    Criar perfil
+                  </Button>
+
+                  <Button variant="text" to="/login" state={{ de: "/reacao" }}>
+                    Já tenho conta
+                  </Button>
+                </div>
               </div>
             ) : null}
 
@@ -317,6 +323,7 @@ function Reacao() {
                 setEscolha((atual) => ({ ...atual, todosAbertos: false }))
               }
               ingredients={carregada.ingredients}
+              alertNames={nomesEmAlerta}
             />
           </section>
         )}
