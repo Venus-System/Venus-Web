@@ -59,6 +59,7 @@
 .tabela {
   width: 100%;
   min-width: 44rem;
+  table-layout: fixed;
   border-collapse: collapse;
   color: var(--texto);
 }
@@ -133,6 +134,15 @@
   object-fit: contain;
 }
 
+.nomeLink {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.nomeLink:hover {
+  color: var(--violeta);
+}
+
 .nome {
   display: flex;
   align-items: center;
@@ -200,19 +210,8 @@
 .preenchida {
   display: block;
   height: 100%;
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
-}
-
-.saude {
-  background-color: var(--saude);
-}
-
-.ambiental {
-  background-color: var(--ambiental);
-}
-
-.etica {
-  background-color: var(--etica);
 }
 
 .melhor,
@@ -234,6 +233,13 @@
 .selo {
   background-color: var(--safe-fundo);
   color: var(--safe);
+}
+
+.alerta,
+.alertaEvitar {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .alerta {
@@ -261,6 +267,15 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--espaco-2);
+}
+
+.convite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
 }
 
 .situacao {

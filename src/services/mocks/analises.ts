@@ -11,7 +11,7 @@ import {
 const agua: Ingrediente = {
   inciName: "Aqua",
   commonName: "Água",
-  functionSummary: "Solvente que forma a base da fórmula.",
+  description: "Solvente que forma a base da fórmula.",
   safetySummary: "Sem risco conhecido para a pele ou para o ambiente.",
   biodegradability: 5,
   irritationRiskLevel: 0,
@@ -23,7 +23,7 @@ const agua: Ingrediente = {
 const glicerina: Ingrediente = {
   inciName: "Glycerin",
   commonName: "Glicerina",
-  functionSummary: "Umectante que puxa água para a camada superficial da pele.",
+  description: "Umectante que puxa água para a camada superficial da pele.",
   safetySummary:
     "Bem tolerada por todos os tipos de pele, inclusive sensível.",
   biodegradability: 5,
@@ -36,7 +36,7 @@ const glicerina: Ingrediente = {
 const niacinamida: Ingrediente = {
   inciName: "Niacinamide",
   commonName: "Niacinamida",
-  functionSummary:
+  description:
     "Forma da vitamina B3 que ajuda a uniformizar o tom e a reforçar a barreira.",
   safetySummary:
     "Ampla literatura de segurança; irritação rara e ligada a peles muito reativas.",
@@ -50,7 +50,7 @@ const niacinamida: Ingrediente = {
 const aveia: Ingrediente = {
   inciName: "Avena Sativa Kernel Extract",
   commonName: "Extrato de aveia",
-  functionSummary: "Calmante de origem vegetal usado em peles reativas.",
+  description: "Calmante de origem vegetal usado em peles reativas.",
   safetySummary:
     "Boa tolerância dermatológica, com relatos raros de alergia.",
   biodegradability: 5,
@@ -63,7 +63,7 @@ const aveia: Ingrediente = {
 const pantenol: Ingrediente = {
   inciName: "Panthenol",
   commonName: "Pró-vitamina B5",
-  functionSummary: "Hidratante que auxilia na reparação da barreira cutânea.",
+  description: "Hidratante que auxilia na reparação da barreira cutânea.",
   safetySummary: "Considerado seguro nas concentrações usuais de cosméticos.",
   biodegradability: 4,
   irritationRiskLevel: 0,
@@ -75,7 +75,7 @@ const pantenol: Ingrediente = {
 const fenoxietanol: Ingrediente = {
   inciName: "Phenoxyethanol",
   commonName: "Fenoxietanol",
-  functionSummary: "Conservante que impede a proliferação de microrganismos.",
+  description: "Conservante que impede a proliferação de microrganismos.",
   safetySummary:
     "Seguro dentro do limite regulatório, mas pode irritar pele sensível.",
   biodegradability: 3,
@@ -88,7 +88,7 @@ const fenoxietanol: Ingrediente = {
 const alcoolCetearilico: Ingrediente = {
   inciName: "Cetearyl Alcohol",
   commonName: "Álcool cetoestearílico",
-  functionSummary: "Emoliente e espessante; não resseca como o álcool volátil.",
+  description: "Emoliente e espessante; não resseca como o álcool volátil.",
   safetySummary: "Boa tolerância; pode pesar em pele com tendência a acne.",
   biodegradability: 4,
   irritationRiskLevel: 1,
@@ -100,7 +100,7 @@ const alcoolCetearilico: Ingrediente = {
 const ceramida: Ingrediente = {
   inciName: "Ceramide NP",
   commonName: "Ceramida NP",
-  functionSummary: "Lipídio que repõe um componente natural da barreira da pele.",
+  description: "Lipídio que repõe um componente natural da barreira da pele.",
   safetySummary: "Sem risco relevante de irritação relatado.",
   biodegradability: 4,
   irritationRiskLevel: 0,
@@ -112,7 +112,7 @@ const ceramida: Ingrediente = {
 const butilenoGlicol: Ingrediente = {
   inciName: "Butylene Glycol",
   commonName: "Butilenoglicol",
-  functionSummary: "Veículo que dissolve ativos e melhora o toque da fórmula.",
+  description: "Veículo que dissolve ativos e melhora o toque da fórmula.",
   safetySummary: "Irritação incomum, concentrada em peles muito sensíveis.",
   biodegradability: 4,
   irritationRiskLevel: 1,
@@ -124,7 +124,7 @@ const butilenoGlicol: Ingrediente = {
 const laurilSulfato: Ingrediente = {
   inciName: "Sodium Lauryl Sulfate",
   commonName: "Lauril sulfato de sódio",
-  functionSummary:
+  description:
     "Tensoativo de limpeza com alto poder de remoção de oleosidade.",
   safetySummary:
     "Resseca e irrita com uso frequente, sobretudo em pele seca ou com eczema.",
@@ -138,7 +138,7 @@ const laurilSulfato: Ingrediente = {
 const cocamidopropilBetaina: Ingrediente = {
   inciName: "Cocamidopropyl Betaine",
   commonName: "Cocamidopropil betaína",
-  functionSummary: "Tensoativo suave usado para equilibrar fórmulas de limpeza.",
+  description: "Tensoativo suave usado para equilibrar fórmulas de limpeza.",
   safetySummary: "Alergênico de contato reconhecido, ainda que pouco comum.",
   biodegradability: 4,
   irritationRiskLevel: 2,
@@ -150,7 +150,7 @@ const cocamidopropilBetaina: Ingrediente = {
 const fragrancia: Ingrediente = {
   inciName: "Parfum",
   commonName: "Fragrância",
-  functionSummary: "Mistura aromática que não tem função de cuidado com a pele.",
+  description: "Mistura aromática que não tem função de cuidado com a pele.",
   safetySummary:
     "Causa frequente de dermatite de contato; a composição não é aberta no rótulo.",
   biodegradability: 2,
@@ -163,7 +163,7 @@ const fragrancia: Ingrediente = {
 const alcoolDenaturado: Ingrediente = {
   inciName: "Alcohol Denat.",
   commonName: "Álcool desnaturado",
-  functionSummary: "Solvente volátil que acelera a secagem da fórmula.",
+  description: "Solvente volátil que acelera a secagem da fórmula.",
   safetySummary:
     "Em posição alta na lista, compromete a barreira e agrava pele sensível.",
   biodegradability: 5,
@@ -176,7 +176,7 @@ const alcoolDenaturado: Ingrediente = {
 const retinol: Ingrediente = {
   inciName: "Retinol",
   commonName: "Retinol",
-  functionSummary: "Derivado de vitamina A usado na renovação celular.",
+  description: "Derivado de vitamina A usado na renovação celular.",
   safetySummary:
     "Contraindicado na gestação e irritante no início do uso; exige protetor solar.",
   biodegradability: 3,
@@ -189,6 +189,7 @@ const retinol: Ingrediente = {
 export const analisesMock: Record<string, AnaliseExibicao> = {
   [serumCalmanteAveia.slug]: {
     product: serumCalmanteAveia,
+    versionId: 1,
     ingredients: [
       {
         id: 1,
@@ -233,11 +234,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fenoxietanol,
       },
     ],
-    personalized: null,
   },
 
   [hidratanteCeramidas.slug]: {
     product: hidratanteCeramidas,
+    versionId: 2,
     ingredients: [
       {
         id: 1,
@@ -282,11 +283,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fenoxietanol,
       },
     ],
-    personalized: null,
   },
 
   [gelLimpezaPurificante.slug]: {
     product: gelLimpezaPurificante,
+    versionId: 3,
     ingredients: [
       {
         id: 1,
@@ -324,11 +325,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 
   [locaoClareadoraNoturna.slug]: {
     product: locaoClareadoraNoturna,
+    versionId: 4,
     ingredients: [
       {
         id: 1,
@@ -366,11 +367,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 
   [oleoCapilarReparador.slug]: {
     product: oleoCapilarReparador,
+    versionId: 5,
     ingredients: [
       {
         id: 15,
@@ -394,6 +395,5 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         ingredient: fragrancia,
       },
     ],
-    personalized: null,
   },
 };

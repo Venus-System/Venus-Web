@@ -5,6 +5,7 @@ import styles from "./styles.module.css";
 
 interface RiskBadgeProps {
   level: RiskLevel;
+  label?: string;
 }
 
 interface BadgeContent {
@@ -19,14 +20,14 @@ const CONTENT: Record<RiskLevel, BadgeContent> = {
   "no-data": { label: "Não verificado", Icon: CircleHelp },
 };
 
-function RiskBadge({ level }: RiskBadgeProps) {
-  const { label, Icon } = CONTENT[level];
+function RiskBadge({ level, label }: RiskBadgeProps) {
+  const { label: padrao, Icon } = CONTENT[level];
   const classes = [styles.badge, styles[level]].join(" ");
 
   return (
     <span className={classes}>
       <Icon className={styles.icon} aria-hidden="true" />
-      {label}
+      {label ?? padrao}
     </span>
   );
 }

@@ -3,7 +3,7 @@ export type RiskLevel = "safe" | "warning" | "avoid" | "no-data";
 export interface Ingrediente {
   inciName: string;
   commonName: string;
-  functionSummary: string;
+  description: string;
   safetySummary: string;
   biodegradability: number;
   irritationRiskLevel: number;

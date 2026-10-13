@@ -1,5 +1,5 @@
-import type { NotasProduto, Produto } from "../../types/produto";
-import type { RiskLevel } from "../../types/ingrediente";
+import type { Marca, NotasProduto, Produto } from "../../types/produto";
+import { nivelDaNota } from "../../utils/niveis";
 import type {
   CategoriaApi,
   MarcaApi,
@@ -34,16 +34,15 @@ function paraNotas(score: NotasApi | null): NotasProduto {
   };
 }
 
-function paraNivel(overallScore: number | null): RiskLevel {
-  if (overallScore === null) {
-    return "no-data";
-  }
-
-  if (overallScore >= 70) {
-    return "safe";
-  }
-
-  return overallScore >= 40 ? "warning" : "avoid";
+function paraMarca(marca: MarcaApi): Marca {
+  return {
+    name: marca.name,
+    country: marca.country ?? null,
+    website: marca.website ?? null,
+    hasCrueltyFreeClaim: marca.hasCrueltyFreeClaim === true,
+    hasVeganClaim: marca.hasVeganClaim === true,
+    isBrazilian: marca.isBrazilian === true,
+  };
 }
 
 export function paraProduto(resposta: ProductFullResponse): Produto {
@@ -54,9 +53,9 @@ export function paraProduto(resposta: ProductFullResponse): Produto {
     name: resposta.product.name,
     description: resposta.product.description ?? "",
     category: resposta.category.name,
-    brand: resposta.brand,
+    brand: paraMarca(resposta.brand),
     imageUrl: null,
-    level: paraNivel(notas.overallScore),
+    level: nivelDaNota(notas.overallScore),
     scores: notas,
   };
 }
@@ -65,15 +64,18 @@ export function paraProdutoDaListagem(
   item: ProdutoApi,
   marca: MarcaApi,
   categoria: CategoriaApi,
+  score: NotasApi | null,
 ): Produto {
+  const notas = paraNotas(score);
+
   return {
     slug: item.slug,
     name: item.name,
     description: item.description ?? "",
     category: categoria.name,
-    brand: marca,
+    brand: paraMarca(marca),
     imageUrl: null,
-    level: "no-data",
-    scores: NOTAS_VAZIAS,
+    level: nivelDaNota(notas.overallScore),
+    scores: notas,
   };
 }

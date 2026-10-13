@@ -19,6 +19,7 @@ export interface ResumoDasAnalises {
   healthScore: number | null;
   environmentalScore: number | null;
   ethicalScore: number | null;
+  performanceScore: number | null;
   approved: number;
   warning: number;
   replace: number;

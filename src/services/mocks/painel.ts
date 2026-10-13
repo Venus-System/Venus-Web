@@ -35,6 +35,7 @@ export function painelDoMock(): Omit<Painel, "profileCompleteness"> {
       healthScore: 88,
       environmentalScore: 76,
       ethicalScore: 89,
+      performanceScore: 81,
       approved: 9,
       warning: 2,
       replace: 1,

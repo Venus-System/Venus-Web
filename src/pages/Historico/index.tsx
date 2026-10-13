@@ -50,6 +50,10 @@ function anuncio(estado: EstadoHistorico): string {
     return "";
   }
 
+  if (estado.recemCarregadas === 0) {
+    return "Nenhuma análise nova nesta parte do histórico.";
+  }
+
   return estado.recemCarregadas === 1
     ? "1 análise carregada."
     : `${estado.recemCarregadas} análises carregadas.`;

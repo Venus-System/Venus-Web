@@ -21,6 +21,16 @@
   max-width: 38rem;
 }
 
+.reacao {
+  align-self: flex-start;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-medio);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .form {
   display: flex;
   flex-wrap: wrap;
@@ -116,9 +126,19 @@
 }
 
 .emptyText {
-  max-width: 42ch;
+  max-width: 60ch;
   color: var(--texto-suave);
-  margin-bottom: var(--espaco-2);
+}
+
+.emptyText strong {
+  color: var(--texto);
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-2);
 }
 
 .grid,

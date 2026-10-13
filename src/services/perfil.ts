@@ -4,6 +4,7 @@ import {
   garantirIdDoUsuarioNaApi,
   renovarIdDoUsuarioNaApi,
 } from "./autenticacao";
+import { esquecerAnalisesPessoais } from "./classificacao";
 import {
   ErroDeOrientacao,
   ErroServicoIndisponivel,
@@ -203,6 +204,8 @@ export async function salvarPerfil(
 
       await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
     }
+
+    esquecerAnalisesPessoais();
 
     return perfil;
   } catch (erro) {

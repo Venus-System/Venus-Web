@@ -10,9 +10,9 @@ export interface MarcaApi {
   name: string;
   country: string | null;
   website: string | null;
-  hasCrueltyFreeClaim: boolean;
-  hasVeganClaim: boolean;
-  isBrazilian: boolean;
+  hasCrueltyFreeClaim: boolean | null;
+  hasVeganClaim: boolean | null;
+  isBrazilian: boolean | null;
 }
 
 export interface AlergiaApi {

@@ -27,6 +27,7 @@ export interface AnaliseLida {
   healthScore: number | null;
   environmentalScore: number | null;
   ethicalScore: number | null;
+  performanceScore: number | null;
   createdAt: string;
 }
 
@@ -63,7 +64,7 @@ export async function lerPaginas(
   return { itens, truncated: true };
 }
 
-function lerNivel(valor: unknown): NivelRecomendacao | null {
+export function lerNivel(valor: unknown): NivelRecomendacao | null {
   const minusculo = typeof valor === "string" ? valor.toLowerCase() : "";
 
   return NIVEIS.find((nivel) => nivel === minusculo) ?? null;
@@ -85,6 +86,7 @@ export function lerAnalise(valor: unknown): AnaliseLida | null {
     healthScore: numero(dados.healthScore),
     environmentalScore: numero(dados.environmentalScore),
     ethicalScore: numero(dados.ethicalScore),
+    performanceScore: numero(dados.performanceScore),
     createdAt,
   };
 }

@@ -2,6 +2,7 @@ import { ErroProdutoNaoEncontrado } from "../erros";
 import type {
   CategoriaApi,
   MarcaApi,
+  NotasApi,
   ProdutoApi,
   ProductFullResponse,
 } from "./tipos";
@@ -12,7 +13,7 @@ import type {
   OpcoesDaPesquisa,
   ResultadoDaPesquisa,
 } from "../../types/pesquisa";
-import { comoObjeto } from "./leitura";
+import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { paraProduto, paraProdutoDaListagem } from "./tradutores";
 import { lerIngredientesDoProduto } from "./ingredientes";
 import { URL_API } from "../../config/ambiente";
@@ -43,13 +44,7 @@ function ehMarcaApi(valor: unknown): valor is MarcaApi {
     "id" in valor &&
     typeof valor.id === "number" &&
     "name" in valor &&
-    typeof valor.name === "string" &&
-    "hasCrueltyFreeClaim" in valor &&
-    typeof valor.hasCrueltyFreeClaim === "boolean" &&
-    "hasVeganClaim" in valor &&
-    typeof valor.hasVeganClaim === "boolean" &&
-    "isBrazilian" in valor &&
-    typeof valor.isBrazilian === "boolean"
+    typeof valor.name === "string"
   );
 }
 
@@ -230,9 +225,101 @@ function buscarMarcasECategorias(): Promise<MarcasECategorias> {
   return pedidoDeMarcasECategorias;
 }
 
+interface NotaDaVersao {
+  productVersionId: number;
+  calculatedAt: string;
+  notas: NotasApi;
+}
+
+function lerNotaDaVersao(valor: unknown): NotaDaVersao | null {
+  const dados = comoObjeto(valor);
+  const productVersionId = numero(dados.productVersionId);
+
+  if (productVersionId === null) {
+    return null;
+  }
+
+  return {
+    productVersionId,
+    calculatedAt: texto(dados.calculatedAt) ?? "",
+    notas: {
+      overallScore: numero(dados.overallScore),
+      healthScore: numero(dados.healthScore),
+      environmentalScore: numero(dados.environmentalScore),
+      ethicalScore: numero(dados.ethicalScore),
+      performanceScore: numero(dados.performanceScore),
+      transparencyScore: numero(dados.transparencyScore),
+      confidenceScore: numero(dados.confidenceScore),
+    },
+  };
+}
+
+function produtoDeCadaVersaoAtual(versoes: unknown[]): Map<number, number> {
+  const produtoDaVersao = new Map<number, number>();
+
+  for (const versao of versoes) {
+    const dados = comoObjeto(versao);
+    const versaoId = numero(dados.id);
+    const produtoId = numero(dados.productId);
+
+    if (versaoId !== null && produtoId !== null && dados.isCurrent === true) {
+      produtoDaVersao.set(versaoId, produtoId);
+    }
+  }
+
+  return produtoDaVersao;
+}
+
+async function carregarNotasPorProduto(): Promise<Map<number, NotasApi>> {
+  const [versoes, notas] = await Promise.all([
+    buscarLista("/api/product-versions"),
+    buscarLista("/api/product-scores"),
+  ]);
+
+  const produtoDaVersao = produtoDeCadaVersaoAtual(versoes);
+  const maisRecentes = new Map<number, NotaDaVersao>();
+
+  for (const nota of lerTodos(notas, lerNotaDaVersao)) {
+    const produtoId = produtoDaVersao.get(nota.productVersionId);
+
+    if (produtoId === undefined) {
+      continue;
+    }
+
+    const guardada = maisRecentes.get(produtoId);
+
+    if (guardada === undefined || nota.calculatedAt > guardada.calculatedAt) {
+      maisRecentes.set(produtoId, nota);
+    }
+  }
+
+  const notasPorProduto = new Map<number, NotasApi>();
+
+  for (const [produtoId, nota] of maisRecentes) {
+    notasPorProduto.set(produtoId, nota.notas);
+  }
+
+  return notasPorProduto;
+}
+
+let pedidoDeNotas: Promise<Map<number, NotasApi>> | null = null;
+
+function buscarNotasPorProduto(): Promise<Map<number, NotasApi>> {
+  if (pedidoDeNotas === null) {
+    pedidoDeNotas = carregarNotasPorProduto().catch(() => {
+      pedidoDeNotas = null;
+
+      return new Map<number, NotasApi>();
+    });
+  }
+
+  return pedidoDeNotas;
+}
+
 function montarProdutos(
   itens: unknown[],
   { marcasPorId, categoriasPorId }: MarcasECategorias,
+  notasPorProduto: Map<number, NotasApi>,
 ): Produto[] {
   const montados: Produto[] = [];
 
@@ -248,7 +335,14 @@ function montarProdutos(
       continue;
     }
 
-    montados.push(paraProdutoDaListagem(item, marca, categoria));
+    montados.push(
+      paraProdutoDaListagem(
+        item,
+        marca,
+        categoria,
+        notasPorProduto.get(item.id) ?? null,
+      ),
+    );
   }
 
   return montados;
@@ -257,12 +351,13 @@ function montarProdutos(
 export async function listarProdutosDaApi(
   sinal?: AbortSignal,
 ): Promise<Produto[]> {
-  const [produtos, apoio] = await Promise.all([
+  const [produtos, apoio, notasPorProduto] = await Promise.all([
     buscarLista("/api/products", sinal),
     buscarMarcasECategorias(),
+    buscarNotasPorProduto(),
   ]);
 
-  return montarProdutos(produtos, apoio);
+  return montarProdutos(produtos, apoio, notasPorProduto);
 }
 
 function idPeloNome<T extends { id: number; name: string }>(
@@ -281,9 +376,9 @@ function idPeloNome<T extends { id: number; name: string }>(
 const POR_NOME = new Intl.Collator("pt-BR");
 
 function nomesOrdenados(itens: Map<number, { name: string }>): string[] {
-  return [...itens.values()]
-    .map((item) => item.name)
-    .sort((a, b) => POR_NOME.compare(a, b));
+  const nomes = new Set([...itens.values()].map((item) => item.name));
+
+  return [...nomes].sort((a, b) => POR_NOME.compare(a, b));
 }
 
 export async function listarOpcoesDaPesquisaNaApi(): Promise<OpcoesDaPesquisa> {
@@ -301,7 +396,10 @@ export async function pesquisarProdutosNaApi(
   tamanho: number,
   sinal?: AbortSignal,
 ): Promise<ResultadoDaPesquisa> {
-  const apoio = await buscarMarcasECategorias();
+  const [apoio, notasPorProduto] = await Promise.all([
+    buscarMarcasECategorias(),
+    buscarNotasPorProduto(),
+  ]);
   const parametros = new URLSearchParams({
     isActive: "true",
     page: String(pagina),
@@ -342,7 +440,7 @@ export async function pesquisarProdutosNaApi(
   const itens: unknown[] = Array.isArray(dados.content) ? dados.content : [];
 
   return {
-    produtos: montarProdutos(itens, apoio),
+    produtos: montarProdutos(itens, apoio, notasPorProduto),
     temMais: dados.last === false,
   };
 }

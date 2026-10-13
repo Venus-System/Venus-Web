@@ -15,6 +15,7 @@ import {
 import type { AnaliseLida, NotaPessoalLida } from "./analises";
 import { lerTodos, numero } from "./leitura";
 import { pedir, verificarResposta } from "./requisicao";
+import { umaPorDia } from "../../utils/umaPorDia";
 
 const QUANTIDADE_DE_RECENTES = 5;
 
@@ -76,6 +77,9 @@ function resumir(
       ultimasAnalises.map((analise) => analise.environmentalScore),
     ),
     ethicalScore: media(ultimasAnalises.map((analise) => analise.ethicalScore)),
+    performanceScore: media(
+      ultimasAnalises.map((analise) => analise.performanceScore),
+    ),
     approved: contarNiveis(notas, ["ideal", "recommended"]),
     warning: contarNiveis(notas, ["acceptable"]),
     replace: contarNiveis(notas, ["not_recommended", "contraindicated"]),
@@ -105,6 +109,11 @@ export async function buscarPainelNaApi(
   ]);
 
   const analises = lerTodos(paginasDeAnalises.itens, lerAnalise);
+  const analisesPorDia = umaPorDia(
+    analises,
+    (analise) => analise.productVersionId,
+    (analise) => analise.createdAt,
+  );
   const notas = maisRecentePorVersao(
     lerTodos(paginasDeNotas.itens, lerNotaPessoal),
   );
@@ -116,7 +125,7 @@ export async function buscarPainelNaApi(
 
   return {
     analyses: contarPorPeriodo(
-      analises.map((analise) => analise.createdAt),
+      analisesPorDia.map((analise) => analise.createdAt),
       paginasDeAnalises.truncated,
     ),
     alerts: contarPorPeriodo(
@@ -130,7 +139,7 @@ export async function buscarPainelNaApi(
     favoriteCount,
     summary: resumir(notas, analises),
     recentAnalyses: await montarAnalises(
-      analises.slice(0, QUANTIDADE_DE_RECENTES),
+      maisRecentePorVersao(analises).slice(0, QUANTIDADE_DE_RECENTES),
       notas,
       sinal,
     ),

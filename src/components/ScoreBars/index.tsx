@@ -1,21 +1,11 @@
 import { useId } from "react";
-import type { NotasProduto } from "../../types/produto";
+import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
+import type { NotasDeQualidade } from "../../utils/notas";
 import styles from "./styles.module.css";
 
 interface ScoreBarsProps {
-  notas: Pick<NotasProduto, "healthScore" | "environmentalScore" | "ethicalScore">;
+  notas: NotasDeQualidade;
 }
-
-const DIMENSIONS = [
-  { key: "healthScore", label: "Saúde", fill: "health", tone: "toneHealth" },
-  {
-    key: "environmentalScore",
-    label: "Ambiental",
-    fill: "environment",
-    tone: "toneEnvironment",
-  },
-  { key: "ethicalScore", label: "Ético", fill: "ethics", tone: "toneEthics" },
-] as const;
 
 function limitar(valor: number): number {
   return Math.min(100, Math.max(0, valor));
@@ -26,33 +16,24 @@ function ScoreBars({ notas }: ScoreBarsProps) {
 
   return (
     <div className={styles.group}>
-      {DIMENSIONS.map((dimension) => {
-        const value = notas[dimension.key];
-        const labelId = `${baseId}-${dimension.key}`;
-        const trackClasses = [styles.track, value === null ? styles.empty : ""]
-          .filter(Boolean)
-          .join(" ");
+      {NOTAS_DE_QUALIDADE.map((nota) => {
+        const value = notas[nota.campo];
+        const labelId = `${baseId}-${nota.campo}`;
 
         return (
-          <div className={styles.row} key={dimension.key}>
-            <span className={styles.label} id={labelId}>
-              {dimension.label}
+          <div className={styles.row} key={nota.campo}>
+            <span className={styles.label}>
+              <span id={labelId}>{nota.rotulo}</span>
+              <span className={styles.hint}>{nota.resumo}</span>
             </span>
 
-            <span
-              className={[
-                styles.value,
-                value === null ? "" : styles[dimension.tone],
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              {value === null ? "—" : `${value}%`}
+            <span className={styles.value}>
+              {value === null ? "Sem dado" : `${value}%`}
             </span>
 
-            <div className={trackClasses}>
+            <div className={styles.track}>
               <div
-                className={[styles.fill, styles[dimension.fill]].join(" ")}
+                className={styles.fill}
                 style={{ width: `${value === null ? 0 : limitar(value)}%` }}
                 role="progressbar"
                 aria-labelledby={labelId}

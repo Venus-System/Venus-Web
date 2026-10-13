@@ -4,9 +4,10 @@ import {
   BookOpen,
   Heart,
   History,
+  ImageUp,
   LayoutGrid,
-  ScanLine,
   Search,
+  ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { FormEvent } from "react";
@@ -41,11 +42,12 @@ const GROUPS: NavGroup[] = [
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
       { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
+      { to: "/reacao", label: "Tive uma reação", Icon: ShieldAlert },
     ],
   },
   {
     id: "my-space",
-    title: "Meu Espaço",
+    title: "Meu espaço",
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
       { to: "/historico", label: "Histórico", Icon: History },
@@ -54,8 +56,8 @@ const GROUPS: NavGroup[] = [
   },
   {
     id: "about",
-    title: "Sobre Venus",
-    links: [{ to: "/metodologia", label: "Como funciona", Icon: BookOpen }],
+    title: "Sobre a Venus",
+    links: [{ to: "/metodologia", label: "Metodologia", Icon: BookOpen }],
   },
 ];
 
@@ -93,8 +95,8 @@ function Sidebar({ onSearch }: SidebarProps) {
       </form>
 
       <Button to="/escanear" className={styles.scan}>
-        <ScanLine className={styles.buttonIcon} aria-hidden="true" />
-        Escanear rótulo
+        <ImageUp className={styles.buttonIcon} aria-hidden="true" />
+        Buscar por foto
       </Button>
 
       {GROUPS.map((group) => (
@@ -131,7 +133,7 @@ function Sidebar({ onSearch }: SidebarProps) {
         </div>
       ))}
 
-      {usuario  ? (
+      {usuario ? (
         <Link to="/perfil" className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
             {fotoUrl === null ? (
@@ -142,7 +144,7 @@ function Sidebar({ onSearch }: SidebarProps) {
           </span>
 
           <span className={styles.userInfo}>
-            <span className={styles.userName}>{usuario .name}</span>
+            <span className={styles.userName}>{usuario.name}</span>
             <span className={styles.userAction}>
               Ver meu perfil
               <ArrowRight className={styles.userIcon} aria-hidden="true" />

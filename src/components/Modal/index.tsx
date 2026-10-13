@@ -42,12 +42,28 @@ function Modal({
       return;
     }
 
-    const anterior = document.body.style.overflow;
+    const raiz = document.documentElement;
+    const corpo = document.body;
 
-    document.body.style.overflow = "hidden";
+    if (corpo.style.overflow === "hidden") {
+      return;
+    }
+
+    const larguraDaBarra = window.innerWidth - raiz.clientWidth;
+    const anterior = {
+      overflow: corpo.style.overflow,
+      paddingRight: corpo.style.paddingRight,
+      reserva: raiz.style.getPropertyValue("scrollbar-gutter"),
+    };
+
+    raiz.style.setProperty("scrollbar-gutter", "auto");
+    corpo.style.overflow = "hidden";
+    corpo.style.paddingRight = `${larguraDaBarra}px`;
 
     return () => {
-      document.body.style.overflow = anterior;
+      raiz.style.setProperty("scrollbar-gutter", anterior.reserva);
+      corpo.style.overflow = anterior.overflow;
+      corpo.style.paddingRight = anterior.paddingRight;
     };
   }, [open]);
 

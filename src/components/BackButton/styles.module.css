@@ -1,0 +1,25 @@
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espaco-1);
+  min-height: var(--alvo-toque);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--violeta);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  cursor: pointer;
+}
+
+.voltar:hover {
+  color: var(--crimson);
+  text-decoration: underline;
+}
+
+.icone {
+  width: 1em;
+  height: 1em;
+}

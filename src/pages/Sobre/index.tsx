@@ -3,38 +3,15 @@ import { ArrowRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import MainLayout from "../../components/MainLayout";
 import SectionNav from "../../components/SectionNav";
 import Button from "../../components/Button";
+import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
+import fotoDaEquipeUm from "../../assets/equipe-1.jpg";
+import fotoDaEquipeDois from "../../assets/equipe-2.jpg";
 import styles from "./styles.module.css";
 
 interface Integrante {
-  id: string;
   nome: string;
-  papel: string;
   github: string;
 }
-
-const NOTAS = [
-  {
-    id: "saude",
-    titulo: "Saúde",
-    texto:
-      "Olha a fórmula em relação à sua pele, às suas condições e ao que você precisa evitar.",
-    tom: styles.ruleHealth,
-  },
-  {
-    id: "ambiental",
-    titulo: "Impacto ambiental",
-    texto:
-      "Considera biodegradabilidade, presença de microplásticos e o material da embalagem.",
-    tom: styles.ruleEnvironment,
-  },
-  {
-    id: "etica",
-    titulo: "Ética",
-    texto:
-      "Considera a origem dos ingredientes, testes em animais e a transparência da marca.",
-    tom: styles.ruleEthics,
-  },
-];
 
 const LIMITES = [
   {
@@ -64,17 +41,17 @@ const LIMITES = [
 ];
 
 const EQUIPE: Integrante[] = [
-  { id: "integrante-01", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-02", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-03", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-04", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-05", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-06", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-07", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-08", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-09", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-10", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
-  { id: "integrante-11", nome: "Nome do integrante", papel: "Papel na equipe", github: "" },
+  { nome: "Matheus Orestes", github: "matheus-orestes" },
+  { nome: "Rafael Lopes", github: "rafasepol" },
+  { nome: "Sophia Castro", github: "Shhiaa" },
+  { nome: "Laura Gonçalves", github: "Laura-986" },
+  { nome: "Felipe Augusto", github: "FelipeAugustoSan" },
+  { nome: "Akira Komati", github: "Akira-132" },
+  { nome: "Bianca Bazoni", github: "starbias" },
+  { nome: "Bruno Vinicius", github: "brunorisadas" },
+  { nome: "Miguel Oliveira", github: "miguelh19max" },
+  { nome: "Sarah Delatorre", github: "sarahdelatorre" },
+  { nome: "Gustavo Herance", github: "GAHerance" },
 ];
 
 const NO_FRASCO =
@@ -101,28 +78,6 @@ function Sobre() {
       left: trilha.clientWidth * 0.8 * direcao,
       behavior: "smooth",
     });
-  }
-
-  function conteudoDoIntegrante(pessoa: Integrante) {
-    return (
-      <>
-        {pessoa.github === "" ? (
-          <span className={styles.avatar} aria-hidden="true">
-            VN
-          </span>
-        ) : (
-          <img
-            className={styles.avatar}
-            src={`https://github.com/${pessoa.github}.png?size=200`}
-            alt=""
-            loading="lazy"
-          />
-        )}
-
-        <span className={styles.memberName}>{pessoa.nome}</span>
-        <span className={styles.memberRole}>{pessoa.papel}</span>
-      </>
-    );
   }
 
   return (
@@ -188,20 +143,19 @@ function Sobre() {
           <p className={styles.eyebrow}>O que a Venus faz</p>
 
           <h2 id="titulo-notas" className={styles.sectionTitle}>
-            Três notas, porque são três perguntas
+            Quatro notas, porque são quatro perguntas
           </h2>
 
           <p className={styles.text}>
             A Venus lê a lista de ingredientes, identifica cada um e cruza com o
-            seu perfil. No fim, cada produto recebe três notas independentes.
+            seu perfil. No fim, cada produto recebe quatro notas independentes.
           </p>
 
           <ul className={styles.cards}>
-            {NOTAS.map((nota) => (
-              <li className={styles.card} key={nota.id}>
-                <span className={nota.tom} aria-hidden="true" />
-                <h3 className={styles.cardTitle}>{nota.titulo}</h3>
-                <p className={styles.cardText}>{nota.texto}</p>
+            {NOTAS_DE_QUALIDADE.map((nota) => (
+              <li className={styles.card} key={nota.campo}>
+                <h3 className={styles.cardTitle}>{nota.rotulo}</h3>
+                <p className={styles.cardText}>{nota.descricao}</p>
               </li>
             ))}
           </ul>
@@ -236,12 +190,30 @@ function Sobre() {
           </h2>
 
           <p className={styles.text}>
-            A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F.
-            Estamos em fase de construção, e preferimos dizer isso abertamente a
-            passar a impressão de um produto pronto.
+            A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F e
+            é feita por onze estudantes. Cada nome leva ao perfil da pessoa no
+            GitHub.
           </p>
 
-          <p className={styles.photo}>Espaço reservado para a foto da equipe.</p>
+          <div className={styles.photos}>
+            <img
+              className={styles.photo}
+              src={fotoDaEquipeUm}
+              alt="Cinco integrantes da equipe da Venus, lado a lado, com o uniforme preto do Instituto J&F."
+              width={1200}
+              height={675}
+              loading="lazy"
+            />
+
+            <img
+              className={styles.photo}
+              src={fotoDaEquipeDois}
+              alt="Seis integrantes da equipe da Venus, abraçados, com o uniforme preto do Instituto J&F."
+              width={1200}
+              height={675}
+              loading="lazy"
+            />
+          </div>
 
           <div className={styles.carouselHeader}>
             <h3 className={styles.cardTitle}>Integrantes</h3>
@@ -272,22 +244,24 @@ function Sobre() {
             aria-label="Integrantes da equipe"
           >
             {EQUIPE.map((pessoa) => (
-              <li className={styles.member} key={pessoa.id}>
-                {pessoa.github === "" ? (
-                  <div className={styles.memberInner}>
-                    {conteudoDoIntegrante(pessoa)}
-                  </div>
-                ) : (
-                  <a
-                    className={styles.memberLink}
-                    href={`https://github.com/${pessoa.github}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Perfil de ${pessoa.nome} no GitHub, abre em nova aba`}
-                  >
-                    {conteudoDoIntegrante(pessoa)}
-                  </a>
-                )}
+              <li className={styles.member} key={pessoa.github}>
+                <a
+                  className={styles.memberLink}
+                  href={`https://github.com/${pessoa.github}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Perfil de ${pessoa.nome} no GitHub, abre em nova aba`}
+                >
+                  <img
+                    className={styles.avatar}
+                    src={`https://github.com/${pessoa.github}.png?size=200`}
+                    alt=""
+                    loading="lazy"
+                  />
+
+                  <span className={styles.memberName}>{pessoa.nome}</span>
+                  <span className={styles.memberHandle}>@{pessoa.github}</span>
+                </a>
               </li>
             ))}
           </ul>

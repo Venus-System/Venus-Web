@@ -19,12 +19,12 @@ import { somentePreferenciasValidas } from "../../utils/preferencias";
 import { ErroDeOrientacao, ErroUsuarioInexistente } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
-function paraEnum(valor: string | null): string | undefined {
-  return valor === null ? undefined : valor.toUpperCase();
+function paraEnum(valor: string | null): string | null {
+  return valor === null ? null : valor.toUpperCase();
 }
 
-function paraCurvatura(valor: string | null): string | undefined {
-  return valor === null ? undefined : `TYPE_${valor.toUpperCase()}`;
+function paraCurvatura(valor: string | null): string | null {
+  return valor === null ? null : `TYPE_${valor.toUpperCase()}`;
 }
 
 function corpoDoPerfil(
@@ -40,13 +40,13 @@ function corpoDoPerfil(
     skinPhototype: paraEnum(perfil.skinPhototype),
     skinSensitivity: paraEnum(perfil.skinSensitivity),
     scalpType: paraEnum(perfil.scalpType),
-    isPregnant: perfil.isPregnant ?? undefined,
-    isBreastfeeding: perfil.isBreastfeeding ?? undefined,
-    acneProne: perfil.acneProne ?? undefined,
-    hasRosacea: perfil.hasRosacea ?? undefined,
-    hasEczema: perfil.hasEczema ?? undefined,
-    hasHyperpigmentation: perfil.hasHyperpigmentation ?? undefined,
-    hasMelasma: perfil.hasMelasma ?? undefined,
+    isPregnant: perfil.isPregnant,
+    isBreastfeeding: perfil.isBreastfeeding,
+    acneProne: perfil.acneProne,
+    hasRosacea: perfil.hasRosacea,
+    hasEczema: perfil.hasEczema,
+    hasHyperpigmentation: perfil.hasHyperpigmentation,
+    hasMelasma: perfil.hasMelasma,
   };
 }
 
@@ -232,25 +232,6 @@ async function usuarioExiste(usuarioId: number): Promise<boolean> {
   return resposta.status !== 404;
 }
 
-function respostasCompletas(perfil: PerfilParaSalvar): boolean {
-  return (
-    perfil.gender !== null &&
-    perfil.ageRange !== null &&
-    perfil.hairType !== null &&
-    perfil.skinType !== null &&
-    perfil.skinPhototype !== null &&
-    perfil.skinSensitivity !== null &&
-    perfil.scalpType !== null &&
-    perfil.isPregnant !== null &&
-    perfil.isBreastfeeding !== null &&
-    perfil.acneProne !== null &&
-    perfil.hasRosacea !== null &&
-    perfil.hasEczema !== null &&
-    perfil.hasHyperpigmentation !== null &&
-    perfil.hasMelasma !== null
-  );
-}
-
 async function enviarPerfil(
   usuarioId: number,
   perfil: PerfilParaSalvar,
@@ -270,12 +251,6 @@ async function enviarPerfil(
 
   if (resposta.status !== 404) {
     verificarResposta(resposta, caminho);
-  }
-
-  if (!respostasCompletas(perfil)) {
-    throw new ErroDeOrientacao(
-      "Para criar o seu perfil, responda as onze perguntas. A API ainda não aceita perfil parcial.",
-    );
   }
 
   const criacao = await pedir(`${URL_API}/api/user-profiles`, {
@@ -482,7 +457,7 @@ async function sincronizarEtiquetas(
 
   if (semEtiqueta.length > 0) {
     throw new ErroDeOrientacao(
-      "O perfil foi salvo, mas algumas preferências ainda não existem na API e ficaram de fora. Tente de novo mais tarde.",
+      "O perfil foi salvo, mas algumas preferências não puderam ser guardadas e ficaram de fora.",
     );
   }
 }
