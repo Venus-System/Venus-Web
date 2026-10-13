@@ -44,13 +44,7 @@ function ehMarcaApi(valor: unknown): valor is MarcaApi {
     "id" in valor &&
     typeof valor.id === "number" &&
     "name" in valor &&
-    typeof valor.name === "string" &&
-    "hasCrueltyFreeClaim" in valor &&
-    typeof valor.hasCrueltyFreeClaim === "boolean" &&
-    "hasVeganClaim" in valor &&
-    typeof valor.hasVeganClaim === "boolean" &&
-    "isBrazilian" in valor &&
-    typeof valor.isBrazilian === "boolean"
+    typeof valor.name === "string"
   );
 }
 
