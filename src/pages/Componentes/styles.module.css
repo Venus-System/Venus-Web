@@ -21,6 +21,13 @@
   flex-direction: column;
 }
 
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  max-width: 24rem;
+}
+
 .grid {
   display: grid;
   gap: var(--espaco-4);
