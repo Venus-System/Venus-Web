@@ -69,3 +69,5 @@ function lerUrlOpcional(bruto: unknown): string {
 export const URL_CLASSIFICACAO = lerUrlOpcional(
   import.meta.env.VITE_CLASSIFICACAO_URL,
 );
+
+export const URL_IA = lerUrlOpcional(import.meta.env.VITE_IA_API_URL);
