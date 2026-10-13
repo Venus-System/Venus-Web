@@ -457,7 +457,7 @@ async function sincronizarEtiquetas(
 
   if (semEtiqueta.length > 0) {
     throw new ErroDeOrientacao(
-      "O perfil foi salvo, mas algumas preferências ainda não existem na API e ficaram de fora. Tente de novo mais tarde.",
+      "O perfil foi salvo, mas algumas preferências não puderam ser guardadas e ficaram de fora.",
     );
   }
 }

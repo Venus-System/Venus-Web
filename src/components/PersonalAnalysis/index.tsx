@@ -225,8 +225,10 @@ function PersonalAnalysis({
               <button
                 type="button"
                 className={styles.acao}
-                onClick={onRecalculate}
-                disabled={state.recalculo === "calculando"}
+                onClick={
+                  state.recalculo === "calculando" ? undefined : onRecalculate
+                }
+                aria-disabled={state.recalculo === "calculando"}
               >
                 {state.recalculo === "calculando"
                   ? "Recalculando..."

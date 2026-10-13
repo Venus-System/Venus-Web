@@ -48,15 +48,6 @@ const ROTULO_STATUS: Record<StatusConta, string> = {
   blocked: "Perfil bloqueado",
 };
 
-const INDISPONIVEIS = [
-  { id: "usar-historico", label: "Usar meu histórico para recomendações" },
-  {
-    id: "mostrar-avaliacoes",
-    label: "Mostrar minhas avaliações na comunidade",
-  },
-  { id: "resumo-semanal", label: "Receber resumo semanal por e-mail" },
-];
-
 interface EstadoDaConta {
   nome: string;
   situacao: "ocioso" | "salvando" | "salvo" | "erro";
@@ -147,7 +138,7 @@ function Perfil() {
   return (
     <MainLayout>
       <div className={styles.page}>
-        <header className={styles.header}>
+        <header>
           <h1 className={styles.title}>
             Meu <span className={styles.titleAccent}>perfil.</span>
           </h1>
@@ -540,18 +531,6 @@ function Perfil() {
                     }}
                     hint="Desligar apaga as suas respostas sobre pele e saúde."
                   />
-
-                  {INDISPONIVEIS.map((opcao) => (
-                    <Interruptor
-                      key={opcao.id}
-                      id={opcao.id}
-                      label={opcao.label}
-                      checked={false}
-                      onChange={() => undefined}
-                      indisponivel
-                      hint="Ainda não disponível."
-                    />
-                  ))}
                 </section>
 
                 <p className="texto-oculto" aria-live="polite">
@@ -600,22 +579,9 @@ function Perfil() {
               </button>
 
               <p className={styles.cardTexto}>
-                Apaga o seu perfil, as alergias, as preferências e o histórico.
-                A exclusão é imediata e não tem volta.
-              </p>
-
-              <button
-                type="button"
-                className={styles.apagar}
-                aria-disabled="true"
-                aria-describedby="aviso-apagar"
-              >
-                Apagar minha conta
-              </button>
-
-              <p id="aviso-apagar" className={styles.cardTexto}>
-                Ainda não dá para apagar a conta por aqui. Escreva para
-                venussystem2026@gmail.com e nós apagamos.
+                Para apagar a conta, escreva para venussystem2026@gmail.com.
+                A exclusão apaga o seu perfil, as alergias, as preferências e
+                o histórico, e não tem volta.
               </p>
             </section>
           </div>

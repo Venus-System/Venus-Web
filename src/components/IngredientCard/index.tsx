@@ -19,7 +19,7 @@ function IngredientCard({ item, note }: IngredientCardProps) {
 
         <p className={styles.text}>
           {item.ingredient?.description ??
-            "Ainda não temos informação verificada sobre este ingrediente."}
+            "Não temos informação verificada sobre este ingrediente."}
         </p>
       </div>
 

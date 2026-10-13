@@ -18,7 +18,7 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
     commonName: texto(dados.commonName) ?? inciName,
     description:
       texto(dados.description) ??
-      "Ainda não temos a descrição deste ingrediente.",
+      "Não temos a descrição deste ingrediente.",
     safetySummary: texto(dados.safetySummary) ?? "",
     biodegradability: numero(dados.biodegradabilityLevel) ?? 0,
     irritationRiskLevel: numero(dados.irritationRiskLevel) ?? 0,
