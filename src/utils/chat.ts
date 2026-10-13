@@ -1,0 +1,1 @@
+export const TAMANHO_MAXIMO_DA_MENSAGEM = 4000;
