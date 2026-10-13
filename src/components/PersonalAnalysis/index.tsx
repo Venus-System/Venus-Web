@@ -94,6 +94,8 @@ function PersonalAnalysis({
   const analise = state.status === "pronta" ? state.analise : null;
   const motivos = analise === null ? [] : motivosDoPerfil(analise);
   const temAlergia = motivos.some((motivo) => motivo.source === "allergy");
+  const notaTravada =
+    temAlergia || motivos.some((motivo) => motivo.blocking);
   const calculadaEm = analise === null ? "" : tempoRelativo(analise.calculatedAt);
 
   return (
@@ -146,11 +148,14 @@ function PersonalAnalysis({
             {state.analise.breakdown.qualityPoints !== null &&
             state.analise.breakdown.profilePoints !== null ? (
               <p className={styles.pontos}>
-                De onde vem a nota:{" "}
+                {notaTravada ? "A conta dava " : "De onde vem a nota: "}
                 {emPontos(state.analise.breakdown.qualityPoints)} de 35 pontos
                 pela qualidade do produto e{" "}
                 {emPontos(state.analise.breakdown.profilePoints)} de 65 pelo que
                 a fórmula combina com o seu perfil.
+                {notaTravada
+                  ? " A segurança vem antes: o alerta abaixo mudou a nota final."
+                  : ""}
               </p>
             ) : null}
 
