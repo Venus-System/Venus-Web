@@ -284,7 +284,7 @@ function Produto() {
   }
 
   return (
-    <MainLayout>
+    <MainLayout chatProductName={product.name}>
       <div className={styles.page}>
         <div className={styles.voltar}>
           <BackButton fallback="/pesquisa" />

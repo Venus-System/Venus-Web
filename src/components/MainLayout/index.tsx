@@ -9,9 +9,10 @@ import { useRolagemDaRota } from "../../hooks/useRolagemDaRota";
 
 interface MainLayoutProps {
   children: ReactNode;
+  chatProductName?: string;
 }
 
-function MainLayout({ children }: MainLayoutProps) {
+function MainLayout({ children, chatProductName }: MainLayoutProps) {
   const { abrir } = useChat();
 
   useRolagemDaRota();
@@ -33,7 +34,7 @@ function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       <ChatButton onOpen={abrir} />
-      <ChatDrawer />
+      <ChatDrawer productName={chatProductName} />
 
       <Footer />
     </div>

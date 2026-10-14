@@ -5,19 +5,29 @@ import { X } from "lucide-react";
 import Button from "../Button";
 import ChatComposer from "../ChatComposer";
 import ChatMessage from "../ChatMessage";
+import ChatSuggestions from "../ChatSuggestions";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useChat } from "../../hooks/useChat";
 import { useSegundosRestantes } from "../../hooks/useSegundosRestantes";
 import { useTravaDeRolagem } from "../../hooks/useTravaDeRolagem";
-import type { MensagemDoChat } from "../../types/chat";
+import {
+  SUGESTOES_DO_PRODUTO,
+  SUGESTOES_GERAIS,
+  perguntaSobreProduto,
+} from "../../utils/chat";
 import styles from "./styles.module.css";
+
+interface ChatDrawerProps {
+  productName?: string;
+}
 
 const ID_DO_CAMPO = "chat-mensagem";
 
-const SAUDACAO: Pick<MensagemDoChat, "author" | "text"> = {
-  author: "veninha",
-  text: "Oi! Sou a Veninha. Posso explicar os ingredientes e a nota de um produto para você.",
-};
+const SAUDACAO_GERAL =
+  "Oi! Sou a Veninha. Posso explicar os ingredientes e a nota de um produto para você.";
+
+const SAUDACAO_DO_PRODUTO =
+  "Oi! Sou a Veninha. Posso explicar os ingredientes e a nota deste produto para você.";
 
 function focarCampo() {
   const campo = document.getElementById(ID_DO_CAMPO);
@@ -27,7 +37,7 @@ function focarCampo() {
   }
 }
 
-function ChatDrawer() {
+function ChatDrawer({ productName }: ChatDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const fimRef = useRef<HTMLDivElement>(null);
   const tituloId = useId();
@@ -38,6 +48,7 @@ function ChatDrawer() {
     envio.status === "limite" ? envio.liberaEm : null,
   );
   const semConta = !carregando && usuario === null;
+  const bloqueado = envio.status === "esperando" || segundos > 0;
 
   useTravaDeRolagem(aberto);
 
@@ -75,6 +86,10 @@ function ChatDrawer() {
     focarCampo();
   }
 
+  function perguntar(texto: string) {
+    enviar(perguntaSobreProduto(texto, productName));
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -102,19 +117,45 @@ function ChatDrawer() {
         {aberto ? (
           <>
             <div
-              className={styles.mensagens}
-              role="log"
-              aria-label="Mensagens da conversa"
+              className={styles.rolagem}
+              role="region"
+              aria-label="Mensagens e sugestões"
               tabIndex={0}
             >
-              <ChatMessage message={SAUDACAO} />
+              <div
+                className={styles.mensagens}
+                role="log"
+                aria-label="Mensagens da conversa"
+              >
+                <ChatMessage
+                  message={{
+                    author: "veninha",
+                    text:
+                      productName === undefined
+                        ? SAUDACAO_GERAL
+                        : SAUDACAO_DO_PRODUTO,
+                  }}
+                />
 
-              {mensagens.map((mensagem) => (
-                <ChatMessage key={mensagem.id} message={mensagem} />
-              ))}
+                {mensagens.map((mensagem) => (
+                  <ChatMessage key={mensagem.id} message={mensagem} />
+                ))}
 
-              {envio.status === "esperando" ? (
-                <p className={styles.pensando}>A Veninha está pensando...</p>
+                {envio.status === "esperando" ? (
+                  <p className={styles.pensando}>A Veninha está pensando...</p>
+                ) : null}
+              </div>
+
+              {usuario !== null ? (
+                <ChatSuggestions
+                  suggestions={
+                    productName === undefined
+                      ? SUGESTOES_GERAIS
+                      : SUGESTOES_DO_PRODUTO
+                  }
+                  blocked={bloqueado}
+                  onPick={perguntar}
+                />
               ) : null}
 
               <div ref={fimRef} />
@@ -150,8 +191,8 @@ function ChatDrawer() {
             {usuario !== null ? (
               <ChatComposer
                 id={ID_DO_CAMPO}
-                blocked={envio.status === "esperando" || segundos > 0}
-                onSend={enviar}
+                blocked={bloqueado}
+                onSend={perguntar}
               />
             ) : null}
 

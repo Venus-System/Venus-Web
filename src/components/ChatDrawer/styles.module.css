@@ -89,13 +89,19 @@
   height: 1.125rem;
 }
 
-.mensagens {
+.rolagem {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: var(--espaco-3);
   min-height: 0;
   overflow-y: auto;
+}
+
+.mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
 }
 
 .pensando {
