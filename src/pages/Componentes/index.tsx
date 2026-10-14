@@ -4,6 +4,7 @@ import logo from "../../assets/Logo.svg";
 import Button from "../../components/Button";
 import ChatComposer from "../../components/ChatComposer";
 import ChatMessage from "../../components/ChatMessage";
+import ChatSuggestions from "../../components/ChatSuggestions";
 import Chip from "../../components/Chip";
 import FavoriteButton from "../../components/FavoriteButton";
 import Input from "../../components/Input";
@@ -23,6 +24,7 @@ import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
 import type { MensagemDoChat } from "../../types/chat";
 import type { RiskLevel } from "../../types/ingrediente";
+import { SUGESTOES_DO_PRODUTO, SUGESTOES_GERAIS } from "../../utils/chat";
 import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
 import styles from "./styles.module.css";
 
@@ -318,12 +320,24 @@ function Componentes() {
       </section>
 
       <section className={styles.section}>
-        <h2>ChatMessage e ChatComposer</h2>
+        <h2>ChatMessage, ChatSuggestions e ChatComposer</h2>
 
         <div className={styles.chat}>
           {conversa.map((mensagem) => (
             <ChatMessage key={mensagem.id} message={mensagem} />
           ))}
+
+          <ChatSuggestions
+            suggestions={SUGESTOES_DO_PRODUTO}
+            blocked={false}
+            onPick={enviarNaVitrine}
+          />
+
+          <ChatSuggestions
+            suggestions={SUGESTOES_GERAIS}
+            blocked
+            onPick={() => undefined}
+          />
 
           <ChatComposer
             id="demo-chat"
