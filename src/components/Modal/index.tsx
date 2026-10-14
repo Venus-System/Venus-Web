@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { X } from "lucide-react";
+import { useTravaDeRolagem } from "../../hooks/useTravaDeRolagem";
 import styles from "./styles.module.css";
 
 interface ModalProps {
@@ -37,35 +38,7 @@ function Modal({
     }
   }, [open]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const raiz = document.documentElement;
-    const corpo = document.body;
-
-    if (corpo.style.overflow === "hidden") {
-      return;
-    }
-
-    const larguraDaBarra = window.innerWidth - raiz.clientWidth;
-    const anterior = {
-      overflow: corpo.style.overflow,
-      paddingRight: corpo.style.paddingRight,
-      reserva: raiz.style.getPropertyValue("scrollbar-gutter"),
-    };
-
-    raiz.style.setProperty("scrollbar-gutter", "auto");
-    corpo.style.overflow = "hidden";
-    corpo.style.paddingRight = `${larguraDaBarra}px`;
-
-    return () => {
-      raiz.style.setProperty("scrollbar-gutter", anterior.reserva);
-      corpo.style.overflow = anterior.overflow;
-      corpo.style.paddingRight = anterior.paddingRight;
-    };
-  }, [open]);
+  useTravaDeRolagem(open);
 
   function handleClick(event: MouseEvent<HTMLDialogElement>) {
     if (event.target === dialogRef.current) {
