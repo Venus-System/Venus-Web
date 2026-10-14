@@ -69,6 +69,8 @@
   --borda-largura: 2px;
   --alvo-toque: 1.5rem;
   --botao-flutuante: 4.375rem;
+  --faixa-veninha: 9rem;
+  --duracao-entrada: 250ms;
 
   --gradiente-primario: linear-gradient(
     90deg,
