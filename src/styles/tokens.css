@@ -68,6 +68,7 @@
   --borda-forte: #8b79a6;
   --borda-largura: 2px;
   --alvo-toque: 1.5rem;
+  --botao-flutuante: 4.375rem;
 
   --gradiente-primario: linear-gradient(
     90deg,
@@ -76,6 +77,11 @@
   );
   --gradiente-marca: linear-gradient(90deg, var(--violeta), var(--crimson));
   --gradiente-conversa: linear-gradient(90deg, var(--violeta), var(--roxo));
+  --gradiente-flutuante: linear-gradient(
+    180deg,
+    var(--crimson),
+    var(--crimson-escuro)
+  );
   --sombra-cartao: 0 1px 2px rgba(26, 10, 46, 0.08);
 
   --tom-roxo: linear-gradient(160deg, #ede6ff, #c8abf2);

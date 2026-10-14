@@ -119,6 +119,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: var(--espaco-3);
+  padding-right: calc(var(--botao-flutuante) + var(--espaco-4));
   border-top: var(--borda-largura) solid var(--borda);
   color: var(--texto-suave);
 }
