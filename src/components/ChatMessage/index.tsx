@@ -2,7 +2,7 @@ import type { MensagemDoChat } from "../../types/chat";
 import styles from "./styles.module.css";
 
 interface ChatMessageProps {
-  message: MensagemDoChat;
+  message: Pick<MensagemDoChat, "author" | "text">;
 }
 
 function ChatMessage({ message }: ChatMessageProps) {
