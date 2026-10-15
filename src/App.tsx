@@ -28,6 +28,8 @@ import Favoritos from "./pages/Favoritos";
 import Comparar from "./pages/Comparar";
 import Escanear from "./pages/Escanear";
 import Reacao from "./pages/Reacao";
+import IntegracaoGoogleAgenda from "./pages/IntegracaoGoogleAgenda";
+import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
 
 function App() {
   return (
@@ -110,6 +112,14 @@ function App() {
         element={
           <RotaPrivada>
             <Perguntas />
+          </RotaPrivada>
+        }
+      />
+      <Route
+        path={CAMINHO_DE_VOLTA}
+        element={
+          <RotaPrivada>
+            <IntegracaoGoogleAgenda />
           </RotaPrivada>
         }
       />
