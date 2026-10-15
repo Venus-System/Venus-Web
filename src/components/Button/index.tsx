@@ -1,4 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactNode,
+} from "react";
 import { Link } from "react-router-dom";
 import type { LinkProps } from "react-router-dom";
 import styles from "./styles.module.css";
@@ -18,14 +22,34 @@ interface ButtonBaseProps {
 }
 
 type ButtonProps =
-  | (ButtonBaseProps & { to?: undefined } & ButtonHTMLAttributes<HTMLButtonElement>)
-  | (ButtonBaseProps & Omit<LinkProps, "className" | "children">);
+  | (ButtonBaseProps & {
+      to?: undefined;
+      href?: undefined;
+    } & ButtonHTMLAttributes<HTMLButtonElement>)
+  | (ButtonBaseProps & { href?: undefined } & Omit<
+        LinkProps,
+        "className" | "children"
+      >)
+  | (ButtonBaseProps & { to?: undefined; href: string } & Omit<
+        AnchorHTMLAttributes<HTMLAnchorElement>,
+        "className" | "children" | "href"
+      >);
 
 function Button(props: ButtonProps) {
   const { variant = "primary", className, children } = props;
   const classes = [styles.button, styles[variant], className]
     .filter(Boolean)
     .join(" ");
+
+  if (props.href !== undefined) {
+    const { variant: _variant, className: _className, ...rest } = props;
+
+    return (
+      <a {...rest} className={classes}>
+        {children}
+      </a>
+    );
+  }
 
   if (props.to !== undefined) {
     const { variant: _variant, className: _className, ...rest } = props;
