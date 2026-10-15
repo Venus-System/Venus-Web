@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { MensagemDoChat } from "../types/chat";
 import { tocarPop } from "../utils/somDaVeninha";
 
-const INTERVALO = 90;
+const INTERVALO = 60;
 const DURACAO_MAXIMA = 3000;
 const LETRAS_POR_SILABA = 3;
 const PASSOS_MAXIMOS = Math.floor(DURACAO_MAXIMA / INTERVALO / 2) * 2;
@@ -11,6 +11,11 @@ interface Fala {
   silabas: string;
   passo: number;
   total: number;
+}
+
+export interface BocaDaVeninha {
+  falando: boolean;
+  aberta: boolean;
 }
 
 const CALADA: Fala = { silabas: "", passo: 0, total: 0 };
@@ -40,7 +45,7 @@ export function useFalaDaVeninha(
   ultima: MensagemDoChat | undefined,
   ativa: boolean,
   comSom: boolean,
-): boolean {
+): BocaDaVeninha {
   const vistaRef = useRef<string | null>(
     ultima === undefined ? null : ultima.id,
   );
@@ -82,5 +87,7 @@ export function useFalaDaVeninha(
     };
   }, [fala.passo, fala.total, fala.silabas, comSom]);
 
-  return fala.passo < fala.total && fala.passo % 2 === 0;
+  const falando = fala.passo < fala.total;
+
+  return { falando, aberta: falando && fala.passo % 2 === 0 };
 }
