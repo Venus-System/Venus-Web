@@ -72,6 +72,7 @@
 
 .cabecalho {
   display: flex;
+  align-items: center;
   gap: var(--espaco-2);
 }
 
@@ -95,6 +96,7 @@
   color: var(--safe);
   font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
+  line-height: 1;
 }
 
 .seloIcone {
@@ -103,7 +105,9 @@
 }
 
 .desconectar {
+  padding: 0;
   font-size: var(--tamanho-pequeno);
+  line-height: 1;
 }
 
 .acao {
