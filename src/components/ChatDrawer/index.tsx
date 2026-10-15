@@ -1,20 +1,25 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { Volume2, VolumeX, X } from "lucide-react";
 import Button from "../Button";
 import ChatComposer from "../ChatComposer";
 import ChatMessage from "../ChatMessage";
 import ChatSuggestions from "../ChatSuggestions";
+import Veninha from "../Veninha";
+import type { EnvioDoChat } from "../../contexts/chat";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useChat } from "../../hooks/useChat";
+import { useFalaDaVeninha } from "../../hooks/useFalaDaVeninha";
 import { useSegundosRestantes } from "../../hooks/useSegundosRestantes";
 import { useTravaDeRolagem } from "../../hooks/useTravaDeRolagem";
+import type { ExpressaoDaVeninha, HumorDaVeninha } from "../../types/chat";
 import {
   SUGESTOES_DO_PRODUTO,
   SUGESTOES_GERAIS,
   perguntaSobreProduto,
 } from "../../utils/chat";
+import { guardarSomLigado, lerSomLigado } from "../../utils/somDaVeninha";
 import styles from "./styles.module.css";
 
 interface ChatDrawerProps {
@@ -37,13 +42,42 @@ function focarCampo() {
   }
 }
 
+function humorDoChat(
+  envio: EnvioDoChat,
+  expressao: ExpressaoDaVeninha,
+): HumorDaVeninha {
+  if (envio.status === "esperando") {
+    return "pensando";
+  }
+
+  if (envio.status === "erro" || envio.status === "limite") {
+    return "confusa";
+  }
+
+  return expressao === "magoada" ? "chorando" : "feliz";
+}
+
 function ChatDrawer({ productName }: ChatDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const fimRef = useRef<HTMLDivElement>(null);
   const tituloId = useId();
   const localizacao = useLocation();
   const { usuario, carregando } = useAutenticacao();
-  const { aberto, mensagens, envio, fechar, enviar, tentarDeNovo } = useChat();
+  const {
+    aberto,
+    mensagens,
+    expression,
+    envio,
+    fechar,
+    enviar,
+    tentarDeNovo,
+  } = useChat();
+  const [somLigado, setSomLigado] = useState(lerSomLigado);
+  const bocaAberta = useFalaDaVeninha(
+    mensagens[mensagens.length - 1],
+    aberto,
+    somLigado,
+  );
   const segundos = useSegundosRestantes(
     envio.status === "limite" ? envio.liberaEm : null,
   );
@@ -90,6 +124,13 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     enviar(perguntaSobreProduto(texto, productName));
   }
 
+  function alternarSom() {
+    const ligado = !somLigado;
+
+    setSomLigado(ligado);
+    guardarSomLigado(ligado);
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -98,19 +139,39 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
       onClose={fechar}
       onClick={handleClick}
     >
+      <div className={styles.veninha}>
+        <Veninha mood={humorDoChat(envio, expression)} mouthOpen={bocaAberta} />
+      </div>
+
       <div className={styles.painel}>
         <div className={styles.cabecalho}>
           <h2 id={tituloId} className="texto-oculto">
             Conversa com a Veninha
           </h2>
 
+          {usuario !== null ? (
+            <button
+              type="button"
+              className={styles.acao}
+              onClick={alternarSom}
+              aria-pressed={somLigado}
+              aria-label="Som da Veninha"
+            >
+              {somLigado ? (
+                <Volume2 className={styles.acaoIcone} aria-hidden="true" />
+              ) : (
+                <VolumeX className={styles.acaoIcone} aria-hidden="true" />
+              )}
+            </button>
+          ) : null}
+
           <button
             type="button"
-            className={styles.fechar}
+            className={`${styles.acao} ${styles.fechar}`}
             onClick={fechar}
             aria-label="Fechar conversa"
           >
-            <X className={styles.fecharIcone} aria-hidden="true" />
+            <X className={styles.acaoIcone} aria-hidden="true" />
           </button>
         </div>
 

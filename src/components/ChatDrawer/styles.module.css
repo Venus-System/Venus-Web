@@ -11,6 +11,7 @@
   border: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-grande);
   color: var(--texto);
+  overflow: visible;
 }
 
 .dialog::backdrop {
@@ -60,12 +61,25 @@
   padding: var(--espaco-3) var(--espaco-4) var(--espaco-4);
 }
 
+.veninha {
+  position: absolute;
+  bottom: calc(100% - var(--espaco-4));
+  left: 50%;
+  width: var(--faixa-veninha);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
 .cabecalho {
   display: flex;
-  justify-content: flex-end;
+  gap: var(--espaco-2);
 }
 
 .fechar {
+  margin-left: auto;
+}
+
+.acao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -80,11 +94,11 @@
   cursor: pointer;
 }
 
-.fechar:hover {
+.acao:hover {
   background-color: var(--lavanda-media);
 }
 
-.fecharIcone {
+.acaoIcone {
   width: 1.125rem;
   height: 1.125rem;
 }
