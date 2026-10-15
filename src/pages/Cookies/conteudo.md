@@ -1,5 +1,5 @@
 ---
-atualizado: 17 de setembro de 2026
+atualizado: 15 de outubro de 2026
 ---
 
 ## O resumo
@@ -7,8 +7,9 @@ atualizado: 17 de setembro de 2026
 **O Venus não usa cookies de publicidade, de rastreamento ou de terceiros para
 fins comerciais.**
 
-O que usamos é armazenamento local no seu navegador, para duas coisas: manter
-você conectado e lembrar do seu progresso no questionário de perfil.
+O que usamos é armazenamento local no seu navegador, para manter você
+conectado, lembrar do seu progresso no questionário de perfil e guardar a
+conversa e as suas escolhas no chat com a Veninha.
 
 ## O que guardamos no seu navegador
 
@@ -17,6 +18,10 @@ você conectado e lembrar do seu progresso no questionário de perfil.
 | Sessão do Firebase Authentication | `localStorage` ou `IndexedDB` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "Lembrar de mim" |
 | Nome e e-mail da conta ativa | `localStorage` ou `sessionStorage` | Mostrar seu nome sem consultar o servidor a cada página | Ao sair da conta |
 | Progresso do questionário | `localStorage` | Permitir retomar o questionário depois | Ao concluir o questionário ou limpar os dados do navegador |
+| Conversa com a Veninha | `sessionStorage` | Mostrar a conversa de novo ao trocar de página | Ao fechar a aba ou sair da conta |
+| Som da Veninha ligado ou desligado | `localStorage` | Lembrar a sua escolha no botão de som | Ao limpar os dados do navegador |
+| Convite da Google Agenda fechado | `localStorage` | Não mostrar de novo o convite que você fechou | Ao limpar os dados do navegador |
+| Pedido de conexão com a Google Agenda | `sessionStorage` | Conferir que a volta da Google é a do pedido que você fez | Ao terminar a conexão ou fechar a aba |
 
 **Nenhum desses itens guarda senha.**
 
