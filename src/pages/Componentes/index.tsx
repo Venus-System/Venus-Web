@@ -19,10 +19,11 @@ import ScoreBars from "../../components/ScoreBars";
 import SegmentedNav from "../../components/SegmentedNav";
 import StarRating from "../../components/StarRating";
 import SubmissionRow from "../../components/SubmissionRow";
+import Veninha from "../../components/Veninha";
 import { avaliacoesDoMock } from "../../services/mocks/avaliacoes";
 import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
-import type { MensagemDoChat } from "../../types/chat";
+import type { HumorDaVeninha, MensagemDoChat } from "../../types/chat";
 import type { RiskLevel } from "../../types/ingrediente";
 import { SUGESTOES_DO_PRODUTO, SUGESTOES_GERAIS } from "../../utils/chat";
 import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
@@ -31,6 +32,8 @@ import styles from "./styles.module.css";
 const LEVELS: RiskLevel[] = ["safe", "warning", "avoid", "no-data"];
 
 const CHIPS_INICIAIS = ["Lanolina", "Óleo de amêndoas", "Vegano"];
+
+const HUMORES: HumorDaVeninha[] = ["feliz", "chorando", "confusa", "pensando"];
 
 const CONVERSA_DE_EXEMPLO: MensagemDoChat[] = [
   {
@@ -346,6 +349,23 @@ function Componentes() {
           />
 
           <ChatComposer id="demo-chat-bloqueado" blocked onSend={() => undefined} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Veninha</h2>
+
+        <div className={styles.row}>
+          {HUMORES.map((humor) => (
+            <figure key={humor} className={styles.veninha}>
+              <div className={styles.row}>
+                <Veninha mood={humor} mouthOpen={false} />
+                <Veninha mood={humor} mouthOpen />
+              </div>
+
+              <figcaption>{humor}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
     </MainLayout>

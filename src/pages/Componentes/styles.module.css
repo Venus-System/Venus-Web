@@ -28,6 +28,17 @@
   max-width: 24rem;
 }
 
+.veninha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin: 0;
+}
+
+.veninha .row > * {
+  width: var(--faixa-veninha);
+}
+
 .grid {
   display: grid;
   gap: var(--espaco-4);
