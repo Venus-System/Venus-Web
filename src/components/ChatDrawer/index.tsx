@@ -353,8 +353,8 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 aria-labelledby={avisoDaNovaId}
               >
                 <p id={avisoDaNovaId}>
-                  Começar uma conversa nova apaga esta. A Veninha não vai
-                  lembrar do que vocês falaram.
+                  Começar uma conversa nova tira esta da tela, e não dá para
+                  voltar a ela. A Veninha não continua o assunto de onde parou.
                 </p>
 
                 <div className={styles.confirmacaoAcoes}>
@@ -363,7 +363,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                     variant="danger"
                     onClick={comecarDeNovo}
                   >
-                    Apagar e começar nova
+                    Começar conversa nova
                   </Button>
 
                   <Button variant="secondary" onClick={cancelarNovaConversa}>
