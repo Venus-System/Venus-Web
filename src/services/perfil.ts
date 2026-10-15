@@ -138,16 +138,6 @@ function lerSituacao(
   return "none";
 }
 
-function lerSensibilidade(
-  nivel: PerfilParaSalvar["skinSensitivity"],
-): RespostasQuestionario["skinSensitivity"] {
-  if (nivel === null || nivel === "very_high") {
-    return "";
-  }
-
-  return nivel;
-}
-
 export function paraRespostas(
   perfil: PerfilParaSalvar,
 ): RespostasQuestionario {
@@ -157,7 +147,7 @@ export function paraRespostas(
     skinType: perfil.skinType ?? "",
     ageRange: perfil.ageRange ?? "",
     skinPhototype: perfil.skinPhototype ?? "",
-    skinSensitivity: lerSensibilidade(perfil.skinSensitivity),
+    skinSensitivity: perfil.skinSensitivity ?? "",
     scalpType: perfil.scalpType ?? "",
     currentSituation: lerSituacao(perfil.isPregnant, perfil.isBreastfeeding),
     skinConditions: lerCondicoes(perfil),

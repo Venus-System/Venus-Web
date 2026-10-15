@@ -18,10 +18,6 @@ export interface AlergiaSelecionada {
 
 export type CurvaturaCabelo = TipoCabelo
 
-export type SensibilidadeQuestionario = Exclude<
-  NivelSensibilidade,
-  "very_high"
->;
 
 export interface RespostasQuestionario {
   gender: Genero | "";
@@ -29,7 +25,7 @@ export interface RespostasQuestionario {
   skinType: TipoPele | "";
   ageRange: FaixaEtaria | "";
   skinPhototype: Fototipo | "";
-  skinSensitivity: SensibilidadeQuestionario | "";
+  skinSensitivity: NivelSensibilidade | "";
   scalpType: TipoCouroCabeludo | "";
   allergies: AlergiaSelecionada[];
   preferences: Preferencia[];
