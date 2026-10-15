@@ -43,12 +43,19 @@ const SAUDACAO_GERAL =
 const SAUDACAO_DO_PRODUTO =
   "Oi! Sou a Veninha. Posso explicar os ingredientes e a nota deste produto para você.";
 
-function focarCampo() {
-  const campo = document.getElementById(ID_DO_CAMPO);
+const ID_DA_NOVA_CONVERSA = "chat-nova-conversa";
+const ID_DA_CONFIRMACAO = "chat-confirmar-nova-conversa";
 
-  if (campo !== null) {
-    campo.focus();
+function focar(id: string) {
+  const elemento = document.getElementById(id);
+
+  if (elemento !== null) {
+    elemento.focus();
   }
+}
+
+function focarCampo() {
+  focar(ID_DO_CAMPO);
 }
 
 function humorDoChat(
@@ -70,6 +77,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const fimRef = useRef<HTMLDivElement>(null);
   const tituloId = useId();
+  const avisoDaNovaId = useId();
   const localizacao = useLocation();
   const { usuario, carregando } = useAutenticacao();
   const {
@@ -83,6 +91,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     novaConversa,
   } = useChat();
   const [somLigado, setSomLigado] = useState(lerSomLigado);
+  const [confirmandoNova, setConfirmandoNova] = useState(false);
   const boca = useFalaDaVeninha(
     mensagens[mensagens.length - 1],
     aberto,
@@ -124,6 +133,18 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
   }, [aberto]);
 
   useEffect(() => {
+    if (!aberto) {
+      setConfirmandoNova(false);
+    }
+  }, [aberto]);
+
+  useEffect(() => {
+    if (confirmandoNova) {
+      focar(ID_DA_CONFIRMACAO);
+    }
+  }, [confirmandoNova]);
+
+  useEffect(() => {
     if (aberto && fimRef.current !== null) {
       fimRef.current.scrollIntoView({ block: "end" });
     }
@@ -146,7 +167,13 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
 
   function comecarDeNovo() {
     novaConversa();
+    setConfirmandoNova(false);
     focarCampo();
+  }
+
+  function cancelarNovaConversa() {
+    setConfirmandoNova(false);
+    focar(ID_DA_NOVA_CONVERSA);
   }
 
   function fecharConviteDaAgenda() {
@@ -201,10 +228,12 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
 
           {usuario !== null && mensagens.length > 0 ? (
             <button
+              id={ID_DA_NOVA_CONVERSA}
               type="button"
               className={styles.acao}
-              onClick={comecarDeNovo}
+              onClick={() => setConfirmandoNova(true)}
               disabled={envio.status === "esperando"}
+              aria-expanded={confirmandoNova}
               aria-label="Nova conversa"
               title="Nova conversa"
             >
@@ -314,6 +343,33 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                     Tentar de novo
                   </Button>
                 )}
+              </div>
+            ) : null}
+
+            {confirmandoNova && mensagens.length > 0 ? (
+              <div
+                className={styles.confirmacao}
+                role="group"
+                aria-labelledby={avisoDaNovaId}
+              >
+                <p id={avisoDaNovaId}>
+                  Começar uma conversa nova apaga esta. A Veninha não vai
+                  lembrar do que vocês falaram.
+                </p>
+
+                <div className={styles.confirmacaoAcoes}>
+                  <Button
+                    id={ID_DA_CONFIRMACAO}
+                    variant="danger"
+                    onClick={comecarDeNovo}
+                  >
+                    Apagar e começar nova
+                  </Button>
+
+                  <Button variant="secondary" onClick={cancelarNovaConversa}>
+                    Cancelar
+                  </Button>
+                </div>
               </div>
             ) : null}
 

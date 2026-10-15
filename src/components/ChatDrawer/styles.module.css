@@ -170,6 +170,26 @@
   font-size: var(--tamanho-pequeno);
 }
 
+.confirmacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-radius: var(--raio-medio);
+  font-size: var(--tamanho-pequeno);
+}
+
+.confirmacao p {
+  margin: 0;
+}
+
+.confirmacaoAcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
 .convite {
   display: flex;
   flex-direction: column;
