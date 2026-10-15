@@ -77,10 +77,10 @@ function Sidebar({ onSearch }: SidebarProps) {
 
   return (
     <nav className={styles.sidebar} aria-label="Navegação principal">
-      <Link to="/" className={styles.brand}>
+      <div className={styles.brand}>
         <img src={logo} alt="" className={styles.logo} />
         <span className={styles.brandName}>Venus</span>
-      </Link>
+      </div>
 
       <form role="search" onSubmit={handleSubmit} className={styles.search}>
         <Input
