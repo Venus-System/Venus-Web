@@ -79,6 +79,33 @@
   margin-left: auto;
 }
 
+.agenda {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  padding: var(--espaco-1) var(--espaco-2);
+  background-color: var(--safe-fundo);
+  border-radius: var(--raio-pilula);
+  color: var(--safe);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.seloIcone {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.desconectar {
+  font-size: var(--tamanho-pequeno);
+}
+
 .acao {
   display: inline-flex;
   align-items: center;

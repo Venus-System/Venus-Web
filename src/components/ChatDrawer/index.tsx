@@ -1,16 +1,19 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { useLocation } from "react-router-dom";
-import { Volume2, VolumeX, X } from "lucide-react";
+import { CalendarCheck, Volume2, VolumeX, X } from "lucide-react";
 import Button from "../Button";
+import ChatAgenda from "../ChatAgenda";
 import ChatComposer from "../ChatComposer";
 import ChatMessage from "../ChatMessage";
 import ChatSuggestions from "../ChatSuggestions";
 import Veninha from "../Veninha";
 import type { EnvioDoChat } from "../../contexts/chat";
+import { useAgendaGoogle } from "../../hooks/useAgendaGoogle";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useChat } from "../../hooks/useChat";
 import { useFalaDaVeninha } from "../../hooks/useFalaDaVeninha";
+import { useLinkDaAgenda } from "../../hooks/useLinkDaAgenda";
 import { useSegundosRestantes } from "../../hooks/useSegundosRestantes";
 import { useTravaDeRolagem } from "../../hooks/useTravaDeRolagem";
 import type { ExpressaoDaVeninha, HumorDaVeninha } from "../../types/chat";
@@ -77,6 +80,15 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     mensagens[mensagens.length - 1],
     aberto,
     somLigado,
+  );
+  const agenda = useAgendaGoogle(aberto && usuario !== null);
+  const agendaConectada =
+    agenda.conexao.status === "pronta" && agenda.conexao.conectada;
+  const linkDaAgenda = useLinkDaAgenda(
+    agenda.disponivel &&
+      agenda.conexao.status === "pronta" &&
+      !agenda.conexao.conectada,
+    `${localizacao.pathname}${localizacao.search}`,
   );
   const segundos = useSegundosRestantes(
     envio.status === "limite" ? envio.liberaEm : null,
@@ -169,6 +181,24 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
             </button>
           ) : null}
 
+          {agenda.disponivel && agendaConectada ? (
+            <div className={styles.agenda}>
+              <span className={styles.selo}>
+                <CalendarCheck className={styles.seloIcone} aria-hidden="true" />
+                Agenda conectada
+              </span>
+
+              <Button
+                variant="text"
+                className={styles.desconectar}
+                onClick={agenda.desconectar}
+                disabled={agenda.desconexao.status === "desconectando"}
+              >
+                Desconectar
+              </Button>
+            </div>
+          ) : null}
+
           <button
             type="button"
             className={`${styles.acao} ${styles.fechar}`}
@@ -251,6 +281,15 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                   </Button>
                 )}
               </div>
+            ) : null}
+
+            {usuario !== null && agenda.disponivel ? (
+              <ChatAgenda
+                connection={agenda.conexao}
+                disconnection={agenda.desconexao}
+                connectLink={linkDaAgenda}
+                onRetry={agenda.recarregar}
+              />
             ) : null}
 
             {usuario !== null ? (
