@@ -359,8 +359,8 @@ function Componentes() {
           {HUMORES.map((humor) => (
             <figure key={humor} className={styles.veninha}>
               <div className={styles.row}>
-                <Veninha mood={humor} mouthOpen={false} />
-                <Veninha mood={humor} mouthOpen />
+                <Veninha mood={humor} speaking mouthOpen={false} />
+                <Veninha mood={humor} speaking mouthOpen />
               </div>
 
               <figcaption>{humor}</figcaption>

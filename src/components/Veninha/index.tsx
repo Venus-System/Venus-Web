@@ -12,6 +12,7 @@ import styles from "./styles.module.css";
 
 interface VeninhaProps {
   mood: HumorDaVeninha;
+  speaking: boolean;
   mouthOpen: boolean;
 }
 
@@ -19,7 +20,8 @@ interface Rosto {
   cara: string;
   aberta: string;
   fechada: string;
-  abertaQuandoParada: boolean;
+  abertaQuieta: boolean;
+  abertaSemMovimento: boolean;
 }
 
 const ROSTOS: Record<HumorDaVeninha, Rosto> = {
@@ -27,32 +29,49 @@ const ROSTOS: Record<HumorDaVeninha, Rosto> = {
     cara: caraFeliz,
     aberta: bocaAbertaEstreita,
     fechada: bocaFechada,
-    abertaQuandoParada: true,
+    abertaQuieta: false,
+    abertaSemMovimento: true,
   },
   chorando: {
     cara: caraChorando,
     aberta: bocaAbertaLarga,
     fechada: bocaTriste,
-    abertaQuandoParada: false,
+    abertaQuieta: false,
+    abertaSemMovimento: false,
   },
   confusa: {
     cara: caraConfusa,
     aberta: bocaAbertaLarga,
     fechada: bocaFechada,
-    abertaQuandoParada: true,
+    abertaQuieta: true,
+    abertaSemMovimento: true,
   },
   pensando: {
     cara: caraPensando,
     aberta: bocaAbertaLarga,
     fechada: bocaTriste,
-    abertaQuandoParada: true,
+    abertaQuieta: false,
+    abertaSemMovimento: true,
   },
 };
 
-function Veninha({ mood, mouthOpen }: VeninhaProps) {
+function bocaAberta(
+  rosto: Rosto,
+  reduzido: boolean,
+  falando: boolean,
+  aberta: boolean,
+): boolean {
+  if (reduzido) {
+    return rosto.abertaSemMovimento;
+  }
+
+  return falando ? aberta : rosto.abertaQuieta;
+}
+
+function Veninha({ mood, speaking, mouthOpen }: VeninhaProps) {
   const reduzido = useMovimentoReduzido();
   const rosto = ROSTOS[mood];
-  const aberta = reduzido ? rosto.abertaQuandoParada : mouthOpen;
+  const aberta = bocaAberta(rosto, reduzido, speaking, mouthOpen);
 
   return (
     <div className={`${styles.veninha} ${styles[mood]}`} aria-hidden="true">
