@@ -81,11 +81,12 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     aberto,
     somLigado,
   );
-  const agenda = useAgendaGoogle(aberto && usuario !== null);
+  const agenda = useAgendaGoogle(usuario === null ? null : usuario.id, aberto);
   const agendaConectada =
     agenda.conexao.status === "pronta" && agenda.conexao.conectada;
   const linkDaAgenda = useLinkDaAgenda(
     agenda.disponivel &&
+      !agenda.conviteFechado &&
       agenda.conexao.status === "pronta" &&
       !agenda.conexao.conectada,
     `${localizacao.pathname}${localizacao.search}`,
@@ -134,6 +135,11 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
 
   function perguntar(texto: string) {
     enviar(perguntaSobreProduto(texto, productName));
+  }
+
+  function fecharConviteDaAgenda() {
+    agenda.fecharConvite();
+    focarCampo();
   }
 
   function alternarSom() {
@@ -288,7 +294,9 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 connection={agenda.conexao}
                 disconnection={agenda.desconexao}
                 connectLink={linkDaAgenda}
+                inviteClosed={agenda.conviteFechado}
                 onRetry={agenda.recarregar}
+                onCloseInvite={fecharConviteDaAgenda}
               />
             ) : null}
 

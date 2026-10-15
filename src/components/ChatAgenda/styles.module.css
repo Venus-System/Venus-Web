@@ -38,6 +38,30 @@
   font-size: var(--tamanho-pequeno);
 }
 
+.fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--raio-pilula);
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background-color: var(--lavanda-media);
+}
+
+.fecharIcone {
+  width: 1rem;
+  height: 1rem;
+}
+
 .conectar {
   flex-shrink: 0;
   padding-inline: var(--espaco-3);

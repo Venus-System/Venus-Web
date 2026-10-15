@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 import Button from "../Button";
 import type {
   EstadoDaConexao,
@@ -10,24 +10,28 @@ interface ChatAgendaProps {
   connection: EstadoDaConexao;
   disconnection: EstadoDaDesconexao;
   connectLink: string | null;
+  inviteClosed: boolean;
   onRetry: () => void;
+  onCloseInvite: () => void;
 }
 
 function ChatAgenda({
   connection,
   disconnection,
   connectLink,
+  inviteClosed,
   onRetry,
+  onCloseInvite,
 }: ChatAgendaProps) {
   return (
     <>
-      {connection.status === "carregando" ? (
+      {connection.status === "carregando" && !inviteClosed ? (
         <p className={styles.info} aria-live="polite">
           Verificando a sua agenda...
         </p>
       ) : null}
 
-      {connection.status === "erro" ? (
+      {connection.status === "erro" && !inviteClosed ? (
         <div className={styles.aviso}>
           <p role="alert">{connection.mensagem}</p>
 
@@ -49,7 +53,9 @@ function ChatAgenda({
         </p>
       ) : null}
 
-      {connection.status === "pronta" && !connection.conectada ? (
+      {connection.status === "pronta" &&
+      !connection.conectada &&
+      !inviteClosed ? (
         <div className={styles.convite}>
           <CalendarDays className={styles.icone} aria-hidden="true" />
 
@@ -62,6 +68,15 @@ function ChatAgenda({
               Conectar
             </Button>
           ) : null}
+
+          <button
+            type="button"
+            className={styles.fechar}
+            onClick={onCloseInvite}
+            aria-label="Fechar o convite da Google Agenda"
+          >
+            <X className={styles.fecharIcone} aria-hidden="true" />
+          </button>
         </div>
       ) : null}
     </>

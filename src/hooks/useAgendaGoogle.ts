@@ -8,26 +8,39 @@ import type {
   EstadoDaConexao,
   EstadoDaDesconexao,
 } from "../types/agenda";
+import {
+  conviteFechado,
+  guardarConviteFechado,
+} from "../utils/conviteDaAgenda";
 
 interface EstadoDaAgenda {
   conexao: EstadoDaConexao;
   desconexao: EstadoDaDesconexao;
   tentativa: number;
+  conviteFechado: boolean;
 }
 
 const INICIAL: EstadoDaAgenda = {
   conexao: { status: "carregando" },
   desconexao: { status: "ociosa" },
   tentativa: 0,
+  conviteFechado: false,
 };
 
 function mensagemDe(erro: unknown, padrao: string): string {
   return erro instanceof Error ? erro.message : padrao;
 }
 
-export function useAgendaGoogle(ativa: boolean) {
+export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
   const [estado, setEstado] = useState<EstadoDaAgenda>(INICIAL);
-  const disponivel = ativa && agendaDisponivel();
+  const disponivel = usuarioId !== null && ativa && agendaDisponivel();
+
+  useEffect(() => {
+    setEstado((atual) => ({
+      ...atual,
+      conviteFechado: usuarioId === null ? false : conviteFechado(usuarioId),
+    }));
+  }, [usuarioId]);
 
   useEffect(() => {
     if (!disponivel) {
@@ -71,6 +84,15 @@ export function useAgendaGoogle(ativa: boolean) {
     setEstado((atual) => ({ ...atual, tentativa: atual.tentativa + 1 }));
   }
 
+  function fecharConvite() {
+    if (usuarioId === null) {
+      return;
+    }
+
+    guardarConviteFechado(usuarioId);
+    setEstado((atual) => ({ ...atual, conviteFechado: true }));
+  }
+
   function desconectar() {
     if (estado.desconexao.status === "desconectando") {
       return;
@@ -107,7 +129,9 @@ export function useAgendaGoogle(ativa: boolean) {
     disponivel,
     conexao: estado.conexao,
     desconexao: estado.desconexao,
+    conviteFechado: estado.conviteFechado,
     recarregar,
+    fecharConvite,
     desconectar,
   };
 }
