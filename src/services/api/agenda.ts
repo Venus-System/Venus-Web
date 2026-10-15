@@ -13,7 +13,7 @@ function verificarConexao(resposta: Response): void {
 
   if (resposta.status === 409) {
     throw new ErroDeOrientacao(
-      "Sua conta ainda não está completa na Venus. Entre de novo e tente conectar.",
+      "A Venus não encontrou a sua conta para ligar a agenda. Tente de novo mais tarde.",
     );
   }
 
