@@ -13,6 +13,7 @@ import {
   contarPreenchidas,
   totalDeRespostas,
 } from "../utils/progressoPerfil";
+import { limparProgresso } from "../utils/progressoQuestionario";
 import {
   validarFaixaEtaria,
   validarGravidadeDasAlergias,
@@ -113,7 +114,7 @@ export function usePerfil(): Perfil {
     mensagem: "",
   });
   const [envioDaFoto, setEnvioDaFoto] = useState<EnvioDaFoto>(FOTO_PARADA);
-  const { fotoUrl, definirFoto } = useAutenticacao();
+  const { usuario, fotoUrl, definirFoto } = useAutenticacao();
   const resumoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -251,6 +252,10 @@ export function usePerfil(): Perfil {
       skinConditions: [],
       allergies: [],
     };
+
+    if (usuario !== null) {
+      limparProgresso(usuario.id);
+    }
 
     atualizar(() => limpas);
     void enviarRespostas(limpas);

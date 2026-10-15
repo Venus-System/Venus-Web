@@ -43,6 +43,8 @@ function Perguntas() {
     trocarCondicoes,
     catalogo,
     tentarCatalogoDeNovo,
+    perfil,
+    tentarPerfilDeNovo,
     formulario,
     itensDoResumo,
     respostasDeSaude,
@@ -81,7 +83,28 @@ function Perguntas() {
         </div>
       </section>
 
-      <form className={styles.form} noValidate onSubmit={handleSubmit}>
+      <p className={styles.catalogStatus} aria-live="polite">
+        {perfil === "carregando" ? "Carregando as suas respostas..." : ""}
+      </p>
+
+      {perfil === "erro" ? (
+        <div className={styles.catalogError} role="alert">
+          <p>
+            Não foi possível carregar as suas respostas. Tente de novo antes de
+            continuar, para não apagar o que você já respondeu.
+          </p>
+          <Button variant="secondary" onClick={tentarPerfilDeNovo}>
+            Tentar novamente
+          </Button>
+        </div>
+      ) : null}
+
+      <form
+        className={styles.form}
+        noValidate
+        onSubmit={handleSubmit}
+        hidden={perfil !== "pronto"}
+      >
         <ResumoErros ref={resumoRef} items={itensDoResumo} />
 
         <QuestionCard number={1} total={TOTAL_PERGUNTAS}>

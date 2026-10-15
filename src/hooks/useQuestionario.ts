@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
+import { useAutenticacao } from "./useAutenticacao";
 import { buscarCatalogoAlergias } from "../services/alergias";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
@@ -23,6 +24,8 @@ export type EstadoCatalogo =
   | { status: "loading" }
   | { status: "success"; options: AlergiaCatalogo[] }
   | { status: "error" };
+
+export type EstadoDoPerfil = "carregando" | "pronto" | "erro";
 
 type SituacaoEnvio = "ocioso" | "enviando" | "sucesso" | "erro";
 
@@ -47,6 +50,8 @@ export interface Questionario {
   trocarCondicoes: (marcadas: CondicaoPele[]) => void;
   catalogo: EstadoCatalogo;
   tentarCatalogoDeNovo: () => void;
+  perfil: EstadoDoPerfil;
+  tentarPerfilDeNovo: () => void;
   formulario: EstadoFormulario;
   itensDoResumo: ErroResumo[];
   respostasDeSaude: number;
@@ -92,10 +97,18 @@ function contarRespostasDeSaude(respostas: RespostasQuestionario): number {
 }
 
 export function useQuestionario(): Questionario {
-  const [respostas, setRespostas] = useState<RespostasQuestionario>(
-    () => lerProgresso() ?? RESPOSTAS_INICIAIS,
+  const { usuario } = useAutenticacao();
+  const usuarioId = usuario === null ? null : usuario.id;
+  const [rascunho] = useState(() =>
+    usuarioId === null ? null : lerProgresso(usuarioId),
   );
-  const [temRascunho] = useState(() => lerProgresso() !== null);
+  const [respostas, setRespostas] = useState<RespostasQuestionario>(
+    rascunho ?? RESPOSTAS_INICIAIS,
+  );
+  const [perfil, setPerfil] = useState<EstadoDoPerfil>(
+    rascunho === null ? "carregando" : "pronto",
+  );
+  const [tentativaPerfil, setTentativaPerfil] = useState(0);
   const [catalogo, setCatalogo] = useState<EstadoCatalogo>({
     status: "loading",
   });
@@ -132,7 +145,7 @@ export function useQuestionario(): Questionario {
   }, [tentativaCatalogo]);
 
   useEffect(() => {
-    if (temRascunho) {
+    if (rascunho !== null) {
       return;
     }
 
@@ -140,20 +153,27 @@ export function useQuestionario(): Questionario {
 
     buscarPerfil()
       .then((carregado) => {
-        if (!ativo || carregado === null) {
+        if (!ativo) {
           return;
         }
 
-        setRespostas((atual) =>
-          atual === RESPOSTAS_INICIAIS ? paraRespostas(carregado.perfil) : atual,
+        setRespostas(
+          carregado === null
+            ? RESPOSTAS_INICIAIS
+            : paraRespostas(carregado.perfil),
         );
+        setPerfil("pronto");
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (ativo) {
+          setPerfil("erro");
+        }
+      });
 
     return () => {
       ativo = false;
     };
-  }, [temRascunho]);
+  }, [rascunho, tentativaPerfil]);
 
   useEffect(() => {
     const temErro =
@@ -192,6 +212,11 @@ export function useQuestionario(): Questionario {
     setTentativaCatalogo((atual) => atual + 1);
   }
 
+  function tentarPerfilDeNovo() {
+    setPerfil("carregando");
+    setTentativaPerfil((atual) => atual + 1);
+  }
+
   function voltarParaConsentimento() {
     setFormulario((atual) => ({ ...atual, aguardandoDecisao: false }));
 
@@ -202,7 +227,11 @@ export function useQuestionario(): Questionario {
   }
 
   function salvarProgresso() {
-    guardarProgresso(respostas);
+    if (usuarioId === null || perfil !== "pronto") {
+      return;
+    }
+
+    guardarProgresso(usuarioId, respostas);
   }
 
   async function enviarRespostas() {
@@ -214,7 +243,10 @@ export function useQuestionario(): Questionario {
 
     try {
       await salvarPerfil(respostas);
-      limparProgresso();
+
+      if (usuarioId !== null) {
+        limparProgresso(usuarioId);
+      }
 
       setFormulario((atual) => ({ ...atual, situacao: "sucesso" }));
     } catch (erro) {
@@ -282,6 +314,8 @@ export function useQuestionario(): Questionario {
     trocarCondicoes,
     catalogo,
     tentarCatalogoDeNovo,
+    perfil,
+    tentarPerfilDeNovo,
     formulario,
     itensDoResumo,
     respostasDeSaude: contarRespostasDeSaude(respostas),
