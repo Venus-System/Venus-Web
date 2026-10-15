@@ -1,5 +1,5 @@
 ---
-atualizado: 17 de setembro de 2026
+atualizado: 15 de outubro de 2026
 ---
 
 ## O que é o Venus
@@ -42,6 +42,17 @@ ferramenta entrega:
 - **Reação individual é imprevisível.** Um produto com nota alta pode te fazer
   mal, e um com nota baixa pode não te fazer nada.
 
+## A conversa com a Veninha
+
+A Veninha é uma assistente de inteligência artificial. As respostas dela são
+geradas automaticamente e **podem ter erros**. Elas valem o mesmo que as
+análises: informam, não diagnosticam. Confira o que for importante na análise
+do produto e, em dúvida sobre a sua saúde, fale com um profissional.
+
+Se você conectar a sua Google Agenda, a Veninha só cria um evento depois que
+você confirma na conversa. Você pode desconectar a qualquer momento, também na
+conversa.
+
 ## Sua conta
 
 Você precisa ter pelo menos 13 anos para criar uma conta no Venus. Entre 13 e
@@ -51,9 +62,9 @@ responsáveis.
 Você é responsável por manter sua senha em segurança e por manter seu perfil
 atualizado. Análises cruzadas com um perfil desatualizado podem estar erradas.
 
-Você pode apagar sua conta a qualquer momento, e a exclusão é imediata. O que
-é removido e o que permanece de forma desvinculada está descrito na política de
-privacidade.
+Você pode pedir a exclusão da sua conta a qualquer momento, pelo e-mail
+venussystem2026@gmail.com. O prazo, o que é removido e o que permanece de forma
+desvinculada estão descritos na política de privacidade.
 
 ## Conteúdo enviado por você
 
