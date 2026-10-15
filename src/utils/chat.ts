@@ -9,7 +9,7 @@ export const SUGESTOES_DO_PRODUTO = [
 export const SUGESTOES_GERAIS = [
   "Como a nota é calculada?",
   "Me ajuda a montar uma rotina de cuidados?",
-  "Quais ingredientes pedem atenção na pele sensível?",
+  "O que evitar na pele sensível?",
 ];
 
 export function perguntaSobreProduto(

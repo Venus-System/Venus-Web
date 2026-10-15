@@ -11,9 +11,10 @@
   padding: var(--espaco-1) var(--espaco-3);
   background-color: var(--card);
   border: var(--borda-largura) solid var(--crimson);
-  border-radius: var(--raio-pilula);
+  border-radius: var(--raio-grande);
   color: var(--crimson);
   font-size: var(--tamanho-pequeno);
+  text-align: left;
   cursor: pointer;
 }
 
