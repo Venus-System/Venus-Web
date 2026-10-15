@@ -6,7 +6,11 @@ export const SUGESTOES_DO_PRODUTO = [
   "Sugira um parecido",
 ];
 
-export const SUGESTOES_GERAIS = ["Como a nota é calculada?"];
+export const SUGESTOES_GERAIS = [
+  "Como a nota é calculada?",
+  "Me ajuda a montar uma rotina de cuidados?",
+  "Quais ingredientes pedem atenção na pele sensível?",
+];
 
 export function perguntaSobreProduto(
   texto: string,
