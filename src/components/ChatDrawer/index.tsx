@@ -73,7 +73,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     tentarDeNovo,
   } = useChat();
   const [somLigado, setSomLigado] = useState(lerSomLigado);
-  const bocaAberta = useFalaDaVeninha(
+  const boca = useFalaDaVeninha(
     mensagens[mensagens.length - 1],
     aberto,
     somLigado,
@@ -140,7 +140,11 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
       onClick={handleClick}
     >
       <div className={styles.veninha}>
-        <Veninha mood={humorDoChat(envio, expression)} mouthOpen={bocaAberta} />
+        <Veninha
+          mood={humorDoChat(envio, expression)}
+          speaking={boca.falando}
+          mouthOpen={boca.aberta}
+        />
       </div>
 
       <div className={styles.painel}>
