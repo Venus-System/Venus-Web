@@ -110,8 +110,8 @@ function IntegracaoGoogleAgenda() {
         <div className={styles.veninha}>
           <Veninha
             mood={HUMOR_DA_VOLTA[volta.status]}
-            speaking={false}
-            mouthOpen={false}
+            speaking={volta.status === "conectada"}
+            mouthOpen={volta.status === "conectada"}
           />
         </div>
 
