@@ -38,6 +38,7 @@ interface ValorDoChat {
   fechar: () => void;
   enviar: (texto: string) => void;
   tentarDeNovo: () => void;
+  novaConversa: () => void;
 }
 
 interface ProvedorChatProps {
@@ -198,6 +199,20 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
     pedirResposta(ultima.text, usuarioId);
   }
 
+  function novaConversa() {
+    if (estado.envio.status === "esperando") {
+      return;
+    }
+
+    setEstado((atual) => ({
+      ...atual,
+      mensagens: [],
+      conversationId: null,
+      expression: "neutra",
+      envio: { status: "ocioso" },
+    }));
+  }
+
   function abrir() {
     setEstado((atual) => ({ ...atual, aberto: true }));
   }
@@ -217,6 +232,7 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
         fechar,
         enviar,
         tentarDeNovo,
+        novaConversa,
       }}
     >
       {children}

@@ -1,7 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { useLocation } from "react-router-dom";
-import { CalendarCheck, Volume2, VolumeX, X } from "lucide-react";
+import {
+  CalendarCheck,
+  MessageCirclePlus,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import Button from "../Button";
 import ChatAgenda from "../ChatAgenda";
 import ChatComposer from "../ChatComposer";
@@ -74,6 +80,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     fechar,
     enviar,
     tentarDeNovo,
+    novaConversa,
   } = useChat();
   const [somLigado, setSomLigado] = useState(lerSomLigado);
   const boca = useFalaDaVeninha(
@@ -137,6 +144,11 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     enviar(perguntaSobreProduto(texto, productName));
   }
 
+  function comecarDeNovo() {
+    novaConversa();
+    focarCampo();
+  }
+
   function fecharConviteDaAgenda() {
     agenda.fecharConvite();
     focarCampo();
@@ -184,6 +196,22 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
               ) : (
                 <VolumeX className={styles.acaoIcone} aria-hidden="true" />
               )}
+            </button>
+          ) : null}
+
+          {usuario !== null && mensagens.length > 0 ? (
+            <button
+              type="button"
+              className={styles.acao}
+              onClick={comecarDeNovo}
+              disabled={envio.status === "esperando"}
+              aria-label="Nova conversa"
+              title="Nova conversa"
+            >
+              <MessageCirclePlus
+                className={styles.acaoIcone}
+                aria-hidden="true"
+              />
             </button>
           ) : null}
 
@@ -247,7 +275,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 ) : null}
               </div>
 
-              {usuario !== null ? (
+              {usuario !== null && mensagens.length === 0 ? (
                 <ChatSuggestions
                   suggestions={
                     productName === undefined

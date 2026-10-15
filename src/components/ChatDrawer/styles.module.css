@@ -125,8 +125,13 @@
   cursor: pointer;
 }
 
-.acao:hover {
+.acao:hover:not(:disabled) {
   background-color: var(--lavanda-media);
+}
+
+.acao:disabled {
+  color: var(--texto-suave);
+  cursor: not-allowed;
 }
 
 .acaoIcone {
