@@ -149,6 +149,7 @@ function Produto() {
 
   function abrirTodas() {
     setModais((atual) => ({ ...atual, todas: true }));
+    atualizarAvaliacoes();
   }
 
   function fecharTodas() {
