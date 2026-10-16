@@ -15,7 +15,7 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { autenticacaoFirebase } from "../config/firebase";
-import { repassarErro } from "./erros";
+import { ErroLinkDeSenhaVencido, repassarErro } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
@@ -325,6 +325,16 @@ function ehUsuarioInexistente(erro: unknown): boolean {
   );
 }
 
+function ehLinkVencido(erro: unknown): boolean {
+  return (
+    typeof erro === "object" &&
+    erro !== null &&
+    "code" in erro &&
+    (erro.code === "auth/expired-action-code" ||
+      erro.code === "auth/invalid-action-code")
+  );
+}
+
 export async function solicitarRedefinicao(email: string): Promise<void> {
   if (autenticacaoFirebase === null) {
     await simularLatencia();
@@ -354,6 +364,10 @@ export async function confirmarRedefinicao(
 
     await confirmPasswordReset(autenticacaoFirebase, codigo, senha);
   } catch (erro) {
+    if (ehLinkVencido(erro)) {
+      throw new ErroLinkDeSenhaVencido();
+    }
+
     repassarErro(erro, "Não foi possível trocar a senha.");
   }
 }

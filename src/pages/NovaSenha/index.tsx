@@ -1,6 +1,12 @@
 import { useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import { ErroLinkDeSenhaVencido } from "../../services/erros";
 import Button from "../../components/Button";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
@@ -27,7 +33,8 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 type EstadoEnvio =
   | { situacao: "parado" }
   | { situacao: "enviando" }
-  | { situacao: "erro"; mensagem: string };
+  | { situacao: "erro"; mensagem: string }
+  | { situacao: "linkVencido" };
 
 interface ErrosSenha {
   senha: string | null;
@@ -105,13 +112,16 @@ function NovaSenha() {
     try {
       await confirmarRedefinicao(codigoConfirmado, senha);
       navegar("/esqueci-senha/pronto", { replace: true });
-    } catch {
+    } catch (erro) {
       setFormulario((atual) => ({
         ...atual,
-        envio: {
-          situacao: "erro",
-          mensagem: "Não foi possível redefinir a senha. Tente novamente.",
-        },
+        envio:
+          erro instanceof ErroLinkDeSenhaVencido
+            ? { situacao: "linkVencido" }
+            : {
+                situacao: "erro",
+                mensagem: "Não foi possível redefinir a senha. Tente novamente.",
+              },
         erros: SEM_ERROS,
       }));
     }
@@ -175,6 +185,13 @@ function NovaSenha() {
           <p className={styles.erro} role="alert">
             {formulario.envio.mensagem}
           </p>
+        ) : null}
+
+        {formulario.envio.situacao === "linkVencido" ? (
+          <div className={styles.erro} role="alert">
+            <p>Este link venceu ou já foi usado.</p>
+            <Link to="/esqueci-senha">Pedir um novo link</Link>
+          </div>
         ) : null}
 
         <Button type="submit" disabled={desabilitado}>
