@@ -4,7 +4,12 @@ import type { AvaliacoesDoProduto } from "../types/avaliacao";
 
 export type EstadoAvaliacoes =
   | { status: "carregando" }
-  | { status: "pronto"; avaliacoes: AvaliacoesDoProduto; rodada: number }
+  | {
+      status: "pronto";
+      slug: string;
+      avaliacoes: AvaliacoesDoProduto;
+      rodada: number;
+    }
   | { status: "erro"; mensagem: string };
 
 export function useAvaliacoes(slug: string | null) {
@@ -26,7 +31,7 @@ export function useAvaliacoes(slug: string | null) {
     buscarAvaliacoes(slug, controle.signal)
       .then((avaliacoes) => {
         if (ativo) {
-          setEstado({ status: "pronto", avaliacoes, rodada: 0 });
+          setEstado({ status: "pronto", slug, avaliacoes, rodada: 0 });
         }
       })
       .catch((erro: unknown) => {
@@ -59,9 +64,9 @@ export function useAvaliacoes(slug: string | null) {
     buscarAvaliacoes(slug)
       .then((avaliacoes) => {
         setEstado((atual) =>
-          atual.status !== "pronto"
+          atual.status !== "pronto" || atual.slug !== slug
             ? atual
-            : { status: "pronto", avaliacoes, rodada: atual.rodada + 1 },
+            : { ...atual, avaliacoes, rodada: atual.rodada + 1 },
         );
       })
       .catch(() => undefined);
