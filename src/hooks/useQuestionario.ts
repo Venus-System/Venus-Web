@@ -190,11 +190,18 @@ export function useQuestionario(): Questionario {
     }
   }, [formulario.aguardandoDecisao]);
 
+  function esquecerSucesso() {
+    setFormulario((atual) =>
+      atual.situacao === "sucesso" ? { ...atual, situacao: "ocioso" } : atual,
+    );
+  }
+
   function responder<Campo extends keyof RespostasQuestionario>(
     campo: Campo,
     valor: RespostasQuestionario[Campo],
   ) {
     setRespostas((atual) => ({ ...atual, [campo]: valor }));
+    esquecerSucesso();
   }
 
   function trocarCondicoes(marcadas: CondicaoPele[]) {
@@ -205,6 +212,7 @@ export function useQuestionario(): Questionario {
       ...atual,
       skinConditions: ultima === "none" ? ["none"] : semNenhuma,
     }));
+    esquecerSucesso();
   }
 
   function tentarCatalogoDeNovo() {
@@ -322,7 +330,7 @@ export function useQuestionario(): Questionario {
     resumoRef,
     decisaoRef,
     handleSubmit,
-    enviar: () => void enviarRespostas(),
+    enviar: validarEEnviar,
     voltarParaConsentimento,
     salvarProgresso,
   };
