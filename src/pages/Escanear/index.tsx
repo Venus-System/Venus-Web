@@ -1,19 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
-import { lerTextoDaImagem } from "../../services/ocr";
-import { buscarProdutos } from "../../services/produtos";
-import { TIPOS_DE_IMAGEM, validarFoto } from "../../services/avatar";
-import type { TextoLido } from "../../types/escanear";
-import type { Produto } from "../../types/produto";
+import { TIPOS_DE_IMAGEM, validarFoto } from "../../utils/validacao";
 import {
   DESCRICAO_DO_EXEMPLO,
   gerarImagemDeExemplo,
 } from "../../utils/imagemDeExemplo";
-import {
-  procurarPeloTexto,
-  temTextoLegivel,
-} from "../../utils/identificacaoDoProduto";
 import { usePreviaDaFoto } from "../../hooks/usePreviaDaFoto";
+import { useProcuraPorFoto } from "../../hooks/useProcuraPorFoto";
+import type { BuscaPorFoto, ImagemLida } from "../../hooks/useProcuraPorFoto";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import Modal from "../../components/Modal";
@@ -21,37 +15,11 @@ import PhotoDropZone from "../../components/PhotoDropZone";
 import ProductCard from "../../components/ProductCard";
 import styles from "./styles.module.css";
 
-interface ImagemLida {
-  arquivo: Blob;
-  texto: TextoLido;
-}
-
-type Busca =
-  | { situacao: "ocioso" }
-  | { situacao: "lendo" }
-  | { situacao: "procurando"; imagem: ImagemLida }
-  | { situacao: "encontrados"; imagem: ImagemLida; produtos: Produto[] }
-  | {
-      situacao: "nenhum";
-      imagem: ImagemLida;
-      daMesmaMarca: Produto[];
-      parecidos: Produto[];
-    }
-  | { situacao: "erro"; mensagem: string; imagem: ImagemLida | null };
-
 interface Ampliada {
   titulo: string;
   descricao: string;
   arquivo: Blob;
 }
-
-interface Escaneamento {
-  busca: Busca;
-  ampliada: Ampliada | null;
-}
-
-const SEM_TEXTO =
-  "Não achamos texto nesta imagem. Mande uma foto ou um print em que o nome e a marca do produto apareçam.";
 
 const PASSOS = [
   {
@@ -96,12 +64,7 @@ const DICAS = [
   { texto: "Evite fotos tremidas ou muito escuras.", evitar: true },
 ];
 
-const INICIAL: Escaneamento = {
-  busca: { situacao: "ocioso" },
-  ampliada: null,
-};
-
-function alvoDoFoco(busca: Busca): string | null {
+function alvoDoFoco(busca: BuscaPorFoto): string | null {
   switch (busca.situacao) {
     case "ocioso":
       return "foto-do-rotulo";
@@ -113,17 +76,22 @@ function alvoDoFoco(busca: Busca): string | null {
   }
 }
 
-function imagemDaBusca(busca: Busca): ImagemLida | null {
+function imagemDaBusca(busca: BuscaPorFoto): ImagemLida | null {
   return "imagem" in busca ? busca.imagem : null;
 }
 
 function Escanear() {
-  const [estado, setEstado] = useState<Escaneamento>(INICIAL);
-  const { busca } = estado;
+  const {
+    busca,
+    ocupado,
+    pesquisar,
+    falhar,
+    recomecar: recomecarBusca,
+  } = useProcuraPorFoto();
+  const [ampliada, setAmpliada] = useState<Ampliada | null>(null);
   const imagem = imagemDaBusca(busca);
   const previa = usePreviaDaFoto(imagem?.arquivo ?? null);
-  const previaAmpliada = usePreviaDaFoto(estado.ampliada?.arquivo ?? null);
-  const ocupado = busca.situacao === "lendo" || busca.situacao === "procurando";
+  const previaAmpliada = usePreviaDaFoto(ampliada?.arquivo ?? null);
   const alvo = alvoDoFoco(busca);
   const alvoAnteriorRef = useRef<string | null>(alvo);
 
@@ -139,80 +107,18 @@ function Escanear() {
     }
   }, [alvo]);
 
-  const pesquisar = useCallback(
-    async (arquivo: Blob) => {
-      if (ocupado) {
-        return;
-      }
-
-      setEstado((atual) => ({ ...atual, busca: { situacao: "lendo" } }));
-
-      let lida: ImagemLida | null = null;
-
-      try {
-        lida = { arquivo, texto: await lerTextoDaImagem(arquivo) };
-
-        if (!temTextoLegivel(lida.texto.lines)) {
-          setEstado((atual) => ({
-            ...atual,
-            busca: { situacao: "erro", mensagem: SEM_TEXTO, imagem: null },
-          }));
-          return;
-        }
-
-        const imagemLida = lida;
-
-        setEstado((atual) => ({
-          ...atual,
-          busca: { situacao: "procurando", imagem: imagemLida },
-        }));
-
-        const { candidatos, daMesmaMarca, parecidos } = procurarPeloTexto(
-          imagemLida.texto.lines,
-          await buscarProdutos(),
-        );
-
-        setEstado((atual) => ({
-          ...atual,
-          busca:
-            candidatos.length > 0
-              ? { situacao: "encontrados", imagem: imagemLida, produtos: candidatos }
-              : { situacao: "nenhum", imagem: imagemLida, daMesmaMarca, parecidos },
-        }));
-      } catch (erro) {
-        const imagemComErro = lida;
-
-        setEstado((atual) => ({
-          ...atual,
-          busca: {
-            situacao: "erro",
-            mensagem:
-              erro instanceof Error
-                ? erro.message
-                : "Não foi possível procurar o produto agora.",
-            imagem: imagemComErro,
-          },
-        }));
-      }
-    },
-    [ocupado],
-  );
-
   const receberArquivo = useCallback(
     (arquivo: File) => {
       const problema = validarFoto(arquivo);
 
       if (problema !== null) {
-        setEstado((atual) => ({
-          ...atual,
-          busca: { situacao: "erro", mensagem: problema, imagem: null },
-        }));
+        falhar(problema);
         return;
       }
 
       void pesquisar(arquivo);
     },
-    [pesquisar],
+    [pesquisar, falhar],
   );
 
   useEffect(() => {
@@ -231,14 +137,7 @@ function Escanear() {
   }, [receberArquivo]);
 
   function falharComExemplo() {
-    setEstado((atual) => ({
-      ...atual,
-      busca: {
-        situacao: "erro",
-        mensagem: "Não foi possível criar a imagem de exemplo.",
-        imagem: null,
-      },
-    }));
+    falhar("Não foi possível criar a imagem de exemplo.");
   }
 
   async function usarExemplo() {
@@ -253,14 +152,11 @@ function Escanear() {
     try {
       const arquivo = await gerarImagemDeExemplo();
 
-      setEstado((atual) => ({
-        ...atual,
-        ampliada: {
-          titulo: "Imagem de exemplo",
-          descricao: DESCRICAO_DO_EXEMPLO,
-          arquivo,
-        },
-      }));
+      setAmpliada({
+        titulo: "Imagem de exemplo",
+        descricao: DESCRICAO_DO_EXEMPLO,
+        arquivo,
+      });
     } catch {
       falharComExemplo();
     }
@@ -271,14 +167,11 @@ function Escanear() {
       return;
     }
 
-    setEstado((atual) => ({
-      ...atual,
-      ampliada: {
-        titulo: "Imagem enviada",
-        descricao: "A imagem que você enviou para a busca.",
-        arquivo: imagem.arquivo,
-      },
-    }));
+    setAmpliada({
+      titulo: "Imagem enviada",
+      descricao: "A imagem que você enviou para a busca.",
+      arquivo: imagem.arquivo,
+    });
   }
 
   function tentarDeNovo() {
@@ -288,11 +181,12 @@ function Escanear() {
   }
 
   function fecharAmpliada() {
-    setEstado((atual) => ({ ...atual, ampliada: null }));
+    setAmpliada(null);
   }
 
   function recomecar() {
-    setEstado(INICIAL);
+    recomecarBusca();
+    setAmpliada(null);
   }
 
   return (
@@ -529,16 +423,16 @@ function Escanear() {
         </div>
 
         <Modal
-          open={estado.ampliada !== null}
-          title={estado.ampliada?.titulo ?? ""}
+          open={ampliada !== null}
+          title={ampliada?.titulo ?? ""}
           onClose={fecharAmpliada}
           size="wide"
         >
-          {estado.ampliada !== null && previaAmpliada !== null ? (
+          {ampliada !== null && previaAmpliada !== null ? (
             <img
               className={styles.ampliada}
               src={previaAmpliada}
-              alt={estado.ampliada.descricao}
+              alt={ampliada.descricao}
             />
           ) : null}
         </Modal>

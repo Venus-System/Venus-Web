@@ -3,6 +3,23 @@ import type { Estrelas, MotivoDenuncia } from "../types/avaliacao";
 import type { FaixaEtaria } from "../types/perfil";
 import type { AlergiaSelecionada } from "../types/questionario";
 
+export const TIPOS_DE_IMAGEM = ["image/png", "image/jpeg", "image/webp"];
+export const TAMANHO_MAXIMO_EM_MB = 20;
+
+const TAMANHO_MAXIMO_DA_FOTO = TAMANHO_MAXIMO_EM_MB * 1024 * 1024;
+
+export function validarFoto(arquivo: File): string | null {
+  if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
+    return "Envie uma imagem PNG, JPEG ou WebP.";
+  }
+
+  if (arquivo.size > TAMANHO_MAXIMO_DA_FOTO) {
+    return `A imagem precisa ter no máximo ${TAMANHO_MAXIMO_EM_MB} MB.`;
+  }
+
+  return null;
+}
+
 export function validarNome(nome: string): string | null {
   if (nome.trim() === "") {
     return "Informe como podemos te chamar.";
