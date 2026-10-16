@@ -1,5 +1,9 @@
 import type { AnaliseExibicao } from "../../types/analise";
-import type { Ingrediente } from "../../types/ingrediente";
+import type {
+  Ingrediente,
+  IngredienteAvaliado,
+} from "../../types/ingrediente";
+import { nivelDoIngrediente } from "../../utils/nivelDoIngrediente";
 import {
   gelLimpezaPurificante,
   hidratanteCeramidas,
@@ -79,7 +83,7 @@ const fenoxietanol: Ingrediente = {
   safetySummary:
     "Seguro dentro do limite regulatório, mas pode irritar pele sensível.",
   biodegradability: 3,
-  irritationRiskLevel: 2,
+  irritationRiskLevel: 4,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 92,
@@ -129,7 +133,7 @@ const laurilSulfato: Ingrediente = {
   safetySummary:
     "Resseca e irrita com uso frequente, sobretudo em pele seca ou com eczema.",
   biodegradability: 4,
-  irritationRiskLevel: 3,
+  irritationRiskLevel: 6,
   comedogenicityScore: 1,
   environmentalRiskLevel: 3,
   scientificConfidence: 95,
@@ -141,7 +145,7 @@ const cocamidopropilBetaina: Ingrediente = {
   description: "Tensoativo suave usado para equilibrar fórmulas de limpeza.",
   safetySummary: "Alergênico de contato reconhecido, ainda que pouco comum.",
   biodegradability: 4,
-  irritationRiskLevel: 2,
+  irritationRiskLevel: 4,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 87,
@@ -154,7 +158,7 @@ const fragrancia: Ingrediente = {
   safetySummary:
     "Causa frequente de dermatite de contato; a composição não é aberta no rótulo.",
   biodegradability: 2,
-  irritationRiskLevel: 3,
+  irritationRiskLevel: 6,
   comedogenicityScore: 0,
   environmentalRiskLevel: 3,
   scientificConfidence: 78,
@@ -167,7 +171,7 @@ const alcoolDenaturado: Ingrediente = {
   safetySummary:
     "Em posição alta na lista, compromete a barreira e agrava pele sensível.",
   biodegradability: 5,
-  irritationRiskLevel: 4,
+  irritationRiskLevel: 7,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 91,
@@ -180,59 +184,37 @@ const retinol: Ingrediente = {
   safetySummary:
     "Contraindicado na gestação e irritante no início do uso; exige protetor solar.",
   biodegradability: 3,
-  irritationRiskLevel: 4,
+  irritationRiskLevel: 7,
   comedogenicityScore: 1,
   environmentalRiskLevel: 2,
   scientificConfidence: 93,
 };
+
+function item(
+  id: number,
+  position: number,
+  ingrediente: Ingrediente,
+): IngredienteAvaliado {
+  return {
+    id,
+    inciName: ingrediente.inciName,
+    position,
+    level: nivelDoIngrediente(ingrediente),
+    ingredient: ingrediente,
+  };
+}
 
 export const analisesMock: Record<string, AnaliseExibicao> = {
   [serumCalmanteAveia.slug]: {
     product: serumCalmanteAveia,
     versionId: 1,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 3,
-        inciName: niacinamida.inciName,
-        position: 3,
-        level: "safe",
-        ingredient: niacinamida,
-      },
-      {
-        id: 4,
-        inciName: aveia.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: aveia,
-      },
-      {
-        id: 5,
-        inciName: pantenol.inciName,
-        position: 5,
-        level: "safe",
-        ingredient: pantenol,
-      },
-      {
-        id: 6,
-        inciName: fenoxietanol.inciName,
-        position: 6,
-        level: "warning",
-        ingredient: fenoxietanol,
-      },
+      item(1, 1, agua),
+      item(2, 2, glicerina),
+      item(3, 3, niacinamida),
+      item(4, 4, aveia),
+      item(5, 5, pantenol),
+      item(6, 6, fenoxietanol),
     ],
   },
 
@@ -240,48 +222,12 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
     product: hidratanteCeramidas,
     versionId: 2,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 7,
-        inciName: alcoolCetearilico.inciName,
-        position: 3,
-        level: "safe",
-        ingredient: alcoolCetearilico,
-      },
-      {
-        id: 8,
-        inciName: ceramida.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: ceramida,
-      },
-      {
-        id: 9,
-        inciName: butilenoGlicol.inciName,
-        position: 5,
-        level: "safe",
-        ingredient: butilenoGlicol,
-      },
-      {
-        id: 6,
-        inciName: fenoxietanol.inciName,
-        position: 6,
-        level: "warning",
-        ingredient: fenoxietanol,
-      },
+      item(1, 1, agua),
+      item(2, 2, glicerina),
+      item(7, 3, alcoolCetearilico),
+      item(8, 4, ceramida),
+      item(9, 5, butilenoGlicol),
+      item(6, 6, fenoxietanol),
     ],
   },
 
@@ -289,41 +235,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
     product: gelLimpezaPurificante,
     versionId: 3,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 10,
-        inciName: laurilSulfato.inciName,
-        position: 2,
-        level: "warning",
-        ingredient: laurilSulfato,
-      },
-      {
-        id: 11,
-        inciName: cocamidopropilBetaina.inciName,
-        position: 3,
-        level: "warning",
-        ingredient: cocamidopropilBetaina,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 5,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(1, 1, agua),
+      item(10, 2, laurilSulfato),
+      item(11, 3, cocamidopropilBetaina),
+      item(2, 4, glicerina),
+      item(12, 5, fragrancia),
     ],
   },
 
@@ -331,41 +247,11 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
     product: locaoClareadoraNoturna,
     versionId: 4,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 13,
-        inciName: alcoolDenaturado.inciName,
-        position: 2,
-        level: "avoid",
-        ingredient: alcoolDenaturado,
-      },
-      {
-        id: 14,
-        inciName: retinol.inciName,
-        position: 3,
-        level: "avoid",
-        ingredient: retinol,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 5,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(1, 1, agua),
+      item(13, 2, alcoolDenaturado),
+      item(14, 3, retinol),
+      item(2, 4, glicerina),
+      item(12, 5, fragrancia),
     ],
   },
 
@@ -380,20 +266,8 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         level: "no-data",
         ingredient: null,
       },
-      {
-        id: 7,
-        inciName: alcoolCetearilico.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: alcoolCetearilico,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 3,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(7, 2, alcoolCetearilico),
+      item(12, 3, fragrancia),
     ],
   },
 };
