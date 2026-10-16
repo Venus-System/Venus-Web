@@ -63,8 +63,9 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
   }, []);
 
   useEffect(() => {
+    setFotoUrl(null);
+
     if (idUsuario === null) {
-      setFotoUrl(null);
       return;
     }
 

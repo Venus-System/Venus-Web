@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarEnvios } from "../services/envios";
 import type { Envio } from "../types/envio";
+import { useAutenticacao } from "./useAutenticacao";
 
 export type EstadoEnvios =
   | { status: "carregando" }
@@ -8,6 +9,8 @@ export type EstadoEnvios =
   | { status: "erro"; mensagem: string };
 
 export function useEnvios() {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoEnvios>({ status: "carregando" });
   const [tentativa, setTentativa] = useState(0);
 
@@ -39,7 +42,7 @@ export function useEnvios() {
       ativo = false;
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);

@@ -116,10 +116,13 @@ export function usePerfil(): Perfil {
   });
   const [envioDaFoto, setEnvioDaFoto] = useState<EnvioDaFoto>(FOTO_PARADA);
   const { usuario, fotoUrl, definirFoto } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const resumoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ativo = true;
+
+    setCarregamento({ status: "carregando" });
 
     buscarPerfil()
       .then((carregado) => {
@@ -156,7 +159,7 @@ export function usePerfil(): Perfil {
     return () => {
       ativo = false;
     };
-  }, [definirFoto]);
+  }, [definirFoto, dono]);
 
   useEffect(() => {
     const controle = new AbortController();

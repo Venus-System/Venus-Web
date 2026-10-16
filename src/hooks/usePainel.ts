@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarPainel } from "../services/painel";
+import { useAutenticacao } from "./useAutenticacao";
 import type { Painel } from "../types/painel";
 
 export type EstadoPainel =
@@ -8,6 +9,8 @@ export type EstadoPainel =
   | { status: "erro"; mensagem: string };
 
 export function usePainel() {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoPainel>({ status: "carregando" });
   const [tentativa, setTentativa] = useState(0);
 
@@ -39,7 +42,7 @@ export function usePainel() {
       ativo = false;
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);

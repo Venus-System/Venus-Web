@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarAvaliacoes } from "../services/avaliacoes";
 import type { AvaliacoesDoProduto } from "../types/avaliacao";
+import { useAutenticacao } from "./useAutenticacao";
 
 export type EstadoAvaliacoes =
   | { status: "carregando" }
@@ -13,6 +14,8 @@ export type EstadoAvaliacoes =
   | { status: "erro"; mensagem: string };
 
 export function useAvaliacoes(slug: string | null) {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoAvaliacoes>({
     status: "carregando",
   });
@@ -50,7 +53,7 @@ export function useAvaliacoes(slug: string | null) {
       ativo = false;
       controle.abort();
     };
-  }, [slug, tentativa]);
+  }, [slug, tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);

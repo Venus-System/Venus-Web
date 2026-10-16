@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarMeuVoto, votar } from "../services/avaliacoes";
 import type { Avaliacao, VotoDeAvaliacao } from "../types/avaliacao";
+import { useAutenticacao } from "./useAutenticacao";
 
 export interface EstadoDoVoto {
   meuVoto: VotoDeAvaliacao | null;
@@ -16,6 +17,8 @@ function pontoUtil(voto: VotoDeAvaliacao | null): number {
 }
 
 export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoDoVoto>({
     meuVoto: null,
     contagem: avaliacao.usefulCount,
@@ -66,7 +69,7 @@ export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
       ativo = false;
       controle.abort();
     };
-  }, [avaliacao.id, podeVotar, tentativa]);
+  }, [avaliacao.id, podeVotar, tentativa, dono]);
 
   const tentarLerDeNovo = useCallback(() => {
     setTentativa((atual) => atual + 1);
