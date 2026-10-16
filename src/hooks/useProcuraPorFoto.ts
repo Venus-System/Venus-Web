@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { lerTextoDaImagem } from "../services/ocr";
 import { buscarProdutos } from "../services/produtos";
 import type { TextoLido } from "../types/escanear";
@@ -33,6 +33,7 @@ const SEM_TEXTO =
 
 export function useProcuraPorFoto() {
   const [busca, setBusca] = useState<BuscaPorFoto>(OCIOSA);
+  const rodadaRef = useRef(0);
   const ocupado = busca.situacao === "lendo" || busca.situacao === "procurando";
 
   const pesquisar = useCallback(
@@ -41,7 +42,17 @@ export function useProcuraPorFoto() {
         return;
       }
 
-      setBusca({ situacao: "lendo" });
+      rodadaRef.current += 1;
+
+      const rodada = rodadaRef.current;
+
+      function mostrar(nova: BuscaPorFoto) {
+        if (rodadaRef.current === rodada) {
+          setBusca(nova);
+        }
+      }
+
+      mostrar({ situacao: "lendo" });
 
       let lida: ImagemLida | null = null;
 
@@ -49,26 +60,26 @@ export function useProcuraPorFoto() {
         lida = { arquivo, texto: await lerTextoDaImagem(arquivo) };
 
         if (!temTextoLegivel(lida.texto.lines)) {
-          setBusca({ situacao: "erro", mensagem: SEM_TEXTO, imagem: null });
+          mostrar({ situacao: "erro", mensagem: SEM_TEXTO, imagem: null });
           return;
         }
 
         const imagemLida = lida;
 
-        setBusca({ situacao: "procurando", imagem: imagemLida });
+        mostrar({ situacao: "procurando", imagem: imagemLida });
 
         const { candidatos, daMesmaMarca, parecidos } = procurarPeloTexto(
           imagemLida.texto.lines,
           await buscarProdutos(),
         );
 
-        setBusca(
+        mostrar(
           candidatos.length > 0
             ? { situacao: "encontrados", imagem: imagemLida, produtos: candidatos }
             : { situacao: "nenhum", imagem: imagemLida, daMesmaMarca, parecidos },
         );
       } catch (erro) {
-        setBusca({
+        mostrar({
           situacao: "erro",
           mensagem:
             erro instanceof Error
@@ -82,10 +93,12 @@ export function useProcuraPorFoto() {
   );
 
   const falhar = useCallback((mensagem: string) => {
+    rodadaRef.current += 1;
     setBusca({ situacao: "erro", mensagem, imagem: null });
   }, []);
 
   const recomecar = useCallback(() => {
+    rodadaRef.current += 1;
     setBusca(OCIOSA);
   }, []);
 

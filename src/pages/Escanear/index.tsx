@@ -109,6 +109,10 @@ function Escanear() {
 
   const receberArquivo = useCallback(
     (arquivo: File) => {
+      if (ocupado) {
+        return;
+      }
+
       const problema = validarFoto(arquivo);
 
       if (problema !== null) {
@@ -118,7 +122,7 @@ function Escanear() {
 
       void pesquisar(arquivo);
     },
-    [pesquisar, falhar],
+    [ocupado, pesquisar, falhar],
   );
 
   useEffect(() => {
