@@ -33,6 +33,7 @@ import {
   ErroSemPermissaoParaDecidir,
   ErroServicoIndisponivel,
   ErroSessaoAdminExpirada,
+  repassarErro,
 } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { entrarComoAdminNoMock } from "./mocks/admin";
@@ -80,7 +81,11 @@ export async function entrarComoAdmin(
 }
 
 export async function sairComoAdmin(): Promise<void> {
-  limparSessaoAdmin();
+  try {
+    limparSessaoAdmin();
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível sair da área administrativa.");
+  }
 }
 
 function ehCancelamento(erro: unknown): boolean {
@@ -118,14 +123,18 @@ function exigirPapelQueDecideNoMock(): void {
 }
 
 async function candidatosPendentes(sinal?: AbortSignal): Promise<Candidato[]> {
-  if (USAR_MOCK) {
-    await simularLatencia();
-    exigirSessaoNoMock();
+  try {
+    if (USAR_MOCK) {
+      await simularLatencia();
+      exigirSessaoNoMock();
 
-    return listarPendentesDoMock();
+      return listarPendentesDoMock();
+    }
+
+    return lerListaDeScans(await listarScansNaApi(sinal));
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar a fila.");
   }
-
-  return lerListaDeScans(await listarScansNaApi(sinal));
 }
 
 export async function listarPendentes(

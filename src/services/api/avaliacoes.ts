@@ -6,7 +6,7 @@ import type {
   VotoDeAvaliacao,
 } from "../../types/avaliacao";
 import { ROTULO_DO_MOTIVO_DE_DENUNCIA } from "../../utils/motivosDenuncia";
-import { ErroAvaliacaoDuplicada } from "../erros";
+import { ErroAvaliacaoDuplicada, repassarErro } from "../erros";
 import { lerPaginas } from "./analises";
 import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { buscarProdutoComVersaoDaApi } from "./produtos";
@@ -62,9 +62,13 @@ async function versaoDoProduto(
   slug: string,
   sinal?: AbortSignal,
 ): Promise<number | null> {
-  const { versaoId } = await buscarProdutoComVersaoDaApi(slug, sinal);
+  try {
+    const { versaoId } = await buscarProdutoComVersaoDaApi(slug, sinal);
 
-  return versaoId;
+    return versaoId;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a versão do produto.");
+  }
 }
 
 export async function buscarAvaliacoesNaApi(
@@ -72,23 +76,27 @@ export async function buscarAvaliacoesNaApi(
   usuarioId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesLidas> {
-  const versaoId = await versaoDoProduto(slug, sinal);
+  try {
+    const versaoId = await versaoDoProduto(slug, sinal);
 
-  if (versaoId === null) {
-    return { avaliacoes: [], truncated: false };
+    if (versaoId === null) {
+      return { avaliacoes: [], truncated: false };
+    }
+
+    const paginas = await lerPaginas(
+      `/api/reviews/product-version/${versaoId}`,
+      sinal,
+    );
+
+    return {
+      avaliacoes: lerTodos(paginas.itens, (item) =>
+        lerAvaliacao(item, usuarioId),
+      ),
+      truncated: paginas.truncated,
+    };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar as avaliações.");
   }
-
-  const paginas = await lerPaginas(
-    `/api/reviews/product-version/${versaoId}`,
-    sinal,
-  );
-
-  return {
-    avaliacoes: lerTodos(paginas.itens, (item) =>
-      lerAvaliacao(item, usuarioId),
-    ),
-    truncated: paginas.truncated,
-  };
 }
 
 export async function publicarAvaliacaoNaApi(
@@ -96,39 +104,43 @@ export async function publicarAvaliacaoNaApi(
   slug: string,
   nova: NovaAvaliacao,
 ): Promise<Avaliacao> {
-  const versaoId = await versaoDoProduto(slug);
+  try {
+    const versaoId = await versaoDoProduto(slug);
 
-  if (versaoId === null) {
-    throw new Error("Este produto ainda não pode receber avaliações.");
+    if (versaoId === null) {
+      throw new Error("Este produto ainda não pode receber avaliações.");
+    }
+
+    const caminho = "/api/reviews";
+    const resposta = await pedir(`${URL_API}${caminho}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: usuarioId,
+        productVersionId: versaoId,
+        rating: nova.rating,
+        title: nova.title.trim(),
+        comment: nova.comment.trim(),
+        verifiedUse: nova.verifiedUse,
+      }),
+    });
+
+    if (resposta.status === 409) {
+      throw new ErroAvaliacaoDuplicada();
+    }
+
+    verificarResposta(resposta, caminho);
+
+    const criada = lerAvaliacao(await resposta.json(), usuarioId);
+
+    if (criada === null) {
+      throw new Error("A avaliação criada não veio no formato esperado.");
+    }
+
+    return criada;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível publicar a avaliação.");
   }
-
-  const caminho = "/api/reviews";
-  const resposta = await pedir(`${URL_API}${caminho}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: usuarioId,
-      productVersionId: versaoId,
-      rating: nova.rating,
-      title: nova.title.trim(),
-      comment: nova.comment.trim(),
-      verifiedUse: nova.verifiedUse,
-    }),
-  });
-
-  if (resposta.status === 409) {
-    throw new ErroAvaliacaoDuplicada();
-  }
-
-  verificarResposta(resposta, caminho);
-
-  const criada = lerAvaliacao(await resposta.json(), usuarioId);
-
-  if (criada === null) {
-    throw new Error("A avaliação criada não veio no formato esperado.");
-  }
-
-  return criada;
 }
 
 export async function buscarMeuVotoNaApi(
@@ -136,16 +148,20 @@ export async function buscarMeuVotoNaApi(
   usuarioId: number,
   sinal?: AbortSignal,
 ): Promise<VotoDeAvaliacao | null> {
-  const caminho = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
-  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+  try {
+    const caminho = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
+    const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
-  if (resposta.status === 404) {
-    return null;
+    if (resposta.status === 404) {
+      return null;
+    }
+
+    verificarResposta(resposta, caminho);
+
+    return lerVoto(await resposta.json());
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar o seu voto.");
   }
-
-  verificarResposta(resposta, caminho);
-
-  return lerVoto(await resposta.json());
 }
 
 export async function votarNaApi(
@@ -154,32 +170,36 @@ export async function votarNaApi(
   novo: VotoDeAvaliacao | null,
   anterior: VotoDeAvaliacao | null,
 ): Promise<void> {
-  const caminhoDoVoto = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
+  try {
+    const caminhoDoVoto = `/api/review-votes/review/${avaliacaoId}/user/${usuarioId}`;
 
-  if (novo === null) {
-    const resposta = await pedir(`${URL_API}${caminhoDoVoto}`, {
-      method: "DELETE",
-    });
+    if (novo === null) {
+      const resposta = await pedir(`${URL_API}${caminhoDoVoto}`, {
+        method: "DELETE",
+      });
 
-    if (resposta.status !== 404) {
-      verificarResposta(resposta, caminhoDoVoto);
+      if (resposta.status !== 404) {
+        verificarResposta(resposta, caminhoDoVoto);
+      }
+
+      return;
     }
 
-    return;
+    const caminho = anterior === null ? "/api/review-votes" : caminhoDoVoto;
+    const resposta = await pedir(`${URL_API}${caminho}`, {
+      method: anterior === null ? "POST" : "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewId: Number(avaliacaoId),
+        userId: usuarioId,
+        voteType: VOTOS[novo],
+      }),
+    });
+
+    verificarResposta(resposta, caminho);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível registrar o voto.");
   }
-
-  const caminho = anterior === null ? "/api/review-votes" : caminhoDoVoto;
-  const resposta = await pedir(`${URL_API}${caminho}`, {
-    method: anterior === null ? "POST" : "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      reviewId: Number(avaliacaoId),
-      userId: usuarioId,
-      voteType: VOTOS[novo],
-    }),
-  });
-
-  verificarResposta(resposta, caminho);
 }
 
 export async function denunciarNaApi(
@@ -187,22 +207,26 @@ export async function denunciarNaApi(
   avaliacaoId: string,
   denuncia: Denuncia,
 ): Promise<void> {
-  const rotulo = ROTULO_DO_MOTIVO_DE_DENUNCIA[denuncia.reason];
-  const comentario = denuncia.comment.trim();
-  const caminho = "/api/reports";
+  try {
+    const rotulo = ROTULO_DO_MOTIVO_DE_DENUNCIA[denuncia.reason];
+    const comentario = denuncia.comment.trim();
+    const caminho = "/api/reports";
 
-  const resposta = await pedir(`${URL_API}${caminho}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: usuarioId,
-      adminUserId: null,
-      targetType: "REVIEW",
-      targetId: Number(avaliacaoId),
-      reason: comentario === "" ? rotulo : `${rotulo}. ${comentario}`,
-      status: "OPEN",
-    }),
-  });
+    const resposta = await pedir(`${URL_API}${caminho}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: usuarioId,
+        adminUserId: null,
+        targetType: "REVIEW",
+        targetId: Number(avaliacaoId),
+        reason: comentario === "" ? rotulo : `${rotulo}. ${comentario}`,
+        status: "OPEN",
+      }),
+    });
 
-  verificarResposta(resposta, caminho);
+    verificarResposta(resposta, caminho);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível enviar a denúncia.");
+  }
 }

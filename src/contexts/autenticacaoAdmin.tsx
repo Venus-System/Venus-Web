@@ -7,6 +7,7 @@ import {
   sairComoAdmin,
   sessaoAdminAtual,
 } from "../services/admin";
+import { repassarErro } from "../services/erros";
 
 interface ValorAutenticacaoAdmin {
   administrador: Administrador | null;
@@ -47,17 +48,25 @@ export function ProvedorAutenticacaoAdmin({
 
   const entrar = useCallback(
     async (email: string, senha: string) => {
-      const sessao = await entrarComoAdmin(email, senha);
+      try {
+        const sessao = await entrarComoAdmin(email, senha);
 
-      await sairDaConta();
-      setAdministrador(sessao.admin);
+        await sairDaConta();
+        setAdministrador(sessao.admin);
+      } catch (erro) {
+        repassarErro(erro, "Não foi possível entrar como administrador.");
+      }
     },
     [sairDaConta],
   );
 
   const sair = useCallback(async () => {
-    await sairComoAdmin();
-    setAdministrador(null);
+    try {
+      await sairComoAdmin();
+      setAdministrador(null);
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível sair da área administrativa.");
+    }
   }, []);
 
   return (

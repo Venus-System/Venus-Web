@@ -15,6 +15,7 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { autenticacaoFirebase } from "../config/firebase";
+import { repassarErro } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
@@ -38,20 +39,24 @@ interface CadastroEmAndamento {
 let cadastroEmAndamento: CadastroEmAndamento | null = null;
 
 async function registrarNaApi(usuario: Usuario): Promise<number | null> {
-  const encontrado = await buscarIdPorUid(usuario.id);
+  try {
+    const encontrado = await buscarIdPorUid(usuario.id);
 
-  if (encontrado !== null) {
-    guardarIdDaApi(usuario.id, encontrado);
-    return encontrado;
+    if (encontrado !== null) {
+      guardarIdDaApi(usuario.id, encontrado);
+      return encontrado;
+    }
+
+    const criado = await criarUsuarioNaApi(usuario);
+
+    if (criado !== null) {
+      guardarIdDaApi(usuario.id, criado);
+    }
+
+    return criado;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível registrar a sua conta.");
   }
-
-  const criado = await criarUsuarioNaApi(usuario);
-
-  if (criado !== null) {
-    guardarIdDaApi(usuario.id, criado);
-  }
-
-  return criado;
 }
 
 function cadastrarUmaVez(usuario: Usuario): Promise<number | null> {
@@ -77,32 +82,40 @@ export async function garantirIdDoUsuarioNaApi(): Promise<number | null> {
     return null;
   }
 
-  return lerIdDaApi(conta.uid) ?? cadastrarUmaVez(paraUsuario(conta));
+  try {
+    return lerIdDaApi(conta.uid) ?? (await cadastrarUmaVez(paraUsuario(conta)));
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
+  }
 }
 
 export async function atualizarNome(nome: string): Promise<Usuario> {
-  const limpo = nome.trim();
-  const problema = validarNome(limpo);
+  try {
+    const limpo = nome.trim();
+    const problema = validarNome(limpo);
 
-  if (problema !== null) {
-    throw new Error(problema);
+    if (problema !== null) {
+      throw new Error(problema);
+    }
+
+    const conta = autenticacaoFirebase?.currentUser ?? null;
+
+    if (conta === null) {
+      throw new Error("Entre de novo para alterar o seu nome.");
+    }
+
+    await updateProfile(conta, { displayName: limpo });
+
+    const id = await garantirIdDoUsuarioNaApi();
+
+    if (id !== null) {
+      await atualizarNomeNaApi(id, limpo);
+    }
+
+    return { ...paraUsuario(conta), name: limpo };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível salvar o nome.");
   }
-
-  const conta = autenticacaoFirebase?.currentUser ?? null;
-
-  if (conta === null) {
-    throw new Error("Entre de novo para alterar o seu nome.");
-  }
-
-  await updateProfile(conta, { displayName: limpo });
-
-  const id = await garantirIdDoUsuarioNaApi();
-
-  if (id !== null) {
-    await atualizarNomeNaApi(id, limpo);
-  }
-
-  return { ...paraUsuario(conta), name: limpo };
 }
 
 export async function renovarIdDoUsuarioNaApi(): Promise<number | null> {
@@ -112,9 +125,13 @@ export async function renovarIdDoUsuarioNaApi(): Promise<number | null> {
     return null;
   }
 
-  esquecerIdDaApi(conta.uid);
+  try {
+    esquecerIdDaApi(conta.uid);
 
-  return cadastrarUmaVez(paraUsuario(conta));
+    return await cadastrarUmaVez(paraUsuario(conta));
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
+  }
 }
 
 function paraUsuario(conta: User): Usuario {
@@ -132,10 +149,14 @@ async function aplicarPersistencia(continuarConectado: boolean): Promise<void> {
     return;
   }
 
-  await setPersistence(
-    autenticacaoFirebase,
-    continuarConectado ? browserLocalPersistence : browserSessionPersistence,
-  );
+  try {
+    await setPersistence(
+      autenticacaoFirebase,
+      continuarConectado ? browserLocalPersistence : browserSessionPersistence,
+    );
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível lembrar a sua escolha de manter a sessão.");
+  }
 }
 
 const CHAVE_SESSAO = "venus.sessao";
@@ -158,19 +179,23 @@ export async function entrar(
   senha: string,
   continuarConectado: boolean,
 ): Promise<Usuario> {
-  if (autenticacaoFirebase === null) {
-    return entrarComMock(email, senha, continuarConectado);
+  try {
+    if (autenticacaoFirebase === null) {
+      return await entrarComMock(email, senha, continuarConectado);
+    }
+
+    await aplicarPersistencia(continuarConectado);
+
+    const credencial = await signInWithEmailAndPassword(
+      autenticacaoFirebase,
+      email,
+      senha,
+    );
+
+    return paraUsuario(credencial.user);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível entrar.");
   }
-
-  await aplicarPersistencia(continuarConectado);
-
-  const credencial = await signInWithEmailAndPassword(
-    autenticacaoFirebase,
-    email,
-    senha,
-  );
-
-  return paraUsuario(credencial.user);
 }
 
 export async function entrarComGoogle(
@@ -180,22 +205,26 @@ export async function entrarComGoogle(
     throw new Error("A entrada com Google não está configurada.");
   }
 
-  await aplicarPersistencia(continuarConectado);
+  try {
+    await aplicarPersistencia(continuarConectado);
 
-  const provedor = new GoogleAuthProvider();
-  const credencial = await signInWithPopup(autenticacaoFirebase, provedor);
-  const usuario = paraUsuario(credencial.user);
-  const informacoes = getAdditionalUserInfo(credencial);
+    const provedor = new GoogleAuthProvider();
+    const credencial = await signInWithPopup(autenticacaoFirebase, provedor);
+    const usuario = paraUsuario(credencial.user);
+    const informacoes = getAdditionalUserInfo(credencial);
 
-  if (informacoes?.isNewUser === true) {
-    try {
-      await cadastrarUmaVez(usuario);
-    } catch {
-      return usuario;
+    if (informacoes?.isNewUser === true) {
+      try {
+        await cadastrarUmaVez(usuario);
+      } catch {
+        return usuario;
+      }
     }
-  }
 
-  return usuario;
+    return usuario;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível entrar com o Google.");
+  }
 }
 
 async function entrarComMock(
@@ -203,21 +232,25 @@ async function entrarComMock(
   senha: string,
   continuarConectado: boolean,
 ): Promise<Usuario> {
-  await simularLatencia();
+  try {
+    await simularLatencia();
 
-  if (validarEmail(email) !== null || senha.length < 8) {
-    throw new Error("E-mail ou senha inválidos.");
+    if (validarEmail(email) !== null || senha.length < 8) {
+      throw new Error("E-mail ou senha inválidos.");
+    }
+
+    const usuario: Usuario = {
+      id: "usuario-mock",
+      name: email.split("@")[0],
+      email,
+    };
+
+    gravarSessao(usuario, continuarConectado);
+
+    return usuario;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível entrar.");
   }
-
-  const usuario: Usuario = {
-    id: "usuario-mock",
-    name: email.split("@")[0],
-    email,
-  };
-
-  gravarSessao(usuario, continuarConectado);
-
-  return usuario;
 }
 
 export async function sair(): Promise<void> {
@@ -226,7 +259,11 @@ export async function sair(): Promise<void> {
     return;
   }
 
-  await signOut(autenticacaoFirebase);
+  try {
+    await signOut(autenticacaoFirebase);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível sair da conta.");
+  }
 }
 
 function sairDoMock(): void {
@@ -309,12 +346,16 @@ export async function confirmarRedefinicao(
   codigo: string,
   senha: string,
 ): Promise<void> {
-  if (autenticacaoFirebase === null) {
-    await simularLatencia();
-    return;
-  }
+  try {
+    if (autenticacaoFirebase === null) {
+      await simularLatencia();
+      return;
+    }
 
-  await confirmPasswordReset(autenticacaoFirebase, codigo, senha);
+    await confirmPasswordReset(autenticacaoFirebase, codigo, senha);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível trocar a senha.");
+  }
 }
 
 export async function criarConta(
@@ -322,31 +363,35 @@ export async function criarConta(
   email: string,
   senha: string,
 ): Promise<Usuario> {
-  if (autenticacaoFirebase === null) {
-    return criarContaComMock(nome, email, senha);
-  }
-
-  const credencial = await createUserWithEmailAndPassword(
-    autenticacaoFirebase,
-    email,
-    senha,
-  );
-
-  await updateProfile(credencial.user, { displayName: nome.trim() });
-  await aplicarPersistencia(false);
-
-  const usuario: Usuario = {
-    ...paraUsuario(credencial.user),
-    name: nome.trim(),
-  };
-
   try {
-    await cadastrarUmaVez(usuario);
-  } catch {
-    return usuario;
-  }
+    if (autenticacaoFirebase === null) {
+      return await criarContaComMock(nome, email, senha);
+    }
 
-  return usuario;
+    const credencial = await createUserWithEmailAndPassword(
+      autenticacaoFirebase,
+      email,
+      senha,
+    );
+
+    await updateProfile(credencial.user, { displayName: nome.trim() });
+    await aplicarPersistencia(false);
+
+    const usuario: Usuario = {
+      ...paraUsuario(credencial.user),
+      name: nome.trim(),
+    };
+
+    try {
+      await cadastrarUmaVez(usuario);
+    } catch {
+      return usuario;
+    }
+
+    return usuario;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível criar a conta.");
+  }
 }
 
 async function criarContaComMock(
@@ -354,25 +399,29 @@ async function criarContaComMock(
   email: string,
   senha: string,
 ): Promise<Usuario> {
-  await simularLatencia();
+  try {
+    await simularLatencia();
 
-  if (
-    validarNome(nome) !== null ||
-    validarEmail(email) !== null ||
-    validarSenha(senha) !== null
-  ) {
-    throw new Error("Não foi possível criar a conta com esses dados.");
+    if (
+      validarNome(nome) !== null ||
+      validarEmail(email) !== null ||
+      validarSenha(senha) !== null
+    ) {
+      throw new Error("Não foi possível criar a conta com esses dados.");
+    }
+
+    const usuario: Usuario = {
+      id: crypto.randomUUID(),
+      name: nome.trim(),
+      email,
+    };
+
+    gravarSessao(usuario, false);
+
+    return usuario;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível criar a conta.");
   }
-
-  const usuario: Usuario = {
-    id: crypto.randomUUID(),
-    name: nome.trim(),
-    email,
-  };
-
-  gravarSessao(usuario, false);
-
-  return usuario;
 }
 
 function lerDoArmazenamento(): string | null {
