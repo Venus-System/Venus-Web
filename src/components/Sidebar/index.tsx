@@ -11,16 +11,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { FormEvent } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
 import Input from "../Input";
 import styles from "./styles.module.css";
-
-interface SidebarProps {
-  onSearch?: (term: string) => void;
-}
 
 interface NavLinkItem {
   to: string;
@@ -61,18 +57,19 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function Sidebar({ onSearch }: SidebarProps) {
+function Sidebar() {
   const { usuario, fotoUrl } = useAutenticacao();
+  const navegar = useNavigate();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!onSearch) {
-      return;
-    }
+    const valor = new FormData(event.currentTarget).get("term");
+    const termo = typeof valor === "string" ? valor.trim() : "";
 
-    const term = new FormData(event.currentTarget).get("term");
-    onSearch(typeof term === "string" ? term : "");
+    navegar(
+      termo === "" ? "/pesquisa" : `/pesquisa?termo=${encodeURIComponent(termo)}`,
+    );
   }
 
   return (

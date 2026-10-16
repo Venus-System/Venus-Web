@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { FiltrosDaPesquisa } from "../../types/pesquisa";
@@ -79,10 +79,12 @@ function textoDeStatus(
 }
 
 function Pesquisa() {
-  const [busca, setBusca] = useState<BuscaDaPesquisa>({
-    filtros: FILTROS_VAZIOS,
+  const [parametros, setParametros] = useSearchParams();
+  const termoDaUrl = (parametros.get("termo") ?? "").trim();
+  const [busca, setBusca] = useState<BuscaDaPesquisa>(() => ({
+    filtros: { ...FILTROS_VAZIOS, termo: termoDaUrl },
     pagina: 0,
-  });
+  }));
   const estado = usePesquisaDeProdutos(busca);
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDaPesquisa();
@@ -91,25 +93,36 @@ function Pesquisa() {
   const gridRef = useRef<HTMLUListElement>(null);
   const focarNoIndice = useRef<number | null>(null);
 
+  useEffect(() => {
+    const campo = formRef.current?.elements.namedItem("termo");
+
+    if (campo instanceof HTMLInputElement && campo.value.trim() !== termoDaUrl) {
+      campo.value = termoDaUrl;
+    }
+
+    setBusca((atual) =>
+      atual.filtros.termo === termoDaUrl
+        ? atual
+        : { filtros: { ...atual.filtros, termo: termoDaUrl }, pagina: 0 },
+    );
+  }, [termoDaUrl]);
+
+  function trocarTermo(termo: string) {
+    setParametros(termo === "" ? {} : { termo }, { replace: true });
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const valor = new FormData(event.currentTarget).get("termo");
-    const termo = typeof valor === "string" ? valor.trim() : "";
 
-    setBusca((atual) => ({ filtros: { ...atual.filtros, termo }, pagina: 0 }));
+    trocarTermo(typeof valor === "string" ? valor.trim() : "");
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.value !== "") {
-      return;
+    if (event.target.value === "") {
+      trocarTermo("");
     }
-
-    setBusca((atual) =>
-      atual.filtros.termo === ""
-        ? atual
-        : { filtros: { ...atual.filtros, termo: "" }, pagina: 0 },
-    );
   }
 
   function mudarFiltro(campo: FiltroDeLista, valor: string) {
@@ -142,6 +155,7 @@ function Pesquisa() {
     }
 
     setBusca({ filtros: FILTROS_VAZIOS, pagina: 0 });
+    trocarTermo("");
   }
 
   function mostrarMais() {
@@ -206,6 +220,7 @@ function Pesquisa() {
             hideLabel
             type="search"
             placeholder="Nome do produto"
+            defaultValue={termoDaUrl}
             className={styles.field}
             onChange={handleChange}
           />
