@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
 import { buscarCatalogoAlergias } from "../services/alergias";
-import { enviarFotoDePerfil } from "../services/avatar";
+import { apagarFotoDePerfil, enviarFotoDePerfil } from "../services/avatar";
 import { useAutenticacao } from "./useAutenticacao";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
@@ -79,6 +79,7 @@ export interface Perfil {
   totalDeRespostas: number;
   foto: EstadoDaFoto;
   enviarFoto: (arquivo: File) => Promise<boolean>;
+  removerFoto: () => Promise<boolean>;
   resumoRef: RefObject<HTMLDivElement>;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
@@ -200,6 +201,9 @@ export function usePerfil(): Perfil {
         ? { ...atual, respostas: mudanca(atual.respostas) }
         : atual,
     );
+    setEnvio((atual) =>
+      atual.situacao === "sucesso" ? { ...atual, situacao: "ocioso" } : atual,
+    );
   }
 
   function responder<Campo extends keyof RespostasQuestionario>(
@@ -284,6 +288,29 @@ export function usePerfil(): Perfil {
     }
   }
 
+  async function removerFoto(): Promise<boolean> {
+    setEnvioDaFoto({ situacao: "enviando", mensagem: "" });
+
+    try {
+      await apagarFotoDePerfil();
+
+      definirFoto(null);
+      setEnvioDaFoto(FOTO_PARADA);
+
+      return true;
+    } catch (erro) {
+      setEnvioDaFoto({
+        situacao: "erro",
+        mensagem:
+          erro instanceof Error
+            ? erro.message
+            : "Não foi possível tirar a sua foto de perfil.",
+      });
+
+      return false;
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -339,6 +366,7 @@ export function usePerfil(): Perfil {
       respostas === null ? CAMPOS_BASICOS : totalDeRespostas(respostas),
     foto: { url: fotoUrl, ...envioDaFoto },
     enviarFoto: subirFoto,
+    removerFoto,
     resumoRef,
     handleSubmit,
   };

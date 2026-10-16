@@ -206,12 +206,12 @@ function ModalFotoPerfil({
       ) : null}
 
       <p className="texto-oculto" aria-live="polite">
-        {enviando ? "Enviando a sua foto." : ""}
+        {enviando ? "Salvando a sua escolha." : ""}
       </p>
 
       <div className={styles.acoes}>
         <Button onClick={handleSalvar} disabled={enviando}>
-          {enviando ? "Enviando…" : "Salvar"}
+          {enviando ? "Salvando…" : "Salvar"}
         </Button>
 
         <Button variant="secondary" onClick={onClose} disabled={enviando}>

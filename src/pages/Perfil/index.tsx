@@ -83,6 +83,7 @@ function Perfil() {
     totalDeRespostas,
     foto,
     enviarFoto,
+    removerFoto,
     resumoRef,
     trocarCondicoes,
     revogarConsentimento,
@@ -669,9 +670,22 @@ function Perfil() {
             return;
           }
 
-          setAvatar(escolha.avatar);
-          guardarAvatar(escolha.avatar);
-          setTrocandoFoto(false);
+          const aplicarAvatar = () => {
+            setAvatar(escolha.avatar);
+            guardarAvatar(escolha.avatar);
+            setTrocandoFoto(false);
+          };
+
+          if (foto.url === null) {
+            aplicarAvatar();
+            return;
+          }
+
+          void removerFoto().then((removeu) => {
+            if (removeu) {
+              aplicarAvatar();
+            }
+          });
         }}
       />
     </MainLayout>
