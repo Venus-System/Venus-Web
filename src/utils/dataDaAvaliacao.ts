@@ -1,4 +1,5 @@
-const UM_DIA = 24 * 60 * 60 * 1000;
+import { diasDeDiferenca } from "./tempoRelativo";
+
 const DIAS_RELATIVOS = 7;
 
 const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", {
@@ -17,7 +18,7 @@ export function dataDaAvaliacao(
     return null;
   }
 
-  const dias = Math.floor((agora.getTime() - lida.getTime()) / UM_DIA);
+  const dias = diasDeDiferenca(lida, agora);
 
   if (dias < 1) {
     return "hoje";
