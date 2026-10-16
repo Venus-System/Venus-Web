@@ -54,6 +54,11 @@ interface EstadoDaConta {
   mensagem: string;
 }
 
+type EstadoDaSaida =
+  | { situacao: "ocioso" }
+  | { situacao: "saindo" }
+  | { situacao: "erro"; mensagem: string };
+
 function Perfil() {
   const navegar = useNavigate();
   const { usuario, sair, atualizarNome } = useAutenticacao();
@@ -62,6 +67,7 @@ function Perfil() {
     situacao: "ocioso",
     mensagem: "",
   });
+  const [saida, setSaida] = useState<EstadoDaSaida>({ situacao: "ocioso" });
   const [revogando, setRevogando] = useState(false);
   const [trocandoFoto, setTrocandoFoto] = useState(false);
   const [avatar, setAvatar] = useState<Avatar>(() => lerAvatar());
@@ -129,8 +135,18 @@ function Perfil() {
     }
   }
 
-  function handleSair() {
-    void sair().then(() => navegar("/login"));
+  async function handleSair() {
+    setSaida({ situacao: "saindo" });
+
+    try {
+      await sair();
+      navegar("/login");
+    } catch {
+      setSaida({
+        situacao: "erro",
+        mensagem: "Não foi possível sair agora. Tente de novo.",
+      });
+    }
   }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
   const faltando = respostas === null ? [] : camposSemResposta(respostas);
@@ -349,6 +365,11 @@ function Perfil() {
                       onChange={(gender) => responder("gender", gender)}
                     />
                   </div>
+
+                  <p className={styles.cardTexto} aria-live="polite">
+                    {conta.situacao === "salvando" ? "Salvando o nome..." : ""}
+                    {conta.situacao === "salvo" ? "Nome salvo." : ""}
+                  </p>
 
                 </section>
 
@@ -573,10 +594,25 @@ function Perfil() {
                 salvos e você volta quando quiser.
               </p>
 
-              <button type="button" className={styles.sair} onClick={handleSair}>
+              <button
+                type="button"
+                className={styles.sair}
+                onClick={() => void handleSair()}
+                disabled={saida.situacao === "saindo"}
+              >
                 <LogOut className={styles.sairIcone} aria-hidden="true" />
-                Sair da conta
+                {saida.situacao === "saindo" ? "Saindo…" : "Sair da conta"}
               </button>
+
+              <p className="texto-oculto" aria-live="polite">
+                {saida.situacao === "saindo" ? "Saindo da conta." : ""}
+              </p>
+
+              {saida.situacao === "erro" ? (
+                <p className={styles.estadoErro} role="alert">
+                  {saida.mensagem}
+                </p>
+              ) : null}
 
               <p className={styles.cardTexto}>
                 Para apagar a conta, escreva para venussystem2026@gmail.com.
