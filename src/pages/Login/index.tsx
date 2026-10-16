@@ -51,6 +51,7 @@ function Login() {
     envio: { situacao: "parado" },
     erros: SEM_ERROS,
   });
+  const [lembrar, setLembrar] = useState(false);
 
   const navegar = useNavigate();
   const localizacao = useLocation();
@@ -77,7 +78,6 @@ function Login() {
     const dados = new FormData(event.currentTarget);
     const email = String(dados.get("email") ?? "");
     const senha = String(dados.get("senha") ?? "");
-    const continuar = dados.get("continuar") === "on";
 
     const erros = {
       email: validarEmail(email),
@@ -92,7 +92,7 @@ function Login() {
     setFormulario({ envio: { situacao: "enviando" }, erros: SEM_ERROS });
 
     try {
-      await entrar(email, senha, continuar);
+      await entrar(email, senha, lembrar);
       navegar(destino, { replace: true });
     } catch {
       setFormulario({
@@ -106,7 +106,7 @@ function Login() {
     setFormulario({ envio: { situacao: "enviando" }, erros: SEM_ERROS });
 
     try {
-      await entrarComGoogle(false);
+      await entrarComGoogle(lembrar);
       navegar(destino, { replace: true });
     } catch {
       setFormulario({
@@ -189,6 +189,8 @@ function Login() {
               name="continuar"
               type="checkbox"
               className={styles.caixa}
+              checked={lembrar}
+              onChange={(event) => setLembrar(event.target.checked)}
             />
             Lembrar de mim
           </label>
