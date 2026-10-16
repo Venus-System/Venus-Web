@@ -25,6 +25,7 @@ export interface Paginas {
 export interface AnaliseLida {
   id: number;
   productVersionId: number;
+  overallScore: number | null;
   healthScore: number | null;
   environmentalScore: number | null;
   ethicalScore: number | null;
@@ -34,6 +35,7 @@ export interface AnaliseLida {
 
 export interface NotaPessoalLida {
   productVersionId: number;
+  analysisResultId: number | null;
   finalScore: number;
   recommendationLevel: NivelRecomendacao | null;
   createdAt: string;
@@ -88,6 +90,7 @@ export function lerAnalise(valor: unknown): AnaliseLida | null {
   return {
     id,
     productVersionId,
+    overallScore: numero(dados.overallScore),
     healthScore: numero(dados.healthScore),
     environmentalScore: numero(dados.environmentalScore),
     ethicalScore: numero(dados.ethicalScore),
@@ -108,6 +111,7 @@ export function lerNotaPessoal(valor: unknown): NotaPessoalLida | null {
 
   return {
     productVersionId,
+    analysisResultId: numero(dados.analysisResultId),
     finalScore,
     recommendationLevel: lerNivel(dados.recommendationLevel),
     createdAt,
@@ -194,9 +198,7 @@ export async function montarAnalises(
 
   return analises.flatMap((analise): AnaliseRecente[] => {
     const produto = produtos.get(analise.productVersionId) ?? null;
-    const nota = notas.find(
-      (item) => item.productVersionId === analise.productVersionId,
-    );
+    const nota = notas.find((item) => item.analysisResultId === analise.id);
 
     if (produto === null) {
       return [];
@@ -206,7 +208,7 @@ export async function montarAnalises(
       {
         id: String(analise.id),
         product: produto,
-        finalScore: nota === undefined ? null : nota.finalScore,
+        finalScore: analise.overallScore,
         recommendationLevel:
           nota === undefined ? null : nota.recommendationLevel,
         analyzedAt: analise.createdAt,
