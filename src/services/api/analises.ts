@@ -134,6 +134,29 @@ export function maisRecentePorVersao<T extends { productVersionId: number }>(
   });
 }
 
+export function maisRecentePorProduto<T extends { productVersionId: number }>(
+  itens: T[],
+  produtoDaVersao: Map<number, number>,
+): T[] {
+  const vistos = new Set<string>();
+
+  return itens.filter((item) => {
+    const produtoId = produtoDaVersao.get(item.productVersionId);
+    const chave =
+      produtoId === undefined
+        ? `versao-${item.productVersionId}`
+        : `produto-${produtoId}`;
+
+    if (vistos.has(chave)) {
+      return false;
+    }
+
+    vistos.add(chave);
+
+    return true;
+  });
+}
+
 async function buscarProdutoDaVersao(
   versaoId: number,
   sinal?: AbortSignal,

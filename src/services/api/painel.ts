@@ -9,12 +9,13 @@ import {
   lerAnalise,
   lerNotaPessoal,
   lerPaginas,
-  maisRecentePorVersao,
+  maisRecentePorProduto,
   montarAnalises,
 } from "./analises";
 import type { AnaliseLida, NotaPessoalLida } from "./analises";
 import { repassarErro } from "../erros";
 import { lerTodos, numero } from "./leitura";
+import { produtoDeCadaVersao } from "./produtos";
 import { pedir, verificarResposta } from "./requisicao";
 import { umaPorDia } from "../../utils/umaPorDia";
 
@@ -66,10 +67,8 @@ function contarNiveis(
 
 function resumir(
   notas: NotaPessoalLida[],
-  analises: AnaliseLida[],
+  ultimasAnalises: AnaliseLida[],
 ): ResumoDasAnalises {
-  const ultimasAnalises = maisRecentePorVersao(analises);
-
   return {
     productCount: notas.length,
     averageScore: media(notas.map((nota) => nota.finalScore)),
@@ -108,11 +107,12 @@ export async function buscarPainelNaApi(
   sinal?: AbortSignal,
 ): Promise<Omit<Painel, "profileCompleteness">> {
   try {
-    const [paginasDeAnalises, paginasDeNotas, favoriteCount] =
+    const [paginasDeAnalises, paginasDeNotas, favoriteCount, produtoDaVersao] =
       await Promise.all([
         lerPaginas(`/api/analysis-results/user/${usuarioId}`, sinal),
         lerPaginas(`/api/personalized-scores/user/${usuarioId}`, sinal),
         contarFavoritos(usuarioId, sinal),
+        produtoDeCadaVersao(sinal).catch(() => new Map<number, number>()),
       ]);
 
     const analises = lerTodos(paginasDeAnalises.itens, lerAnalise);
@@ -121,8 +121,10 @@ export async function buscarPainelNaApi(
       (analise) => analise.productVersionId,
       (analise) => analise.createdAt,
     );
-    const notas = maisRecentePorVersao(
+    const ultimasAnalises = maisRecentePorProduto(analises, produtoDaVersao);
+    const notas = maisRecentePorProduto(
       lerTodos(paginasDeNotas.itens, lerNotaPessoal),
+      produtoDaVersao,
     );
     const alertas = notas.filter(
       (nota) => nota.recommendationLevel === "contraindicated",
@@ -144,9 +146,9 @@ export async function buscarPainelNaApi(
           ? null
           : maisAntiga.createdAt,
       favoriteCount,
-      summary: resumir(notas, analises),
+      summary: resumir(notas, ultimasAnalises),
       recentAnalyses: await montarAnalises(
-        maisRecentePorVersao(analises).slice(0, QUANTIDADE_DE_RECENTES),
+        ultimasAnalises.slice(0, QUANTIDADE_DE_RECENTES),
         notas,
         sinal,
       ),

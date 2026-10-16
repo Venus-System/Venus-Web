@@ -344,6 +344,29 @@ function buscarNotasPorProduto(): Promise<Map<number, NotasApi>> {
   return pedidoDeNotas;
 }
 
+export async function produtoDeCadaVersao(
+  sinal?: AbortSignal,
+): Promise<Map<number, number>> {
+  try {
+    const versoes = await buscarLista("/api/product-versions", sinal);
+    const produtoDaVersao = new Map<number, number>();
+
+    for (const versao of versoes) {
+      const dados = comoObjeto(versao);
+      const versaoId = numero(dados.id);
+      const produtoId = numero(dados.productId);
+
+      if (versaoId !== null && produtoId !== null) {
+        produtoDaVersao.set(versaoId, produtoId);
+      }
+    }
+
+    return produtoDaVersao;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível ligar as versões aos produtos.");
+  }
+}
+
 export function esquecerNotasDoCatalogo(): void {
   pedidoDeNotas = null;
 }
