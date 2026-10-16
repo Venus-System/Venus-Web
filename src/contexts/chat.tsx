@@ -27,6 +27,7 @@ interface EstadoDoChat {
   conversationId: string | null;
   expression: ExpressaoDaVeninha;
   envio: EnvioDoChat;
+  geracao: string;
 }
 
 interface ValorDoChat {
@@ -45,14 +46,17 @@ interface ProvedorChatProps {
   children: ReactNode;
 }
 
-const INICIAL: EstadoDoChat = {
-  dono: null,
-  aberto: false,
-  mensagens: [],
-  conversationId: null,
-  expression: "neutra",
-  envio: { status: "ocioso" },
-};
+function estadoInicial(): EstadoDoChat {
+  return {
+    dono: null,
+    aberto: false,
+    mensagens: [],
+    conversationId: null,
+    expression: "neutra",
+    envio: { status: "ocioso" },
+    geracao: crypto.randomUUID(),
+  };
+}
 
 const FALHA = "Não foi possível enviar a mensagem para a Veninha.";
 const UM_SEGUNDO = 1000;
@@ -95,7 +99,7 @@ export const ContextoChat = createContext<ValorDoChat | null>(null);
 export function ProvedorChat({ children }: ProvedorChatProps) {
   const { usuario } = useAutenticacao();
   const usuarioId = usuario === null ? null : usuario.id;
-  const [estado, setEstado] = useState<EstadoDoChat>(INICIAL);
+  const [estado, setEstado] = useState<EstadoDoChat>(estadoInicial);
 
   useEffect(() => {
     if (estado.dono === usuarioId) {
@@ -107,14 +111,14 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
     }
 
     if (usuarioId === null) {
-      setEstado(INICIAL);
+      setEstado(estadoInicial());
       return;
     }
 
     const guardada = lerConversa(usuarioId);
 
     setEstado({
-      ...INICIAL,
+      ...estadoInicial(),
       dono: usuarioId,
       mensagens: guardada === null ? [] : guardada.mensagens,
       conversationId: guardada === null ? null : guardada.conversationId,
@@ -132,11 +136,15 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
     });
   }, [usuarioId, estado.dono, estado.mensagens, estado.conversationId]);
 
-  function pedirResposta(texto: string, dono: string) {
-    enviarMensagem(texto, estado.conversationId)
+  function pedirResposta(
+    texto: string,
+    conversationId: string,
+    geracao: string,
+  ) {
+    enviarMensagem(texto, conversationId)
       .then((resposta) => {
         setEstado((atual) =>
-          atual.dono !== dono
+          atual.geracao !== geracao
             ? atual
             : {
                 ...atual,
@@ -152,7 +160,9 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
       })
       .catch((erro: unknown) => {
         setEstado((atual) =>
-          atual.dono !== dono ? atual : { ...atual, envio: envioComErro(erro) },
+          atual.geracao !== geracao
+            ? atual
+            : { ...atual, envio: envioComErro(erro) },
         );
       });
   }
@@ -169,34 +179,38 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
   function enviar(texto: string) {
     const limpo = texto.trim();
 
-    if (limpo === "" || usuarioId === null || !podeEnviar()) {
+    if (limpo === "" || !podeEnviar()) {
       return;
     }
+
+    const conversationId = estado.conversationId ?? crypto.randomUUID();
 
     setEstado((atual) => ({
       ...atual,
       mensagens: [...atual.mensagens, novaMensagem("pessoa", limpo)],
+      conversationId,
       envio: { status: "esperando" },
     }));
 
-    pedirResposta(limpo, usuarioId);
+    pedirResposta(limpo, conversationId, estado.geracao);
   }
 
   function tentarDeNovo() {
     const ultima = estado.mensagens[estado.mensagens.length - 1];
 
-    if (
-      ultima === undefined ||
-      ultima.author !== "pessoa" ||
-      usuarioId === null ||
-      !podeEnviar()
-    ) {
+    if (ultima === undefined || ultima.author !== "pessoa" || !podeEnviar()) {
       return;
     }
 
-    setEstado((atual) => ({ ...atual, envio: { status: "esperando" } }));
+    const conversationId = estado.conversationId ?? crypto.randomUUID();
 
-    pedirResposta(ultima.text, usuarioId);
+    setEstado((atual) => ({
+      ...atual,
+      conversationId,
+      envio: { status: "esperando" },
+    }));
+
+    pedirResposta(ultima.text, conversationId, estado.geracao);
   }
 
   function novaConversa() {
@@ -210,6 +224,7 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
       conversationId: null,
       expression: "neutra",
       envio: { status: "ocioso" },
+      geracao: crypto.randomUUID(),
     }));
   }
 
