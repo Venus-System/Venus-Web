@@ -284,7 +284,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
             <div
               className={styles.rolagem}
               role="region"
-              aria-label="Mensagens e sugestões"
+              aria-label="Mensagens, sugestões e avisos"
               tabIndex={0}
             >
               <div
@@ -323,75 +323,75 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 />
               ) : null}
 
-              <div ref={fimRef} />
-            </div>
+              {envio.status === "erro" ? (
+                <div className={styles.aviso}>
+                  <p role="alert">{envio.mensagem}</p>
 
-            {envio.status === "erro" ? (
-              <div className={styles.aviso}>
-                <p role="alert">{envio.mensagem}</p>
-
-                <Button variant="text" onClick={repetir}>
-                  Tentar de novo
-                </Button>
-              </div>
-            ) : null}
-
-            {envio.status === "limite" ? (
-              <div className={styles.aviso}>
-                <p role="alert">{envio.mensagem}</p>
-
-                {segundos > 0 ? (
-                  <p>
-                    Você pode tentar de novo em {segundos}{" "}
-                    {segundos === 1 ? "segundo" : "segundos"}.
-                  </p>
-                ) : (
                   <Button variant="text" onClick={repetir}>
                     Tentar de novo
                   </Button>
-                )}
-              </div>
-            ) : null}
-
-            {confirmandoNova && mensagens.length > 0 ? (
-              <div
-                className={styles.confirmacao}
-                role="group"
-                aria-labelledby={avisoDaNovaId}
-              >
-                <p id={avisoDaNovaId}>
-                  Começar uma conversa nova tira esta da tela, e não dá para
-                  voltar a ela. A Veninha começa um assunto novo, mas continua
-                  lembrando do que já sabe sobre você.
-                </p>
-
-                <div className={styles.confirmacaoAcoes}>
-                  <Button
-                    id={ID_DA_CONFIRMACAO}
-                    variant="danger"
-                    onClick={comecarDeNovo}
-                  >
-                    Começar conversa nova
-                  </Button>
-
-                  <Button variant="secondary" onClick={cancelarNovaConversa}>
-                    Cancelar
-                  </Button>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {usuario !== null && agenda.disponivel ? (
-              <ChatAgenda
-                connection={agenda.conexao}
-                disconnection={agenda.desconexao}
-                connectLink={linkDaAgenda.link}
-                onRetryLink={linkDaAgenda.tentarDeNovo}
-                inviteClosed={agenda.conviteFechado}
-                onRetry={agenda.recarregar}
-                onCloseInvite={fecharConviteDaAgenda}
-              />
-            ) : null}
+              {envio.status === "limite" ? (
+                <div className={styles.aviso}>
+                  <p role="alert">{envio.mensagem}</p>
+
+                  {segundos > 0 ? (
+                    <p>
+                      Você pode tentar de novo em {segundos}{" "}
+                      {segundos === 1 ? "segundo" : "segundos"}.
+                    </p>
+                  ) : (
+                    <Button variant="text" onClick={repetir}>
+                      Tentar de novo
+                    </Button>
+                  )}
+                </div>
+              ) : null}
+
+              {confirmandoNova && mensagens.length > 0 ? (
+                <div
+                  className={styles.confirmacao}
+                  role="group"
+                  aria-labelledby={avisoDaNovaId}
+                >
+                  <p id={avisoDaNovaId}>
+                    Começar uma conversa nova tira esta da tela, e não dá para
+                    voltar a ela. A Veninha começa um assunto novo, mas
+                    continua lembrando do que já sabe sobre você.
+                  </p>
+
+                  <div className={styles.confirmacaoAcoes}>
+                    <Button
+                      id={ID_DA_CONFIRMACAO}
+                      variant="danger"
+                      onClick={comecarDeNovo}
+                    >
+                      Começar conversa nova
+                    </Button>
+
+                    <Button variant="secondary" onClick={cancelarNovaConversa}>
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+
+              {usuario !== null && agenda.disponivel ? (
+                <ChatAgenda
+                  connection={agenda.conexao}
+                  disconnection={agenda.desconexao}
+                  connectLink={linkDaAgenda.link}
+                  onRetryLink={linkDaAgenda.tentarDeNovo}
+                  inviteClosed={agenda.conviteFechado}
+                  onRetry={agenda.recarregar}
+                  onCloseInvite={fecharConviteDaAgenda}
+                />
+              ) : null}
+
+              <div ref={fimRef} />
+            </div>
 
             {usuario !== null ? (
               <ChatComposer

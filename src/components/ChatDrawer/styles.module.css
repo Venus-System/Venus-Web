@@ -190,6 +190,11 @@
   gap: var(--espaco-2);
 }
 
+.confirmacaoAcoes > * {
+  padding: var(--espaco-1) var(--espaco-3);
+  font-size: var(--tamanho-pequeno);
+}
+
 .convite {
   display: flex;
   flex-direction: column;
