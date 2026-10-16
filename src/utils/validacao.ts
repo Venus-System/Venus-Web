@@ -182,6 +182,10 @@ export function validarNomeInci(nome: string): string | null {
     : null;
 }
 
+export function validarIngredienteCadastrado(id: string): string | null {
+  return id === "" ? "Escolha o ingrediente cadastrado." : null;
+}
+
 export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
 
 export function validarNotaDaAvaliacao(nota: Estrelas | null): string | null {

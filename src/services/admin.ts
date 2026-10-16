@@ -2,8 +2,8 @@ import { USAR_MOCK } from "../config/ambiente";
 import type {
   AprovacaoCandidato,
   Candidato,
-  CandidatoResumo,
   CatalogoDaRevisao,
+  FilaDeCandidatos,
   FiltroFila,
   RecusaCandidato,
   ResultadoAprovacao,
@@ -123,16 +123,25 @@ function exigirPapelQueDecideNoMock(): void {
   }
 }
 
-async function candidatosPendentes(sinal?: AbortSignal): Promise<Candidato[]> {
+interface CandidatosLidos {
+  candidatos: Candidato[];
+  truncated: boolean;
+}
+
+async function candidatosPendentes(
+  sinal?: AbortSignal,
+): Promise<CandidatosLidos> {
   try {
     if (USAR_MOCK) {
       await simularLatencia();
       exigirSessaoNoMock();
 
-      return listarPendentesDoMock();
+      return { candidatos: listarPendentesDoMock(), truncated: false };
     }
 
-    return lerListaDeScans(await listarScansNaApi(sinal));
+    const { itens, truncated } = await listarScansNaApi(sinal);
+
+    return { candidatos: lerListaDeScans(itens), truncated };
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar a fila.");
   }
@@ -141,16 +150,19 @@ async function candidatosPendentes(sinal?: AbortSignal): Promise<Candidato[]> {
 export async function listarPendentes(
   filtro: FiltroFila,
   sinal?: AbortSignal,
-): Promise<CandidatoResumo[]> {
+): Promise<FilaDeCandidatos> {
   try {
-    const candidatos = await candidatosPendentes(sinal);
+    const { candidatos, truncated } = await candidatosPendentes(sinal);
 
-    return candidatos
-      .filter(
-        (candidato) =>
-          filtro.origin === null || candidato.origin === filtro.origin,
-      )
-      .map(paraResumo);
+    return {
+      itens: candidatos
+        .filter(
+          (candidato) =>
+            filtro.origin === null || candidato.origin === filtro.origin,
+        )
+        .map(paraResumo),
+      truncated,
+    };
   } catch (erro) {
     return repassarOuTraduzir(erro, "Não foi possível carregar a fila.");
   }

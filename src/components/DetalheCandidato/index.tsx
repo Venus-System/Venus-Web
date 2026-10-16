@@ -13,7 +13,9 @@ import type { VisaoDaFonte } from "../PainelFonte";
 import RevisaoIngrediente, {
   OPCAO_CRIAR,
   OPCAO_DESCARTAR,
+  OPCAO_LIGAR,
   idDaDecisao,
+  idDoIngredienteCadastrado,
   idDoNomeInci,
 } from "../RevisaoIngrediente";
 import type { EscolhaDoIngrediente } from "../RevisaoIngrediente";
@@ -32,6 +34,7 @@ import { tempoRelativo } from "../../utils/tempoRelativo";
 import {
   validarCategoria,
   validarDecisaoDoIngrediente,
+  validarIngredienteCadastrado,
   validarMarca,
   validarNomeDoProduto,
   validarNomeInci,
@@ -113,8 +116,10 @@ function escolhaInicial(
     position: ingrediente.position,
     opcao: "",
     inciName: ingrediente.rawName,
+    ingredientId: "",
     erro: null,
     erroDoNome: null,
+    erroDoIngrediente: null,
   };
 }
 
@@ -124,6 +129,10 @@ function validarEscolha(escolha: EscolhaDoIngrediente): EscolhaDoIngrediente {
     erro: validarDecisaoDoIngrediente(escolha.opcao),
     erroDoNome:
       escolha.opcao === OPCAO_CRIAR ? validarNomeInci(escolha.inciName) : null,
+    erroDoIngrediente:
+      escolha.opcao === OPCAO_LIGAR
+        ? validarIngredienteCadastrado(escolha.ingredientId)
+        : null,
   };
 }
 
@@ -143,7 +152,9 @@ function paraDecisao(escolha: EscolhaDoIngrediente): DecisaoIngrediente {
   return {
     position: escolha.position,
     action: "link",
-    ingredientId: Number(escolha.opcao),
+    ingredientId: Number(
+      escolha.opcao === OPCAO_LIGAR ? escolha.ingredientId : escolha.opcao,
+    ),
   };
 }
 
@@ -175,6 +186,10 @@ function primeiroInvalido(
 
     if (escolha?.erroDoNome) {
       return idDoNomeInci(ingrediente);
+    }
+
+    if (escolha?.erroDoIngrediente) {
+      return idDoIngredienteCadastrado(ingrediente);
     }
   }
 
@@ -467,6 +482,11 @@ function DetalheCandidato({
                 key={ingrediente.id}
                 ingrediente={ingrediente}
                 escolha={escolha}
+                ingredientesDoCatalogo={
+                  catalogo.status === "pronto"
+                    ? catalogo.catalogo.ingredients
+                    : null
+                }
                 onMudar={mudarEscolha}
               />
             );

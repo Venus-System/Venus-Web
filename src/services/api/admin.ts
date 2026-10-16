@@ -138,16 +138,62 @@ async function pedirComoAdmin(
   }
 }
 
-const TAMANHO_DA_FILA = 100;
+const TAMANHO_DA_PAGINA_DA_FILA = 100;
+const LIMITE_DE_PAGINAS_DA_FILA = 5;
+const STATUS_DA_FILA = ["PENDING_REVIEW", "SYNC_FAILED"];
 
-export async function listarScansNaApi(sinal?: AbortSignal): Promise<unknown> {
+export interface ScansLidos {
+  itens: unknown[];
+  truncated: boolean;
+}
+
+async function lerScansDoStatus(
+  status: string,
+  sinal?: AbortSignal,
+): Promise<ScansLidos> {
   try {
-    const caminho = `/api/scan-sessions/status/PENDING_REVIEW?size=${TAMANHO_DA_FILA}`;
-    const resposta = await pedirComoAdmin(caminho, { signal: sinal });
+    const itens: unknown[] = [];
 
-    verificarResposta(resposta, caminho);
+    for (let pagina = 0; pagina < LIMITE_DE_PAGINAS_DA_FILA; pagina += 1) {
+      const caminho = `/api/scan-sessions/status/${status}?page=${pagina}&size=${TAMANHO_DA_PAGINA_DA_FILA}&sort=createdAt,asc`;
+      const resposta = await pedirComoAdmin(caminho, { signal: sinal });
 
-    return await resposta.json();
+      verificarResposta(resposta, caminho);
+
+      const dados = comoObjeto(await resposta.json());
+
+      if (!Array.isArray(dados.content)) {
+        throw new Error("A fila de aprovação não veio no formato esperado.");
+      }
+
+      itens.push(...dados.content);
+
+      if (
+        dados.last === true ||
+        dados.content.length < TAMANHO_DA_PAGINA_DA_FILA
+      ) {
+        return { itens, truncated: false };
+      }
+    }
+
+    return { itens, truncated: true };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar a fila de aprovação.");
+  }
+}
+
+export async function listarScansNaApi(
+  sinal?: AbortSignal,
+): Promise<ScansLidos> {
+  try {
+    const lidos = await Promise.all(
+      STATUS_DA_FILA.map((status) => lerScansDoStatus(status, sinal)),
+    );
+
+    return {
+      itens: lidos.flatMap((lido) => lido.itens),
+      truncated: lidos.some((lido) => lido.truncated),
+    };
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar a fila de aprovação.");
   }
@@ -338,7 +384,7 @@ export async function recusarNaApi(
   }
 }
 
-function lerOpcoes(valor: unknown): OpcaoDoCatalogo[] {
+function lerOpcoes(valor: unknown, campoDoNome: string): OpcaoDoCatalogo[] {
   if (!Array.isArray(valor)) {
     return [];
   }
@@ -346,9 +392,10 @@ function lerOpcoes(valor: unknown): OpcaoDoCatalogo[] {
   return valor
     .flatMap((item) => {
       const dados = comoObjeto(item);
+      const nome = dados[campoDoNome];
 
-      return typeof dados.id === "number" && typeof dados.name === "string"
-        ? [{ id: dados.id, name: dados.name }]
+      return typeof dados.id === "number" && typeof nome === "string"
+        ? [{ id: dados.id, name: nome }]
         : [];
     })
     .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -357,13 +404,14 @@ function lerOpcoes(valor: unknown): OpcaoDoCatalogo[] {
 async function buscarOpcoes(
   caminho: string,
   sinal?: AbortSignal,
+  campoDoNome = "name",
 ): Promise<OpcaoDoCatalogo[]> {
   try {
     const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
     verificarResposta(resposta, caminho);
 
-    return lerOpcoes(await resposta.json());
+    return lerOpcoes(await resposta.json(), campoDoNome);
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar as opções do catálogo.");
   }
@@ -373,13 +421,14 @@ export async function buscarCatalogoDaRevisaoNaApi(
   sinal?: AbortSignal,
 ): Promise<CatalogoDaRevisao> {
   try {
-    const [brands, categories] = await Promise.all([
+    const [brands, categories, ingredients] = await Promise.all([
       buscarOpcoes("/api/brands", sinal),
       buscarOpcoes("/api/product-categories", sinal),
+      buscarOpcoes("/api/ingredients", sinal, "inciName"),
     ]);
 
-    return { brands, categories };
+    return { brands, categories, ingredients };
   } catch (erro) {
-    repassarErro(erro, "Não foi possível carregar marcas e categorias.");
+    repassarErro(erro, "Não foi possível carregar o catálogo da revisão.");
   }
 }

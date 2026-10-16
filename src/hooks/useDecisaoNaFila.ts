@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { IngredienteACriar } from "../components/ModalAprovacao";
 import {
   aprovarPendente,
@@ -25,6 +25,7 @@ export type PedidoDeDecisao =
   | { tipo: "recusar"; recusa: RecusaCandidato };
 
 interface EstadoDecisao {
+  idDoCandidato: string | null;
   modal: ModalAberto;
   aprovacao: AprovacaoCandidato | null;
   enviando: boolean;
@@ -35,12 +36,14 @@ interface EstadoDecisao {
 }
 
 interface OpcoesDaDecisao {
+  idAberto: string | null;
   recarregar: () => void;
   aoAvancar: (idAtual: string) => void;
   aoExpirar: () => void;
 }
 
 const SEM_DECISAO: EstadoDecisao = {
+  idDoCandidato: null,
   modal: "nenhum",
   aprovacao: null,
   enviando: false,
@@ -65,15 +68,22 @@ export function novosDaAprovacao(
 }
 
 export function useDecisaoNaFila({
+  idAberto,
   recarregar,
   aoAvancar,
   aoExpirar,
 }: OpcoesDaDecisao) {
   const [decisao, setDecisao] = useState<EstadoDecisao>(SEM_DECISAO);
+  const idAbertoRef = useRef(idAberto);
 
-  function abrirRecusa() {
+  useEffect(() => {
+    idAbertoRef.current = idAberto;
+  }, [idAberto]);
+
+  function abrirRecusa(candidato: Candidato) {
     setDecisao((atual) => ({
       ...atual,
+      idDoCandidato: candidato.id,
       modal: "recusar",
       mensagem: "",
       detalhes: [],
@@ -93,7 +103,10 @@ export function useDecisaoNaFila({
   function avancar(idAtual: string, anuncio: string) {
     setDecisao({ ...SEM_DECISAO, anuncio });
     recarregar();
-    aoAvancar(idAtual);
+
+    if (idAbertoRef.current === idAtual) {
+      aoAvancar(idAtual);
+    }
   }
 
   function tratarErro(erro: unknown) {
@@ -148,6 +161,7 @@ export function useDecisaoNaFila({
   async function executar(candidato: Candidato, pedido: PedidoDeDecisao) {
     setDecisao((atual) => ({
       ...atual,
+      idDoCandidato: candidato.id,
       enviando: true,
       mensagem: "",
       detalhes: [],
@@ -165,6 +179,7 @@ export function useDecisaoNaFila({
       if (resultado.status === "sincronizacaoFalhou") {
         setDecisao({
           ...SEM_DECISAO,
+          idDoCandidato: candidato.id,
           semSincronizar: candidato.id,
           anuncio: `${candidato.name} aprovado, mas ainda não entrou no catálogo.`,
         });
@@ -186,6 +201,7 @@ export function useDecisaoNaFila({
     if (novosDaAprovacao(aprovacao).length > 0) {
       setDecisao((atual) => ({
         ...atual,
+        idDoCandidato: candidato.id,
         modal: "aprovar",
         aprovacao,
         mensagem: "",
@@ -200,6 +216,7 @@ export function useDecisaoNaFila({
   async function sincronizar(candidato: Candidato) {
     setDecisao((atual) => ({
       ...atual,
+      idDoCandidato: candidato.id,
       enviando: true,
       mensagem: "",
       detalhes: [],

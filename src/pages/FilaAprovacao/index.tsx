@@ -84,6 +84,7 @@ function FilaAprovacao() {
     executar,
     sincronizar,
   } = useDecisaoNaFila({
+    idAberto: idSelecionado,
     recarregar,
     aoAvancar: irParaOProximo,
     aoExpirar: () => void sair(),
@@ -91,6 +92,8 @@ function FilaAprovacao() {
 
   const podeDecidir =
     administrador !== null && administrador.role !== "analyst";
+  const decisaoDoAberto =
+    idSelecionado !== null && decisao.idDoCandidato === idSelecionado;
 
   function proximoDaFila(atual: string): string | null {
     if (estado.status !== "pronto") {
@@ -171,11 +174,18 @@ function FilaAprovacao() {
             </div>
           ) : null}
 
+          {estado.status === "pronto" && estado.truncated ? (
+            <p className={styles.estado}>
+              A fila tem mais envios do que mostramos. Decida os primeiros para
+              ver os próximos.
+            </p>
+          ) : null}
+
           {estado.status === "pronto" && estado.itens.length === 0 ? (
             <p className={styles.estado}>
               {origem === null
                 ? "Nenhum produto aguardando aprovação. A fila está em dia."
-                : `Nenhum produto de ${ROTULO_ORIGEM[origem]} aguardando aprovação.`}
+                : `Nenhum produto de ${ROTULO_ORIGEM[origem]} entre os envios mostrados.`}
             </p>
           ) : null}
 
@@ -222,6 +232,12 @@ function FilaAprovacao() {
                     </div>
 
                     <div className={styles.selos}>
+                      {item.status === "semPublicar" ? (
+                        <Selo
+                          label="Aprovado, falta publicar"
+                          variant="destaque"
+                        />
+                      ) : null}
                       <Selo label={ROTULO_ORIGEM[item.origin]} />
                       <Selo
                         label={rotuloDePendencias(
@@ -285,17 +301,24 @@ function FilaAprovacao() {
               podeDecidir={podeDecidir}
               enviando={decisao.enviando}
               semSincronizar={
+                estadoCandidato.candidato.status === "semPublicar" ||
                 decisao.semSincronizar === estadoCandidato.candidato.id
               }
               mensagemDeErro={
-                decisao.modal === "nenhum" ? decisao.mensagem : ""
+                decisaoDoAberto && decisao.modal === "nenhum"
+                  ? decisao.mensagem
+                  : ""
               }
-              detalhesDoErro={decisao.modal === "nenhum" ? decisao.detalhes : []}
+              detalhesDoErro={
+                decisaoDoAberto && decisao.modal === "nenhum"
+                  ? decisao.detalhes
+                  : []
+              }
               onTentarCatalogo={recarregarCatalogo}
               onAprovar={(aprovacao) =>
                 pedirAprovacao(estadoCandidato.candidato, aprovacao)
               }
-              onRecusar={abrirRecusa}
+              onRecusar={() => abrirRecusa(estadoCandidato.candidato)}
               onSincronizar={() => void sincronizar(estadoCandidato.candidato)}
             />
           ) : null}
