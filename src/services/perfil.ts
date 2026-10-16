@@ -194,9 +194,9 @@ export async function salvarPerfil(
       }
 
       await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
+    } finally {
+      esquecerAnalisesPessoais();
     }
-
-    esquecerAnalisesPessoais();
 
     return perfil;
   } catch (erro) {
