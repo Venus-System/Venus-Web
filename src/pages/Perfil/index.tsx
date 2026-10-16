@@ -170,7 +170,11 @@ function Perfil() {
           <aside className={styles.aside}>
             <button
               type="button"
-              className={`${styles.avatar} ${styles[avatar]}`}
+              className={
+                foto.url === null
+                  ? `${styles.avatar} ${styles[avatar]}`
+                  : styles.avatar
+              }
               onClick={() => setTrocandoFoto(true)}
             >
               {foto.url === null ? (
