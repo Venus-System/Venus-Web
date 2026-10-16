@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { confirmarRedefinicao } from "../../services/autenticacao";
 import Button from "../../components/Button";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import {
@@ -43,6 +43,7 @@ interface EstadoFormulario {
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
 function NovaSenha() {
+  const { confirmarRedefinicao } = useAutenticacao();
   const navegar = useNavigate();
   const [parametros] = useSearchParams();
   const codigo = parametros.get("oobCode");

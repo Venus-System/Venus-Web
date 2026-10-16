@@ -8,8 +8,11 @@ import {
   sair as sairDoServico,
   criarConta as criarContaNoServico,
   atualizarNome as atualizarNomeNoServico,
+  solicitarRedefinicao,
+  confirmarRedefinicao,
 } from "../services/autenticacao";
 import { buscarFotoDePerfil } from "../services/avatar";
+import { repassarErro } from "../services/erros";
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
@@ -25,6 +28,8 @@ interface ValorAutenticacao {
   atualizarNome: (nome: string) => Promise<void>;
   entrarComGoogle: (continuarConectado: boolean) => Promise<void>;
   criarConta: (nome: string, email: string, senha: string) => Promise<void>;
+  solicitarRedefinicao: (email: string) => Promise<void>;
+  confirmarRedefinicao: (codigo: string, senha: string) => Promise<void>;
 }
 
 interface EstadoAutenticacao {
@@ -85,28 +90,48 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     senha: string,
     continuarConectado: boolean,
   ) {
-    const usuario = await entrarNoServico(email, senha, continuarConectado);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await entrarNoServico(email, senha, continuarConectado);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível entrar.");
+    }
   }
 
   async function entrarComGoogle(continuarConectado: boolean) {
-    const usuario = await entrarComGoogleNoServico(continuarConectado);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await entrarComGoogleNoServico(continuarConectado);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível entrar com o Google.");
+    }
   }
 
   async function sair() {
-    await sairDoServico();
-    setEstado({ usuario: null, carregando: false });
+    try {
+      await sairDoServico();
+      setEstado({ usuario: null, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível sair da conta.");
+    }
   }
 
   async function atualizarNome(nome: string) {
-    const usuario = await atualizarNomeNoServico(nome);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await atualizarNomeNoServico(nome);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível salvar o nome.");
+    }
   }
 
   async function criarConta(nome: string, email: string, senha: string) {
-    const usuario = await criarContaNoServico(nome, email, senha);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await criarContaNoServico(nome, email, senha);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível criar a conta.");
+    }
   }
 
   return (
@@ -120,6 +145,8 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
         criarConta,
         sair,
         atualizarNome,
+        solicitarRedefinicao,
+        confirmarRedefinicao,
       }}
     >
       {children}
