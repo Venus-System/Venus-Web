@@ -1,32 +1,19 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { pesquisarProdutos } from "../../services/pesquisa";
-import type { Produto } from "../../types/produto";
 import type { FiltrosDaPesquisa } from "../../types/pesquisa";
 import { useOpcoesDaPesquisa } from "../../hooks/useOpcoesDaPesquisa";
+import { usePesquisaDeProdutos } from "../../hooks/usePesquisaDeProdutos";
+import type {
+  BuscaDaPesquisa,
+  EstadoDaPesquisa,
+} from "../../hooks/usePesquisaDeProdutos";
 import MainLayout from "../../components/MainLayout";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import ProductCard from "../../components/ProductCard";
 import styles from "./styles.module.css";
-
-interface ListaCarregada {
-  lista: Produto[];
-  temMais: boolean;
-  paginasCarregadas: number;
-}
-
-type EstadoBusca =
-  | ({ situacao: "carregando" } & ListaCarregada)
-  | ({ situacao: "sucesso" } & ListaCarregada)
-  | ({ situacao: "erro"; mensagem: string } & ListaCarregada);
-
-interface Busca {
-  filtros: FiltrosDaPesquisa;
-  pagina: number;
-}
 
 type FiltroDeLista = "categoria" | "marca";
 
@@ -60,7 +47,10 @@ function descricaoDosFiltros(filtros: FiltrosDaPesquisa): string {
   return partes.length === 0 ? "no catálogo" : partes.join(", ");
 }
 
-function textoDeStatus(estado: EstadoBusca, busca: Busca): string {
+function textoDeStatus(
+  estado: EstadoDaPesquisa,
+  busca: BuscaDaPesquisa,
+): string {
   const descricao = descricaoDosFiltros(busca.filtros);
 
   if (estado.situacao === "carregando") {
@@ -89,16 +79,11 @@ function textoDeStatus(estado: EstadoBusca, busca: Busca): string {
 }
 
 function Pesquisa() {
-  const [estado, setEstado] = useState<EstadoBusca>({
-    situacao: "carregando",
-    lista: [],
-    temMais: false,
-    paginasCarregadas: 0,
-  });
-  const [busca, setBusca] = useState<Busca>({
+  const [busca, setBusca] = useState<BuscaDaPesquisa>({
     filtros: FILTROS_VAZIOS,
     pagina: 0,
   });
+  const estado = usePesquisaDeProdutos(busca);
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDaPesquisa();
   const formRef = useRef<HTMLFormElement>(null);
@@ -167,72 +152,6 @@ function Pesquisa() {
     focarNoIndice.current = estado.lista.length;
     setBusca((atual) => ({ ...atual, pagina: estado.paginasCarregadas }));
   }
-
-  useEffect(() => {
-    let ativo = true;
-    let expirou = false;
-
-    const controle = new AbortController();
-    const limite = setTimeout(() => {
-      expirou = true;
-      controle.abort();
-    }, 8000);
-
-    async function carregar() {
-      setEstado((atual) => ({
-        situacao: "carregando",
-        lista: atual.lista,
-        temMais: atual.temMais,
-        paginasCarregadas: atual.paginasCarregadas,
-      }));
-
-      try {
-        const resultado = await pesquisarProdutos(
-          busca.filtros,
-          busca.pagina,
-          controle.signal,
-        );
-
-        if (ativo) {
-          setEstado((atual) =>
-            busca.pagina === 0
-              ? {
-                  situacao: "sucesso",
-                  lista: resultado.produtos,
-                  temMais: resultado.temMais,
-                  paginasCarregadas: 1,
-                }
-              : {
-                  situacao: "sucesso",
-                  lista: [...atual.lista, ...resultado.produtos],
-                  temMais: resultado.temMais,
-                  paginasCarregadas: atual.paginasCarregadas + 1,
-                },
-          );
-        }
-      } catch {
-        if (ativo) {
-          setEstado((atual) => ({
-            situacao: "erro",
-            mensagem: expirou
-              ? "A busca demorou demais. Tente novamente."
-              : "Não foi possível carregar os produtos.",
-            lista: atual.lista,
-            temMais: busca.pagina === 0 ? false : atual.temMais,
-            paginasCarregadas: atual.paginasCarregadas,
-          }));
-        }
-      }
-    }
-
-    carregar();
-
-    return () => {
-      ativo = false;
-      clearTimeout(limite);
-      controle.abort();
-    };
-  }, [busca]);
 
   useEffect(() => {
     const indice = focarNoIndice.current;
