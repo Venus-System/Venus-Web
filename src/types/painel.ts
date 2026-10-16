@@ -33,17 +33,6 @@ export interface AnaliseRecente {
   analyzedAt: string;
 }
 
-export interface LadoDaTroca {
-  product: ProdutoDoPainel;
-  finalScore: number | null;
-  note: string;
-}
-
-export interface TrocaRecomendada {
-  current: LadoDaTroca;
-  suggested: LadoDaTroca;
-}
-
 export interface Painel {
   analyses: ContagemPorPeriodo;
   alerts: ContagemPorPeriodo;
@@ -51,6 +40,5 @@ export interface Painel {
   favoriteCount: number;
   summary: ResumoDasAnalises;
   recentAnalyses: AnaliseRecente[];
-  recommendedSwap: TrocaRecomendada | null;
   profileCompleteness: number | null;
 }

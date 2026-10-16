@@ -7,7 +7,6 @@ import ScoreBars from "../../components/ScoreBars";
 import ScoreExplanation from "../../components/ScoreExplanation";
 import ScoreRing from "../../components/ScoreRing";
 import StatCard from "../../components/StatCard";
-import SwapCard from "../../components/SwapCard";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { usePainel } from "../../hooks/usePainel";
 import type { ContagemPorPeriodo, Painel } from "../../types/painel";
@@ -292,88 +291,49 @@ function Dashboard() {
               </section>
             </div>
 
-            <div className={styles.linha}>
-              <section
-                className={styles.cartao}
-                aria-labelledby="titulo-recentes"
-              >
-                <div className={styles.cartaoTopo}>
-                  <div>
-                    <h2 id="titulo-recentes" className={styles.cartaoTitulo}>
-                      Análises recentes
-                    </h2>
-                    <p className={styles.cartaoSub}>
-                      Os últimos produtos que você analisou.
-                    </p>
-                  </div>
-
-                  <Button variant="secondary" to="/historico">
-                    Histórico completo
-                    <ArrowRight className={styles.icone} aria-hidden="true" />
-                  </Button>
+            <section
+              className={styles.cartao}
+              aria-labelledby="titulo-recentes"
+            >
+              <div className={styles.cartaoTopo}>
+                <div>
+                  <h2 id="titulo-recentes" className={styles.cartaoTitulo}>
+                    Análises recentes
+                  </h2>
+                  <p className={styles.cartaoSub}>
+                    Os últimos produtos que você analisou.
+                  </p>
                 </div>
 
-                {estado.painel.recentAnalyses.length === 0 ? (
-                  <p className={styles.vazio}>
-                    Você ainda não analisou nenhum produto.{" "}
-                    <Link to="/pesquisa" className={styles.link}>
-                      Busque um produto para começar
-                    </Link>
-                    .
-                  </p>
-                ) : (
-                  <ul className={styles.lista}>
-                    {estado.painel.recentAnalyses.map((analise) => (
-                      <li key={analise.id}>
-                        <ProductRow
-                          produto={analise.product}
-                          nota={analise.finalScore}
-                          nivel={nivelDaRecomendacao(
-                            analise.recommendationLevel,
-                          )}
-                          realizadaEm={analise.analyzedAt}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
+                <Button variant="secondary" to="/historico">
+                  Histórico completo
+                  <ArrowRight className={styles.icone} aria-hidden="true" />
+                </Button>
+              </div>
 
-              <section
-                className={styles.cartao}
-                aria-labelledby="titulo-troca"
-              >
-                <h2 id="titulo-troca" className={styles.cartaoTitulo}>
-                  Troca <span className={styles.destaque}>recomendada</span>
-                </h2>
-                <p className={styles.cartaoSub}>
-                  Uma alternativa mais alinhada com você para um produto que
-                  você analisou.
+              {estado.painel.recentAnalyses.length === 0 ? (
+                <p className={styles.vazio}>
+                  Você ainda não analisou nenhum produto.{" "}
+                  <Link to="/pesquisa" className={styles.link}>
+                    Busque um produto para começar
+                  </Link>
+                  .
                 </p>
-
-                {estado.painel.recommendedSwap === null ? (
-                  <p className={styles.vazio}>
-                    Quando a Venus encontrar uma alternativa melhor para um
-                    produto que você analisou, ela aparece aqui.
-                  </p>
-                ) : (
-                  <>
-                    <SwapCard swap={estado.painel.recommendedSwap} />
-
-                    <Link
-                      to={`/comparar?${new URLSearchParams({
-                        a: estado.painel.recommendedSwap.current.product.slug,
-                        b: estado.painel.recommendedSwap.suggested.product.slug,
-                      }).toString()}`}
-                      className={styles.verTudo}
-                    >
-                      Comparar os dois
-                      <ArrowRight className={styles.icone} aria-hidden="true" />
-                    </Link>
-                  </>
-                )}
-              </section>
-            </div>
+              ) : (
+                <ul className={styles.lista}>
+                  {estado.painel.recentAnalyses.map((analise) => (
+                    <li key={analise.id}>
+                      <ProductRow
+                        produto={analise.product}
+                        nota={analise.finalScore}
+                        nivel={nivelDaRecomendacao(analise.recommendationLevel)}
+                        realizadaEm={analise.analyzedAt}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
           </>
         ) : null}
       </div>

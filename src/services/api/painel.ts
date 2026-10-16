@@ -143,6 +143,5 @@ export async function buscarPainelNaApi(
       notas,
       sinal,
     ),
-    recommendedSwap: null,
   };
 }
