@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { Usuario } from "../types/usuario";
+import type { ResultadoDaRedefinicao, Usuario } from "../types/usuario";
 import {
   entrar as entrarNoServico,
   entrarComGoogle as entrarComGoogleNoServico,
@@ -9,10 +9,10 @@ import {
   criarConta as criarContaNoServico,
   atualizarNome as atualizarNomeNoServico,
   solicitarRedefinicao,
-  confirmarRedefinicao,
+  confirmarRedefinicao as confirmarRedefinicaoNoServico,
 } from "../services/autenticacao";
 import { buscarFotoDePerfil } from "../services/avatar";
-import { repassarErro } from "../services/erros";
+import { ErroLinkDeSenhaVencido, repassarErro } from "../services/erros";
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
@@ -29,7 +29,10 @@ interface ValorAutenticacao {
   entrarComGoogle: (continuarConectado: boolean) => Promise<void>;
   criarConta: (nome: string, email: string, senha: string) => Promise<void>;
   solicitarRedefinicao: (email: string) => Promise<void>;
-  confirmarRedefinicao: (codigo: string, senha: string) => Promise<void>;
+  confirmarRedefinicao: (
+    codigo: string,
+    senha: string,
+  ) => Promise<ResultadoDaRedefinicao>;
 }
 
 interface EstadoAutenticacao {
@@ -132,6 +135,23 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
       setEstado({ usuario, carregando: false });
     } catch (erro) {
       repassarErro(erro, "Não foi possível criar a conta.");
+    }
+  }
+
+  async function confirmarRedefinicao(
+    codigo: string,
+    senha: string,
+  ): Promise<ResultadoDaRedefinicao> {
+    try {
+      await confirmarRedefinicaoNoServico(codigo, senha);
+
+      return "trocada";
+    } catch (erro) {
+      if (erro instanceof ErroLinkDeSenhaVencido) {
+        return "linkVencido";
+      }
+
+      repassarErro(erro, "Não foi possível trocar a senha.");
     }
   }
 

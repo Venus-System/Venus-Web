@@ -6,7 +6,6 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { ErroLinkDeSenhaVencido } from "../../services/erros";
 import Button from "../../components/Button";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
@@ -110,18 +109,25 @@ function NovaSenha() {
     }));
 
     try {
-      await confirmarRedefinicao(codigoConfirmado, senha);
+      const resultado = await confirmarRedefinicao(codigoConfirmado, senha);
+
+      if (resultado === "linkVencido") {
+        setFormulario((atual) => ({
+          ...atual,
+          envio: { situacao: "linkVencido" },
+          erros: SEM_ERROS,
+        }));
+        return;
+      }
+
       navegar("/esqueci-senha/pronto", { replace: true });
-    } catch (erro) {
+    } catch {
       setFormulario((atual) => ({
         ...atual,
-        envio:
-          erro instanceof ErroLinkDeSenhaVencido
-            ? { situacao: "linkVencido" }
-            : {
-                situacao: "erro",
-                mensagem: "Não foi possível redefinir a senha. Tente novamente.",
-              },
+        envio: {
+          situacao: "erro",
+          mensagem: "Não foi possível redefinir a senha. Tente novamente.",
+        },
         erros: SEM_ERROS,
       }));
     }

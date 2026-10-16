@@ -6,6 +6,8 @@ export interface Usuario {
 
 export type StatusConta = "active" | "inactive" | "blocked" | "pending";
 
+export type ResultadoDaRedefinicao = "trocada" | "linkVencido";
+
 export type SituacaoAtual =
   | "pregnant"
   | "breastfeeding"
