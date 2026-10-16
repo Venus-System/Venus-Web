@@ -1,6 +1,8 @@
 import bocaAbertaEstreita from "../../assets/veninha/boca-aberta-estreita.png";
 import bocaAbertaLarga from "../../assets/veninha/boca-aberta-larga.png";
 import bocaFechada from "../../assets/veninha/boca-fechada.png";
+import bocaFechadaFeliz from "../../assets/veninha/boca-fechada-feliz.png";
+import bocaFechadaTriste from "../../assets/veninha/boca-fechada-triste.png";
 import bocaTriste from "../../assets/veninha/boca-triste.png";
 import caraChorando from "../../assets/veninha/veninha-chorando.png";
 import caraConfusa from "../../assets/veninha/veninha-confusa.png";
@@ -28,14 +30,14 @@ const ROSTOS: Record<HumorDaVeninha, Rosto> = {
   feliz: {
     cara: caraFeliz,
     aberta: bocaAbertaEstreita,
-    fechada: bocaFechada,
+    fechada: bocaFechadaFeliz,
     abertaQuieta: false,
     abertaSemMovimento: true,
   },
   chorando: {
     cara: caraChorando,
     aberta: bocaAbertaLarga,
-    fechada: bocaTriste,
+    fechada: bocaFechadaTriste,
     abertaQuieta: false,
     abertaSemMovimento: false,
   },
