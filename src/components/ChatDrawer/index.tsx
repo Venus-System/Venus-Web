@@ -106,6 +106,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
       agenda.conexao.status === "pronta" &&
       !agenda.conexao.conectada,
     `${localizacao.pathname}${localizacao.search}`,
+    usuario === null ? null : usuario.id,
   );
   const segundos = useSegundosRestantes(
     envio.status === "limite" ? envio.liberaEm : null,
@@ -143,6 +144,12 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
       focar(ID_DA_CONFIRMACAO);
     }
   }, [confirmandoNova]);
+
+  useEffect(() => {
+    if (agenda.desconexao.status === "concluida") {
+      focarCampo();
+    }
+  }, [agenda.desconexao.status]);
 
   useEffect(() => {
     if (aberto && fimRef.current !== null) {
@@ -354,7 +361,8 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
               >
                 <p id={avisoDaNovaId}>
                   Começar uma conversa nova tira esta da tela, e não dá para
-                  voltar a ela. A Veninha não continua o assunto de onde parou.
+                  voltar a ela. A Veninha começa um assunto novo, mas continua
+                  lembrando do que já sabe sobre você.
                 </p>
 
                 <div className={styles.confirmacaoAcoes}>
@@ -377,7 +385,8 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
               <ChatAgenda
                 connection={agenda.conexao}
                 disconnection={agenda.desconexao}
-                connectLink={linkDaAgenda}
+                connectLink={linkDaAgenda.link}
+                onRetryLink={linkDaAgenda.tentarDeNovo}
                 inviteClosed={agenda.conviteFechado}
                 onRetry={agenda.recarregar}
                 onCloseInvite={fecharConviteDaAgenda}

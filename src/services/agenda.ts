@@ -69,11 +69,15 @@ function verificarDisponivel(): void {
   }
 }
 
-export async function lerConexaoDaAgenda(): Promise<ConexaoDaAgenda> {
+export async function lerConexaoDaAgenda(
+  usuarioId: string,
+): Promise<ConexaoDaAgenda> {
   try {
     verificarDisponivel();
 
-    return USAR_MOCK ? await conexaoDoMock() : await lerConexaoNaApi();
+    return USAR_MOCK
+      ? await conexaoDoMock(usuarioId)
+      : await lerConexaoNaApi();
   } catch (erro) {
     throw erroDaAgenda(erro, "Não foi possível ver se a sua agenda está conectada.");
   }
@@ -83,12 +87,13 @@ export async function conectarAgenda(
   code: string,
   redirectUri: string,
   codeVerifier: string,
+  usuarioId: string,
 ): Promise<void> {
   try {
     verificarDisponivel();
 
     if (USAR_MOCK) {
-      await conectarNoMock();
+      await conectarNoMock(usuarioId);
       return;
     }
 
@@ -98,12 +103,12 @@ export async function conectarAgenda(
   }
 }
 
-export async function desconectarAgenda(): Promise<void> {
+export async function desconectarAgenda(usuarioId: string): Promise<void> {
   try {
     verificarDisponivel();
 
     if (USAR_MOCK) {
-      await desconectarNoMock();
+      await desconectarNoMock(usuarioId);
       return;
     }
 

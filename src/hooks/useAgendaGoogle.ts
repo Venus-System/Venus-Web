@@ -43,15 +43,19 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
   }, [usuarioId]);
 
   useEffect(() => {
-    if (!disponivel) {
+    if (!disponivel || usuarioId === null) {
       return;
     }
 
     let valido = true;
 
-    setEstado((atual) => ({ ...atual, conexao: { status: "carregando" } }));
+    setEstado((atual) => ({
+      ...atual,
+      conexao: { status: "carregando" },
+      desconexao: { status: "ociosa" },
+    }));
 
-    lerConexaoDaAgenda()
+    lerConexaoDaAgenda(usuarioId)
       .then((conexao) => {
         if (valido) {
           setEstado((atual) => ({
@@ -78,7 +82,7 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
     return () => {
       valido = false;
     };
-  }, [disponivel, estado.tentativa]);
+  }, [disponivel, usuarioId, estado.tentativa]);
 
   function recarregar() {
     setEstado((atual) => ({ ...atual, tentativa: atual.tentativa + 1 }));
@@ -94,7 +98,7 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
   }
 
   function desconectar() {
-    if (estado.desconexao.status === "desconectando") {
+    if (usuarioId === null || estado.desconexao.status === "desconectando") {
       return;
     }
 
@@ -103,12 +107,12 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
       desconexao: { status: "desconectando" },
     }));
 
-    desconectarAgenda()
+    desconectarAgenda(usuarioId)
       .then(() => {
         setEstado((atual) => ({
           ...atual,
           conexao: { status: "pronta", conectada: false },
-          desconexao: { status: "ociosa" },
+          desconexao: { status: "concluida" },
         }));
       })
       .catch((erro: unknown) => {

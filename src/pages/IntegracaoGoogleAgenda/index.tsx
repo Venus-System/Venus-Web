@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import Veninha from "../../components/Veninha";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useChat } from "../../hooks/useChat";
 import { useLinkDaAgenda } from "../../hooks/useLinkDaAgenda";
 import { conectarAgenda } from "../../services/agenda";
@@ -38,10 +39,31 @@ const RECUSADO =
 const PEDIDO_INVALIDO =
   "Este pedido de conexão não vale mais. Comece de novo pela conversa com a Veninha.";
 
+const OUTRA_CONTA =
+  "Este pedido de conexão foi feito por outra conta. Comece de novo pela conversa com a Veninha.";
+
+function erroDoPedido(
+  recusou: boolean,
+  valido: boolean,
+  daConta: boolean,
+): string | null {
+  if (recusou) {
+    return RECUSADO;
+  }
+
+  if (!valido) {
+    return PEDIDO_INVALIDO;
+  }
+
+  return daConta ? null : OUTRA_CONTA;
+}
+
 function IntegracaoGoogleAgenda() {
   const [busca] = useSearchParams();
   const localizacao = useLocation();
   const navigate = useNavigate();
+  const { usuario } = useAutenticacao();
+  const usuarioId = usuario === null ? null : usuario.id;
   const { abrir } = useChat();
   const iniciouRef = useRef(false);
   const [estado, setEstado] = useState<EstadoDaVolta>({
@@ -51,6 +73,7 @@ function IntegracaoGoogleAgenda() {
   const linkDeNovo = useLinkDaAgenda(
     estado.volta.status === "erro",
     estado.returnTo,
+    usuarioId,
   );
 
   useEffect(() => {
@@ -68,9 +91,15 @@ function IntegracaoGoogleAgenda() {
 
     navigate(localizacao.pathname, { replace: true });
 
-    if (recusou || code === null || pedido === null || pedido.state !== state) {
+    const erro = erroDoPedido(
+      recusou,
+      code !== null && pedido !== null && pedido.state === state,
+      pedido !== null && pedido.ownerId === usuarioId,
+    );
+
+    if (erro !== null || code === null || pedido === null) {
       setEstado({
-        volta: { status: "erro", mensagem: recusou ? RECUSADO : PEDIDO_INVALIDO },
+        volta: { status: "erro", mensagem: erro ?? PEDIDO_INVALIDO },
         returnTo,
       });
       return;
@@ -79,7 +108,12 @@ function IntegracaoGoogleAgenda() {
     limparPedido();
     setEstado({ volta: { status: "conectando" }, returnTo });
 
-    conectarAgenda(code, enderecoDeVolta(), pedido.codeVerifier)
+    conectarAgenda(
+      code,
+      enderecoDeVolta(),
+      pedido.codeVerifier,
+      pedido.ownerId,
+    )
       .then(() => {
         setEstado({ volta: { status: "conectada" }, returnTo });
       })
@@ -95,7 +129,7 @@ function IntegracaoGoogleAgenda() {
           returnTo,
         });
       });
-  }, [busca, localizacao.pathname, navigate]);
+  }, [busca, localizacao.pathname, navigate, usuarioId]);
 
   function voltarParaConversa() {
     abrir();
@@ -154,9 +188,16 @@ function IntegracaoGoogleAgenda() {
               {volta.mensagem}
             </p>
 
+            {linkDeNovo.link.status === "erro" ? (
+              <p className={styles.texto} role="alert">
+                Não foi possível preparar uma nova conexão. Volte para a
+                conversa e tente por lá.
+              </p>
+            ) : null}
+
             <div className={styles.acoes}>
-              {linkDeNovo !== null ? (
-                <Button href={linkDeNovo}>Tentar de novo</Button>
+              {linkDeNovo.link.status === "pronto" ? (
+                <Button href={linkDeNovo.link.url}>Tentar de novo</Button>
               ) : null}
 
               <Button variant="secondary" onClick={voltarParaConversa}>

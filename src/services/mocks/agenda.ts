@@ -4,7 +4,7 @@ const TEMPO_PARA_RESPONDER = 800;
 
 export const CODIGO_DO_MOCK = "codigo-do-mock";
 
-let conectada = false;
+const contasConectadas = new Set<string>();
 
 function esperar(): Promise<void> {
   return new Promise((resolver) => {
@@ -12,20 +12,22 @@ function esperar(): Promise<void> {
   });
 }
 
-export async function conexaoDoMock(): Promise<ConexaoDaAgenda> {
+export async function conexaoDoMock(
+  usuarioId: string,
+): Promise<ConexaoDaAgenda> {
   await esperar();
 
-  return { connected: conectada };
+  return { connected: contasConectadas.has(usuarioId) };
 }
 
-export async function conectarNoMock(): Promise<void> {
+export async function conectarNoMock(usuarioId: string): Promise<void> {
   await esperar();
 
-  conectada = true;
+  contasConectadas.add(usuarioId);
 }
 
-export async function desconectarNoMock(): Promise<void> {
+export async function desconectarNoMock(usuarioId: string): Promise<void> {
   await esperar();
 
-  conectada = false;
+  contasConectadas.delete(usuarioId);
 }

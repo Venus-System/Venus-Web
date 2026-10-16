@@ -33,6 +33,7 @@ export function enderecoDeVolta(): string {
 
 export async function criarPedidoDeConexao(
   returnTo: string,
+  ownerId: string,
 ): Promise<PedidoDeConexao> {
   const codeVerifier = aleatorio(BYTES_DO_VERIFICADOR);
   const resumo = await crypto.subtle.digest(
@@ -45,6 +46,7 @@ export async function criarPedidoDeConexao(
     codeVerifier,
     codeChallenge: base64Url(new Uint8Array(resumo)),
     returnTo,
+    ownerId,
   };
 }
 
@@ -59,15 +61,18 @@ function ehPedido(valor: unknown): valor is PedidoDeConexao {
     "codeChallenge" in valor &&
     typeof valor.codeChallenge === "string" &&
     "returnTo" in valor &&
-    typeof valor.returnTo === "string"
+    typeof valor.returnTo === "string" &&
+    "ownerId" in valor &&
+    typeof valor.ownerId === "string"
   );
 }
 
-export function guardarPedido(pedido: PedidoDeConexao): void {
+export function guardarPedido(pedido: PedidoDeConexao): boolean {
   try {
     sessionStorage.setItem(CHAVE_DO_PEDIDO, JSON.stringify(pedido));
+    return true;
   } catch {
-    return;
+    return false;
   }
 }
 

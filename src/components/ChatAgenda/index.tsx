@@ -3,15 +3,17 @@ import Button from "../Button";
 import type {
   EstadoDaConexao,
   EstadoDaDesconexao,
+  EstadoDoLink,
 } from "../../types/agenda";
 import styles from "./styles.module.css";
 
 interface ChatAgendaProps {
   connection: EstadoDaConexao;
   disconnection: EstadoDaDesconexao;
-  connectLink: string | null;
+  connectLink: EstadoDoLink;
   inviteClosed: boolean;
   onRetry: () => void;
+  onRetryLink: () => void;
   onCloseInvite: () => void;
 }
 
@@ -21,8 +23,12 @@ function ChatAgenda({
   connectLink,
   inviteClosed,
   onRetry,
+  onRetryLink,
   onCloseInvite,
 }: ChatAgendaProps) {
+  const mostraConvite =
+    connection.status === "pronta" && !connection.conectada && !inviteClosed;
+
   return (
     <>
       {connection.status === "carregando" && !inviteClosed ? (
@@ -53,9 +59,23 @@ function ChatAgenda({
         </p>
       ) : null}
 
-      {connection.status === "pronta" &&
-      !connection.conectada &&
-      !inviteClosed ? (
+      {disconnection.status === "concluida" ? (
+        <p className={styles.info} role="status">
+          Agenda desconectada.
+        </p>
+      ) : null}
+
+      {mostraConvite && connectLink.status === "erro" ? (
+        <div className={styles.aviso}>
+          <p role="alert">Não foi possível preparar a conexão com o Google.</p>
+
+          <Button variant="text" onClick={onRetryLink}>
+            Tentar de novo
+          </Button>
+        </div>
+      ) : null}
+
+      {mostraConvite ? (
         <div className={styles.convite}>
           <CalendarDays className={styles.icone} aria-hidden="true" />
 
@@ -63,8 +83,8 @@ function ChatAgenda({
             Conecte a sua Google Agenda para eu montar a sua rotina.
           </p>
 
-          {connectLink !== null ? (
-            <Button href={connectLink} className={styles.conectar}>
+          {connectLink.status === "pronto" ? (
+            <Button href={connectLink.url} className={styles.conectar}>
               Conectar
             </Button>
           ) : null}

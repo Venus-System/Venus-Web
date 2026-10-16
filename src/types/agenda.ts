@@ -10,11 +10,18 @@ export type EstadoDaConexao =
 export type EstadoDaDesconexao =
   | { status: "ociosa" }
   | { status: "desconectando" }
+  | { status: "concluida" }
   | { status: "erro"; mensagem: string };
+
+export type EstadoDoLink =
+  | { status: "preparando" }
+  | { status: "pronto"; url: string }
+  | { status: "erro" };
 
 export interface PedidoDeConexao {
   state: string;
   codeVerifier: string;
   codeChallenge: string;
   returnTo: string;
+  ownerId: string;
 }
