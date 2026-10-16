@@ -24,6 +24,7 @@ import {
   recusarNaApi,
   sincronizarNaApi,
 } from "./api/admin";
+import { esquecerNotasDoCatalogo } from "./api/produtos";
 import { lerListaDeScans, lerScan, paraResumo } from "./api/scan";
 import {
   ErroCandidatoNaoEncontrado,
@@ -210,7 +211,11 @@ export async function aprovarPendente(
       return aprovarNoMock(id, aprovacao);
     }
 
-    return await aprovarNaApi(id, aprovacao);
+    const resultado = await aprovarNaApi(id, aprovacao);
+
+    esquecerNotasDoCatalogo();
+
+    return resultado;
   } catch (erro) {
     return repassarOuTraduzir(erro, "Não foi possível aprovar este produto.");
   }
@@ -227,7 +232,11 @@ export async function sincronizarPendente(
       return sincronizarNoMock(id);
     }
 
-    return await sincronizarNaApi(id);
+    const resultado = await sincronizarNaApi(id);
+
+    esquecerNotasDoCatalogo();
+
+    return resultado;
   } catch (erro) {
     return repassarOuTraduzir(
       erro,
@@ -245,7 +254,11 @@ export async function calcularNotaBase(versaoId: number): Promise<number> {
       return notaBaseDoMock();
     }
 
-    return await calcularNotaBaseNaApi(versaoId);
+    const nota = await calcularNotaBaseNaApi(versaoId);
+
+    esquecerNotasDoCatalogo();
+
+    return nota;
   } catch {
     throw new Error("A nota base não foi calculada.");
   }

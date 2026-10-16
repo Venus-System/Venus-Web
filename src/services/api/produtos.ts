@@ -344,6 +344,10 @@ function buscarNotasPorProduto(): Promise<Map<number, NotasApi>> {
   return pedidoDeNotas;
 }
 
+export function esquecerNotasDoCatalogo(): void {
+  pedidoDeNotas = null;
+}
+
 function montarProdutos(
   itens: unknown[],
   { marcasPorId, categoriasPorId }: MarcasECategorias,
