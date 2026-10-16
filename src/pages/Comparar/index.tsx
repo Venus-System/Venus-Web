@@ -147,6 +147,22 @@ function vencedorPessoal(
   return maiorNota(a.finalScore, b.finalScore);
 }
 
+function textoDaComparacaoIncompleta(
+  estado: EstadoDaAnalisePessoal,
+  algumaEvitar: boolean,
+  calculando: boolean,
+): string | null {
+  if (estado.status === "pronta" && evitarParaAPessoa(estado.analise)) {
+    return "Não é a escolha recomendada para o seu perfil.";
+  }
+
+  if (algumaEvitar) {
+    return "Sem a nota para o seu perfil deste produto, não dá para dizer se ele combina mais com você.";
+  }
+
+  return calculando ? "Calculando a nota para o seu perfil." : null;
+}
+
 function textoDaEscolhaPessoal(
   analise: AnalisePersonalizada,
   lado: number,
@@ -348,13 +364,19 @@ function Comparar() {
     pessoalA.estado.status === "calculando" ||
     pessoalB.estado.status === "calculando";
 
+  const algumaEvitar = pessoais.some(
+    ({ estado: pessoal }) =>
+      pessoal.status === "pronta" && evitarParaAPessoa(pessoal.analise),
+  );
+
   let vencedor: Lado | null = null;
 
-  if (produtos !== null) {
-    vencedor =
-      analises === null
-        ? vencedorGeral(produtos[0].product, produtos[1].product)
-        : vencedorPessoal(analises[0], analises[1]);
+  if (produtos !== null && analises !== null) {
+    vencedor = vencedorPessoal(analises[0], analises[1]);
+  }
+
+  if (produtos !== null && analises === null && !algumaEvitar && !calculando) {
+    vencedor = vencedorGeral(produtos[0].product, produtos[1].product);
   }
 
   return (
@@ -654,7 +676,11 @@ function Comparar() {
                             </span>
                           ) : null}
                           {analises === null
-                            ? textoDaEscolha(produtos, lado, vencedor)
+                            ? (textoDaComparacaoIncompleta(
+                                pessoais[lado].estado,
+                                algumaEvitar,
+                                calculando,
+                              ) ?? textoDaEscolha(produtos, lado, vencedor))
                             : textoDaEscolhaPessoal(
                                 analises[lado],
                                 lado,
