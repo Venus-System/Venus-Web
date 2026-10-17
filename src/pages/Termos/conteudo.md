@@ -33,8 +33,8 @@ ferramenta entrega:
 - **Lemos a fórmula declarada, não testamos o produto.** A análise parte da
   lista de ingredientes do rótulo, não de ensaio de laboratório.
 - **A concentração exata não é pública.** Os rótulos não informam quanto de
-  cada ingrediente existe. Trabalhamos com estimativa a partir da ordem da
-  lista, que indica proporção decrescente.
+  cada ingrediente existe. A ordem da lista indica proporção decrescente,
+  mas a nota ainda não usa essa ordem.
 - **A base de ingredientes é incompleta.** Quando não conhecemos um
   ingrediente, ele aparece como não verificado — nunca como aprovado.
 - **Nem tudo sai do rótulo.** Embalagem, certificações e características
