@@ -35,19 +35,27 @@ export async function criarPedidoDeConexao(
   returnTo: string,
   ownerId: string,
 ): Promise<PedidoDeConexao> {
-  const codeVerifier = aleatorio(BYTES_DO_VERIFICADOR);
-  const resumo = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(codeVerifier),
-  );
+  try {
+    const codeVerifier = aleatorio(BYTES_DO_VERIFICADOR);
+    const resumo = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(codeVerifier),
+    );
 
-  return {
-    state: aleatorio(BYTES_DO_STATE),
-    codeVerifier,
-    codeChallenge: base64Url(new Uint8Array(resumo)),
-    returnTo,
-    ownerId,
-  };
+    return {
+      state: aleatorio(BYTES_DO_STATE),
+      codeVerifier,
+      codeChallenge: base64Url(new Uint8Array(resumo)),
+      returnTo,
+      ownerId,
+    };
+  } catch (erro) {
+    if (erro instanceof Error) {
+      throw erro;
+    }
+
+    throw new Error("Não foi possível preparar a conexão com o Google.");
+  }
 }
 
 function ehPedido(valor: unknown): valor is PedidoDeConexao {

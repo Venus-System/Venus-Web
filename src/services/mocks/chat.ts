@@ -1,5 +1,9 @@
 import type { RespostaDoChat } from "../../types/chat";
-import { ErroMuitasMensagens, ErroServicoIndisponivel } from "../erros";
+import {
+  ErroMuitasMensagens,
+  ErroServicoIndisponivel,
+  repassarErro,
+} from "../erros";
 
 const TEMPO_PARA_RESPONDER = 1200;
 const CONVERSA_DE_EXEMPLO = "conversa-de-exemplo";
@@ -56,33 +60,37 @@ export async function respostaDoMock(
   mensagem: string,
   conversationId: string | null,
 ): Promise<RespostaDoChat> {
-  await esperar();
+  try {
+    await esperar();
 
-  const texto = mensagem.toLowerCase();
+    const texto = mensagem.toLowerCase();
 
-  if (texto.includes("simular erro")) {
-    throw new ErroServicoIndisponivel();
+    if (texto.includes("simular erro")) {
+      throw new ErroServicoIndisponivel();
+    }
+
+    if (texto.includes("simular limite")) {
+      throw new ErroMuitasMensagens(ESPERA_DE_EXEMPLO);
+    }
+
+    const base = {
+      conversationId: conversationId ?? CONVERSA_DE_EXEMPLO,
+    };
+
+    if (OFENSAS.some((ofensa) => texto.includes(ofensa))) {
+      return { ...base, reply: RESPOSTA_MAGOADA, expression: "magoada" };
+    }
+
+    const encontrada = RESPOSTAS.find(({ palavras }) =>
+      palavras.some((palavra) => texto.includes(palavra)),
+    );
+
+    return {
+      ...base,
+      reply: encontrada === undefined ? RESPOSTA_PADRAO : encontrada.reply,
+      expression: "neutra",
+    };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível gerar a resposta de exemplo.");
   }
-
-  if (texto.includes("simular limite")) {
-    throw new ErroMuitasMensagens(ESPERA_DE_EXEMPLO);
-  }
-
-  const base = {
-    conversationId: conversationId ?? CONVERSA_DE_EXEMPLO,
-  };
-
-  if (OFENSAS.some((ofensa) => texto.includes(ofensa))) {
-    return { ...base, reply: RESPOSTA_MAGOADA, expression: "magoada" };
-  }
-
-  const encontrada = RESPOSTAS.find(({ palavras }) =>
-    palavras.some((palavra) => texto.includes(palavra)),
-  );
-
-  return {
-    ...base,
-    reply: encontrada === undefined ? RESPOSTA_PADRAO : encontrada.reply,
-    expression: "neutra",
-  };
 }

@@ -1,4 +1,5 @@
 import type { ConexaoDaAgenda } from "../../types/agenda";
+import { repassarErro } from "../erros";
 
 const TEMPO_PARA_RESPONDER = 800;
 
@@ -15,19 +16,31 @@ function esperar(): Promise<void> {
 export async function conexaoDoMock(
   usuarioId: string,
 ): Promise<ConexaoDaAgenda> {
-  await esperar();
+  try {
+    await esperar();
 
-  return { connected: contasConectadas.has(usuarioId) };
+    return { connected: contasConectadas.has(usuarioId) };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível ver a agenda de exemplo.");
+  }
 }
 
 export async function conectarNoMock(usuarioId: string): Promise<void> {
-  await esperar();
+  try {
+    await esperar();
 
-  contasConectadas.add(usuarioId);
+    contasConectadas.add(usuarioId);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível conectar a agenda de exemplo.");
+  }
 }
 
 export async function desconectarNoMock(usuarioId: string): Promise<void> {
-  await esperar();
+  try {
+    await esperar();
 
-  contasConectadas.delete(usuarioId);
+    contasConectadas.delete(usuarioId);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível desconectar a agenda de exemplo.");
+  }
 }

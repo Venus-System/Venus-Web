@@ -1,3 +1,11 @@
+export function repassarErro(erro: unknown, mensagem: string): never {
+  if (erro instanceof Error) {
+    throw erro;
+  }
+
+  throw new Error(mensagem);
+}
+
 export class ErroServicoIndisponivel extends Error {
   constructor() {
     super(
