@@ -88,13 +88,13 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
     setEstado((atual) => ({ ...atual, tentativa: atual.tentativa + 1 }));
   }
 
-  function fecharConvite() {
+  function trocarConvite(fechado: boolean) {
     if (usuarioId === null) {
       return;
     }
 
-    guardarConviteFechado(usuarioId);
-    setEstado((atual) => ({ ...atual, conviteFechado: true }));
+    guardarConviteFechado(usuarioId, fechado);
+    setEstado((atual) => ({ ...atual, conviteFechado: fechado }));
   }
 
   function desconectar() {
@@ -135,7 +135,8 @@ export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {
     desconexao: estado.desconexao,
     conviteFechado: estado.conviteFechado,
     recarregar,
-    fecharConvite,
+    fecharConvite: () => trocarConvite(true),
+    reabrirConvite: () => trocarConvite(false),
     desconectar,
   };
 }

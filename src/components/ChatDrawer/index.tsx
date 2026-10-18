@@ -3,13 +3,14 @@ import type { MouseEvent } from "react";
 import { useLocation } from "react-router-dom";
 import {
   CalendarCheck,
+  CalendarPlus,
   MessageCirclePlus,
   Volume2,
   VolumeX,
   X,
 } from "lucide-react";
 import Button from "../Button";
-import ChatAgenda from "../ChatAgenda";
+import ChatAgenda, { ID_DO_CONVITE_DA_AGENDA } from "../ChatAgenda";
 import ChatComposer from "../ChatComposer";
 import ChatMessage from "../ChatMessage";
 import ChatSuggestions from "../ChatSuggestions";
@@ -100,6 +101,13 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
   const agenda = useAgendaGoogle(usuario === null ? null : usuario.id, aberto);
   const agendaConectada =
     agenda.conexao.status === "pronta" && agenda.conexao.conectada;
+  const podeReabrirConvite =
+    usuario !== null &&
+    agenda.disponivel &&
+    agenda.conviteFechado &&
+    agenda.conexao.status === "pronta" &&
+    !agenda.conexao.conectada;
+  const focarConviteRef = useRef(false);
   const linkDaAgenda = useLinkDaAgenda(
     agenda.disponivel &&
       !agenda.conviteFechado &&
@@ -152,6 +160,13 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
   }, [agenda.desconexao.status]);
 
   useEffect(() => {
+    if (focarConviteRef.current && !agenda.conviteFechado) {
+      focarConviteRef.current = false;
+      focar(ID_DO_CONVITE_DA_AGENDA);
+    }
+  }, [agenda.conviteFechado]);
+
+  useEffect(() => {
     if (aberto && fimRef.current !== null) {
       fimRef.current.scrollIntoView({ block: "end" });
     }
@@ -186,6 +201,11 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
   function fecharConviteDaAgenda() {
     agenda.fecharConvite();
     focarCampo();
+  }
+
+  function reabrirConviteDaAgenda() {
+    focarConviteRef.current = true;
+    agenda.reabrirConvite();
   }
 
   function alternarSom() {
@@ -248,6 +268,18 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 className={styles.acaoIcone}
                 aria-hidden="true"
               />
+            </button>
+          ) : null}
+
+          {podeReabrirConvite ? (
+            <button
+              type="button"
+              className={styles.acao}
+              onClick={reabrirConviteDaAgenda}
+              aria-label="Conectar a Google Agenda"
+              title="Conectar a Google Agenda"
+            >
+              <CalendarPlus className={styles.acaoIcone} aria-hidden="true" />
             </button>
           ) : null}
 

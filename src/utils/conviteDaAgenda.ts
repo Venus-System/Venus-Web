@@ -10,6 +10,9 @@ export function conviteFechado(usuarioId: string): boolean {
   return ler(`${PREFIXO}${usuarioId}`, ehBooleano) ?? false;
 }
 
-export function guardarConviteFechado(usuarioId: string): void {
-  guardar(`${PREFIXO}${usuarioId}`, true);
+export function guardarConviteFechado(
+  usuarioId: string,
+  fechado: boolean,
+): void {
+  guardar(`${PREFIXO}${usuarioId}`, fechado);
 }

@@ -7,6 +7,8 @@ import type {
 } from "../../types/agenda";
 import styles from "./styles.module.css";
 
+export const ID_DO_CONVITE_DA_AGENDA = "chat-convite-da-agenda";
+
 interface ChatAgendaProps {
   connection: EstadoDaConexao;
   disconnection: EstadoDaDesconexao;
@@ -76,7 +78,11 @@ function ChatAgenda({
       ) : null}
 
       {mostraConvite ? (
-        <div className={styles.convite}>
+        <div
+          id={ID_DO_CONVITE_DA_AGENDA}
+          className={styles.convite}
+          tabIndex={-1}
+        >
           <CalendarDays className={styles.icone} aria-hidden="true" />
 
           <p className={styles.texto}>
