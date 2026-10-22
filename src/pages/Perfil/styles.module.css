@@ -41,7 +41,9 @@
   width: var(--tamanho-avatar);
   height: var(--tamanho-avatar);
   flex-shrink: 0;
+  padding: 0;
   overflow: hidden;
+  background: none;
   border: var(--borda-largura) solid transparent;
   border-radius: var(--raio-pilula);
   color: var(--texto-invertido);
