@@ -183,7 +183,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
     focarCampo();
   }
 
-  function perguntar(texto: string) {
+  function perguntarPelaSugestao(texto: string) {
     enviar(perguntaSobreProduto(texto, productName));
   }
 
@@ -351,7 +351,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                       : SUGESTOES_DO_PRODUTO
                   }
                   blocked={bloqueado}
-                  onPick={perguntar}
+                  onPick={perguntarPelaSugestao}
                 />
               ) : null}
 
@@ -429,7 +429,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
               <ChatComposer
                 id={ID_DO_CAMPO}
                 blocked={bloqueado}
-                onSend={perguntar}
+                onSend={enviar}
               />
             ) : null}
 
