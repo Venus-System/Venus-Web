@@ -90,6 +90,16 @@ export class ErroLinkDeSenhaVencido extends Error {
   }
 }
 
+export class ErroMuitasMensagens extends Error {
+  segundos: number | null;
+
+  constructor(segundos: number | null) {
+    super("Muitas mensagens em pouco tempo. Espere um pouco e tente de novo.");
+    this.name = "ErroMuitasMensagens";
+    this.segundos = segundos;
+  }
+}
+
 export class ErroProdutoNaoEncontrado extends Error {
   constructor(slug: string) {
     super(`Nenhum produto corresponde a "${slug}".`);

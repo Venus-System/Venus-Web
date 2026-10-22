@@ -21,7 +21,11 @@ function RotaPrivada({ children }: RotaPrivadaProps) {
 
   if (!usuario) {
     return (
-      <Navigate to="/login" state={{ de: localizacao.pathname }} replace />
+      <Navigate
+        to="/login"
+        state={{ de: localizacao.pathname + localizacao.search }}
+        replace
+      />
     );
   }
 

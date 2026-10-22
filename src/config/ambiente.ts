@@ -69,3 +69,17 @@ function lerUrlOpcional(bruto: unknown): string {
 export const URL_CLASSIFICACAO = lerUrlOpcional(
   import.meta.env.VITE_CLASSIFICACAO_URL,
 );
+
+export const URL_IA = lerUrlOpcional(import.meta.env.VITE_IA_API_URL);
+
+function lerTextoOpcional(bruto: unknown): string {
+  if (USAR_MOCK) {
+    return "";
+  }
+
+  return typeof bruto === "string" ? bruto.trim() : "";
+}
+
+export const GOOGLE_CLIENT_ID = lerTextoOpcional(
+  import.meta.env.VITE_GOOGLE_CLIENT_ID,
+);
