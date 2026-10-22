@@ -16,6 +16,7 @@ import QuestionCard from "../../components/QuestionCard";
 import ResumoErros from "../../components/ResumoErros";
 import {
   TOTAL_PERGUNTAS,
+  ID_DO_CONSENTIMENTO,
   TOTAL_PERGUNTAS_DE_SAUDE,
   useQuestionario,
 } from "../../hooks/useQuestionario";
@@ -138,7 +139,7 @@ function Perguntas() {
         </QuestionCard>
 
         <ConsentimentoSaude
-          id="consentimento-saude"
+          id={ID_DO_CONSENTIMENTO}
           checked={respostas.healthDataConsent}
           onChange={(autorizado) => responder("healthDataConsent", autorizado)}
         />

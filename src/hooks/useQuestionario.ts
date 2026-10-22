@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
+import { idDoBlocoDeConsentimento } from "../components/ConsentimentoSaude";
 import type { ErroResumo } from "../components/ResumoErros";
 import { useAutenticacao } from "./useAutenticacao";
 import { buscarCatalogoAlergias } from "../services/alergias";
@@ -19,6 +20,7 @@ import {
 
 export const TOTAL_PERGUNTAS = 11;
 export const TOTAL_PERGUNTAS_DE_SAUDE = 7;
+export const ID_DO_CONSENTIMENTO = "consentimento-saude";
 
 export type EstadoCatalogo =
   | { status: "loading" }
@@ -228,9 +230,12 @@ export function useQuestionario(): Questionario {
   function voltarParaConsentimento() {
     setFormulario((atual) => ({ ...atual, aguardandoDecisao: false }));
 
-    const caixa = document.getElementById("consentimento-saude");
+    const bloco = document.getElementById(
+      idDoBlocoDeConsentimento(ID_DO_CONSENTIMENTO),
+    );
+    const caixa = document.getElementById(ID_DO_CONSENTIMENTO);
 
-    caixa?.scrollIntoView();
+    bloco?.scrollIntoView({ block: "start" });
     caixa?.focus({ preventScroll: true });
   }
 
