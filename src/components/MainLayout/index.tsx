@@ -1,14 +1,20 @@
 import type { ReactNode } from "react";
+import ChatButton from "../ChatButton";
+import ChatDrawer from "../ChatDrawer";
 import Footer from "../Footer";
 import Sidebar from "../Sidebar";
 import styles from "./styles.module.css";
+import { useChat } from "../../hooks/useChat";
 import { useRolagemDaRota } from "../../hooks/useRolagemDaRota";
 
 interface MainLayoutProps {
   children: ReactNode;
+  chatProductName?: string;
 }
 
-function MainLayout({ children }: MainLayoutProps) {
+function MainLayout({ children, chatProductName }: MainLayoutProps) {
+  const { abrir } = useChat();
+
   useRolagemDaRota();
 
   return (
@@ -26,6 +32,9 @@ function MainLayout({ children }: MainLayoutProps) {
           {children}
         </main>
       </div>
+
+      <ChatButton onOpen={abrir} />
+      <ChatDrawer productName={chatProductName} />
 
       <Footer />
     </div>

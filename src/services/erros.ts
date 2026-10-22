@@ -1,3 +1,11 @@
+export function repassarErro(erro: unknown, mensagem: string): never {
+  if (erro instanceof Error) {
+    throw erro;
+  }
+
+  throw new Error(mensagem);
+}
+
 export class ErroServicoIndisponivel extends Error {
   constructor() {
     super(
@@ -72,6 +80,16 @@ export class ErroAvaliacaoDuplicada extends Error {
   constructor() {
     super("Você já avaliou este produto.");
     this.name = "ErroAvaliacaoDuplicada";
+  }
+}
+
+export class ErroMuitasMensagens extends Error {
+  segundos: number | null;
+
+  constructor(segundos: number | null) {
+    super("Muitas mensagens em pouco tempo. Espere um pouco e tente de novo.");
+    this.name = "ErroMuitasMensagens";
+    this.segundos = segundos;
   }
 }
 

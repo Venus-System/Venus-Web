@@ -1,0 +1,33 @@
+.linhaDaPessoa,
+.linhaDaVeninha {
+  display: flex;
+}
+
+.linhaDaPessoa {
+  justify-content: flex-end;
+}
+
+.linhaDaVeninha {
+  justify-content: flex-start;
+}
+
+.balaoDaPessoa,
+.balaoDaVeninha {
+  max-width: 85%;
+  padding: var(--espaco-3);
+  border-radius: var(--raio-grande);
+  font-size: var(--tamanho-pequeno);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.balaoDaPessoa {
+  background-image: var(--gradiente-conversa);
+  color: var(--texto-invertido);
+}
+
+.balaoDaVeninha {
+  background-color: var(--lavanda-clara);
+  color: var(--texto);
+}

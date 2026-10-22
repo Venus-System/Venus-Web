@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ProvedorAutenticacao } from "./contexts/autenticacao";
 import { ProvedorAutenticacaoAdmin } from "./contexts/autenticacaoAdmin";
+import { ProvedorChat } from "./contexts/chat";
 import "./styles/tokens.css";
 import "./styles/global.css";
 
@@ -18,7 +19,9 @@ ReactDOM.createRoot(raiz).render(
     <BrowserRouter>
       <ProvedorAutenticacao>
         <ProvedorAutenticacaoAdmin>
-          <App />
+          <ProvedorChat>
+            <App />
+          </ProvedorChat>
         </ProvedorAutenticacaoAdmin>
       </ProvedorAutenticacao>
     </BrowserRouter>
