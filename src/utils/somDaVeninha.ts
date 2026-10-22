@@ -1,13 +1,13 @@
 import { guardar, ler } from "./armazenamento";
 
 const CHAVE_DO_SOM = "venus.somDaVeninha";
-const TOM_BASE = 380;
-const PASSO_DO_TOM = 40;
+const TOM_BASE = 520;
+const PASSO_DO_TOM = 50;
 const TONS_DIFERENTES = 6;
-const QUEDA_DO_TOM = 0.5;
+const QUEDA_DO_TOM = 0.6;
 const DURACAO = 0.07;
 const SUBIDA = 0.01;
-const VOLUME = 0.15;
+const VOLUME = 0.45;
 const SILENCIO = 0.0001;
 
 let contexto: AudioContext | null = null;
@@ -56,7 +56,7 @@ export function tocarPop(letra: string): void {
     const oscilador = audio.createOscillator();
     const volume = audio.createGain();
 
-    oscilador.type = "sine";
+    oscilador.type = "triangle";
     oscilador.frequency.setValueAtTime(tom, agora);
     oscilador.frequency.exponentialRampToValueAtTime(
       tom * QUEDA_DO_TOM,
