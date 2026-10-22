@@ -9,9 +9,8 @@ import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
 import type { CondicaoPele, StatusConta } from "../types/usuario";
 import {
-  CAMPOS_BASICOS,
+  TOTAL_DE_CAMPOS,
   contarPreenchidas,
-  totalDeRespostas,
 } from "../utils/progressoPerfil";
 import { limparProgresso } from "../utils/progressoQuestionario";
 import {
@@ -365,8 +364,7 @@ export function usePerfil(): Perfil {
     envio,
     itensDoResumo,
     respostasPreenchidas: respostas === null ? 0 : contarPreenchidas(respostas),
-    totalDeRespostas:
-      respostas === null ? CAMPOS_BASICOS : totalDeRespostas(respostas),
+    totalDeRespostas: TOTAL_DE_CAMPOS,
     foto: { url: fotoUrl, ...envioDaFoto },
     enviarFoto: subirFoto,
     removerFoto,

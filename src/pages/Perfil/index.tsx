@@ -33,6 +33,8 @@ import {
 } from "../Perguntas/opcoes";
 import styles from "./styles.module.css";
 
+const ID_DA_AUTORIZACAO = "consentimento-saude";
+
 const SECOES = [
   { id: "titulo-conta", rotulo: "Conta" },
   { id: "titulo-pele", rotulo: "Pele & cabelo" },
@@ -150,7 +152,11 @@ function Perfil() {
     }
   }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
-  const faltando = respostas === null ? [] : camposSemResposta(respostas);
+  const respostasFaltando = totalDeRespostas - respostasPreenchidas;
+  const faltando =
+    respostas === null
+      ? []
+      : camposSemResposta(respostas, ID_DA_AUTORIZACAO);
 
   return (
     <MainLayout>
@@ -226,9 +232,9 @@ function Perfil() {
                       className={styles.faltandoTitulo}
                       tabIndex={-1}
                     >
-                      {faltando.length === 1
+                      {respostasFaltando === 1
                         ? "Falta 1 resposta"
-                        : `Faltam ${faltando.length} respostas`}
+                        : `Faltam ${respostasFaltando} respostas`}
                     </p>
 
                     <ul className={styles.faltandoLista}>
@@ -544,7 +550,7 @@ function Perfil() {
                   <p className={styles.cardTexto}>Seus dados, suas regras.</p>
 
                   <Interruptor
-                    id="consentimento-saude"
+                    id={ID_DA_AUTORIZACAO}
                     label="Usar minhas respostas de saúde na análise"
                     checked={respostas.healthDataConsent}
                     onChange={(autorizado) => {

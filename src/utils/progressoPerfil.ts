@@ -67,34 +67,39 @@ const CAMPOS: CampoContado[] = [
   },
 ];
 
-export const CAMPOS_BASICOS = CAMPOS.filter((campo) => !campo.deSaude).length;
+export const TOTAL_DE_CAMPOS = CAMPOS.length;
 
-function camposContados(respostas: RespostasQuestionario): CampoContado[] {
-  return CAMPOS.filter(
-    (campo) => !campo.deSaude || respostas.healthDataConsent,
+const ROTULO_DA_AUTORIZACAO = "Perguntas de pele e saúde (precisa autorizar)";
+
+function respondido(
+  campo: CampoContado,
+  respostas: RespostasQuestionario,
+): boolean {
+  return (
+    (!campo.deSaude || respostas.healthDataConsent) &&
+    campo.preenchido(respostas)
   );
 }
 
 export function contarPreenchidas(respostas: RespostasQuestionario): number {
-  return camposContados(respostas).filter((campo) =>
-    campo.preenchido(respostas),
-  ).length;
-}
-
-export function totalDeRespostas(respostas: RespostasQuestionario): number {
-  return camposContados(respostas).length;
+  return CAMPOS.filter((campo) => respondido(campo, respostas)).length;
 }
 
 export function camposSemResposta(
   respostas: RespostasQuestionario,
+  idDaAutorizacao: string,
 ): CampoDoPerfil[] {
-  return camposContados(respostas)
-    .filter((campo) => !campo.preenchido(respostas))
-    .map(({ id, rotulo }) => ({ id, rotulo }));
+  const vazios = CAMPOS.filter(
+    (campo) =>
+      (!campo.deSaude || respostas.healthDataConsent) &&
+      !campo.preenchido(respostas),
+  ).map(({ id, rotulo }) => ({ id, rotulo }));
+
+  return respostas.healthDataConsent
+    ? vazios
+    : [...vazios, { id: idDaAutorizacao, rotulo: ROTULO_DA_AUTORIZACAO }];
 }
 
 export function porcentagemDoPerfil(respostas: RespostasQuestionario): number {
-  return Math.round(
-    (contarPreenchidas(respostas) / totalDeRespostas(respostas)) * 100,
-  );
+  return Math.round((contarPreenchidas(respostas) / TOTAL_DE_CAMPOS) * 100);
 }
