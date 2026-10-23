@@ -58,6 +58,7 @@ const INGREDIENTES_NA_PAGINA = 3;
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
   const estado = useAnaliseDoProduto(slug);
+  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
   const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
@@ -65,7 +66,10 @@ function Produto() {
     estado: avaliacoes,
     recarregar: recarregarAvaliacoes,
     atualizar: atualizarAvaliacoes,
-  } = useAvaliacoes(slug ?? null);
+  } = useAvaliacoes(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
     todas: false,
@@ -82,7 +86,6 @@ function Produto() {
     limpar: limparDenuncia,
   } = useDenunciarAvaliacao();
   const logado = usuario !== null;
-  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
   const {
     estado: analisePessoal,
     tentarDeNovo: tentarAnaliseDeNovo,

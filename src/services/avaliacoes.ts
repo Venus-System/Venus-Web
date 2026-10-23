@@ -63,6 +63,7 @@ function repassarOuTrocar(erro: unknown, mensagem: string): never {
 
 async function avaliacoesLidas(
   slug: string,
+  versaoId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesLidas> {
   try {
@@ -74,7 +75,7 @@ async function avaliacoesLidas(
 
     const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
 
-    return await buscarAvaliacoesNaApi(slug, usuarioId, sinal);
+    return await buscarAvaliacoesNaApi(versaoId, usuarioId, sinal);
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar as avaliações.");
   }
@@ -82,10 +83,15 @@ async function avaliacoesLidas(
 
 export async function buscarAvaliacoes(
   slug: string,
+  versaoId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesDoProduto> {
   try {
-    const { avaliacoes, truncated } = await avaliacoesLidas(slug, sinal);
+    const { avaliacoes, truncated } = await avaliacoesLidas(
+      slug,
+      versaoId,
+      sinal,
+    );
     const recentes = [...avaliacoes].sort(
       (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
     );

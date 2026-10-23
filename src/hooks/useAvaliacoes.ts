@@ -13,8 +13,8 @@ export type EstadoAvaliacoes =
     }
   | { status: "erro"; mensagem: string };
 
-export function useAvaliacoes(slug: string | null) {
-  const { usuario } = useAutenticacao();
+export function useAvaliacoes(slug: string | null, versaoId: number | null) {
+  const { usuario, carregando: carregandoConta } = useAutenticacao();
   const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoAvaliacoes>({
     status: "carregando",
@@ -22,16 +22,16 @@ export function useAvaliacoes(slug: string | null) {
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    if (slug === null) {
+    setEstado({ status: "carregando" });
+
+    if (slug === null || carregandoConta) {
       return;
     }
 
     const controle = new AbortController();
     let ativo = true;
 
-    setEstado({ status: "carregando" });
-
-    buscarAvaliacoes(slug, controle.signal)
+    buscarAvaliacoes(slug, versaoId, controle.signal)
       .then((avaliacoes) => {
         if (ativo) {
           setEstado({ status: "pronto", slug, avaliacoes, rodada: 0 });
@@ -53,7 +53,7 @@ export function useAvaliacoes(slug: string | null) {
       ativo = false;
       controle.abort();
     };
-  }, [slug, tentativa, dono]);
+  }, [slug, versaoId, tentativa, dono, carregandoConta]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);
@@ -64,7 +64,7 @@ export function useAvaliacoes(slug: string | null) {
       return;
     }
 
-    buscarAvaliacoes(slug)
+    buscarAvaliacoes(slug, versaoId)
       .then((avaliacoes) => {
         setEstado((atual) =>
           atual.status !== "pronto" || atual.slug !== slug
@@ -73,7 +73,7 @@ export function useAvaliacoes(slug: string | null) {
         );
       })
       .catch(() => undefined);
-  }, [slug]);
+  }, [slug, versaoId]);
 
   return { estado, recarregar, atualizar };
 }

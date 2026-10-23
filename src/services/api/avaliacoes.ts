@@ -72,13 +72,11 @@ async function versaoDoProduto(
 }
 
 export async function buscarAvaliacoesNaApi(
-  slug: string,
+  versaoId: number | null,
   usuarioId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesLidas> {
   try {
-    const versaoId = await versaoDoProduto(slug, sinal);
-
     if (versaoId === null) {
       return { avaliacoes: [], truncated: false };
     }
