@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button";
@@ -36,6 +37,8 @@ interface Coluna {
   id: string;
   rotulo: string;
 }
+
+const POR_NOME = new Intl.Collator("pt-BR");
 
 const COLUNAS: Coluna[] = [
   { parametro: "a", id: "produto-a", rotulo: "Primeiro produto" },
@@ -319,6 +322,15 @@ function Comparar() {
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDeProduto();
   const { estado, recarregar } = useComparacao(slugs[0], slugs[1]);
+  const [categoriaEscolhida, setCategoriaEscolhida] = useState<string | null>(
+    null,
+  );
+  const catalogo = opcoes.status === "pronto" ? opcoes.produtos : [];
+  const produtoA = catalogo.find((produto) => produto.slug === slugs[0]);
+  const categoria = categoriaEscolhida ?? produtoA?.category ?? "";
+  const categorias = [
+    ...new Set(catalogo.map((produto) => produto.category)),
+  ].sort((a, b) => POR_NOME.compare(a, b));
 
   function escolher(parametro: Parametro, slug: string) {
     setParametros(
@@ -331,16 +343,22 @@ function Comparar() {
     );
   }
 
-  function opcoesPara(outroSlug: string | null): SelectOption<string>[] {
-    if (opcoes.status !== "pronto") {
-      return [];
-    }
-
-    return opcoes.produtos.map((produto) => ({
-      value: produto.slug,
-      label: `${produto.name} · ${produto.brand.name}`,
-      disabled: produto.slug === outroSlug,
-    }));
+  function opcoesPara(
+    meuSlug: string | null,
+    outroSlug: string | null,
+  ): SelectOption<string>[] {
+    return catalogo
+      .filter(
+        (produto) =>
+          categoria === "" ||
+          produto.category === categoria ||
+          produto.slug === meuSlug,
+      )
+      .map((produto) => ({
+        value: produto.slug,
+        label: `${produto.name} · ${produto.brand.name}`,
+        disabled: produto.slug === outroSlug,
+      }));
   }
 
   const produtos = estado.status === "pronta" ? estado.produtos : null;
@@ -425,6 +443,32 @@ function Comparar() {
         </p>
 
         {opcoes.status === "pronto" ? (
+          <div className={styles.filtro}>
+            <ListaSuspensa
+              id="categoria-comparar"
+              label="Categoria"
+              placeholder="Todas as categorias"
+              options={categorias.map((nome) => ({ value: nome, label: nome }))}
+              value={categoria}
+              onChange={setCategoriaEscolhida}
+              onClear={() => setCategoriaEscolhida("")}
+            />
+
+            {produtos !== null &&
+            produtos[0].product.category !== produtos[1].product.category ? (
+              <p className={styles.avisoCategoria} role="status">
+                <AlertTriangle
+                  className={styles.iconePequeno}
+                  aria-hidden="true"
+                />
+                Estes produtos são de categorias diferentes, então a comparação
+                ajuda menos.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {opcoes.status === "pronto" ? (
           <div
             className={styles.moldura}
             role="region"
@@ -458,7 +502,7 @@ function Comparar() {
                           id={coluna.id}
                           label={coluna.rotulo}
                           placeholder="Escolha um produto"
-                          options={opcoesPara(slugs[lado === 0 ? 1 : 0])}
+                          options={opcoesPara(slug, slugs[lado === 0 ? 1 : 0])}
                           value={slug ?? ""}
                           onChange={(valor) => escolher(coluna.parametro, valor)}
                           hideLabel
