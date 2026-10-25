@@ -48,6 +48,26 @@
   font-weight: var(--peso-forte);
 }
 
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: flex-end;
+  max-width: 66rem;
+}
+
+.avisoCategoria {
+  display: inline-flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--warning-fundo);
+  border-radius: var(--raio-medio);
+  color: var(--warning);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
 .moldura {
   max-width: 66rem;
   overflow-x: auto;

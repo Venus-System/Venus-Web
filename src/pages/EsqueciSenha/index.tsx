@@ -6,7 +6,7 @@ import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { validarEmail } from "../../utils/validacao";
 import styles from "./styles.module.css";
-import { solicitarRedefinicao } from "../../services/autenticacao";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 
 type EstadoEnvio =
   | { situacao: "parado" }
@@ -20,6 +20,7 @@ interface EstadoFormulario {
 }
 
 function EsqueciSenha() {
+  const { solicitarRedefinicao } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
     erroEmail: null,

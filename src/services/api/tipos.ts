@@ -3,6 +3,7 @@ export interface ProdutoBaseApi {
   name: string;
   description: string | null;
   slug: string;
+  imageUrl?: string | null;
 }
 
 export interface MarcaApi {
@@ -52,6 +53,7 @@ export interface ProductFullResponse {
   brand: MarcaApi;
   category: CategoriaApi;
   currentVersion: VersaoApi | null;
+  photos: unknown;
   ingredients: unknown;
   claims: ClaimApi[];
   score: NotasApi | null;

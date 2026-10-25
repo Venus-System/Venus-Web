@@ -1,6 +1,7 @@
 import { URL_API } from "../../config/ambiente";
 import type { NivelRecomendacao } from "../../types/analise";
 import type { AnaliseRecente, ProdutoDoPainel } from "../../types/painel";
+import { repassarErro } from "../erros";
 import { comoObjeto, numero, texto } from "./leitura";
 import { buscarProdutoPorIdDaApi } from "./produtos";
 import { pedir, verificarResposta } from "./requisicao";
@@ -24,6 +25,7 @@ export interface Paginas {
 export interface AnaliseLida {
   id: number;
   productVersionId: number;
+  overallScore: number | null;
   healthScore: number | null;
   environmentalScore: number | null;
   ethicalScore: number | null;
@@ -33,6 +35,7 @@ export interface AnaliseLida {
 
 export interface NotaPessoalLida {
   productVersionId: number;
+  analysisResultId: number | null;
   finalScore: number;
   recommendationLevel: NivelRecomendacao | null;
   createdAt: string;
@@ -43,25 +46,29 @@ export async function lerPaginas(
   sinal?: AbortSignal,
   urlBase: string = URL_API,
 ): Promise<Paginas> {
-  const itens: unknown[] = [];
+  try {
+    const itens: unknown[] = [];
 
-  for (let pagina = 0; pagina < LIMITE_DE_PAGINAS; pagina += 1) {
-    const caminho = `${caminhoBase}?page=${pagina}&size=${TAMANHO_DA_PAGINA}&sort=createdAt,desc`;
-    const resposta = await pedir(`${urlBase}${caminho}`, { signal: sinal });
+    for (let pagina = 0; pagina < LIMITE_DE_PAGINAS; pagina += 1) {
+      const caminho = `${caminhoBase}?page=${pagina}&size=${TAMANHO_DA_PAGINA}&sort=createdAt,desc`;
+      const resposta = await pedir(`${urlBase}${caminho}`, { signal: sinal });
 
-    verificarResposta(resposta, caminho);
+      verificarResposta(resposta, caminho);
 
-    const dados = comoObjeto(await resposta.json());
-    const daPagina = Array.isArray(dados.content) ? dados.content : [];
+      const dados = comoObjeto(await resposta.json());
+      const daPagina = Array.isArray(dados.content) ? dados.content : [];
 
-    itens.push(...daPagina);
+      itens.push(...daPagina);
 
-    if (dados.last === true || daPagina.length < TAMANHO_DA_PAGINA) {
-      return { itens, truncated: false };
+      if (dados.last === true || daPagina.length < TAMANHO_DA_PAGINA) {
+        return { itens, truncated: false };
+      }
     }
-  }
 
-  return { itens, truncated: true };
+    return { itens, truncated: true };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível ler as páginas da API.");
+  }
 }
 
 export function lerNivel(valor: unknown): NivelRecomendacao | null {
@@ -83,6 +90,7 @@ export function lerAnalise(valor: unknown): AnaliseLida | null {
   return {
     id,
     productVersionId,
+    overallScore: numero(dados.overallScore),
     healthScore: numero(dados.healthScore),
     environmentalScore: numero(dados.environmentalScore),
     ethicalScore: numero(dados.ethicalScore),
@@ -103,6 +111,7 @@ export function lerNotaPessoal(valor: unknown): NotaPessoalLida | null {
 
   return {
     productVersionId,
+    analysisResultId: numero(dados.analysisResultId),
     finalScore,
     recommendationLevel: lerNivel(dados.recommendationLevel),
     createdAt,
@@ -125,37 +134,64 @@ export function maisRecentePorVersao<T extends { productVersionId: number }>(
   });
 }
 
+export function maisRecentePorProduto<T extends { productVersionId: number }>(
+  itens: T[],
+  produtoDaVersao: Map<number, number>,
+): T[] {
+  const vistos = new Set<string>();
+
+  return itens.filter((item) => {
+    const produtoId = produtoDaVersao.get(item.productVersionId);
+    const chave =
+      produtoId === undefined
+        ? `versao-${item.productVersionId}`
+        : `produto-${produtoId}`;
+
+    if (vistos.has(chave)) {
+      return false;
+    }
+
+    vistos.add(chave);
+
+    return true;
+  });
+}
+
 async function buscarProdutoDaVersao(
   versaoId: number,
   sinal?: AbortSignal,
 ): Promise<ProdutoDoPainel | null> {
-  const caminho = `/api/product-versions/${versaoId}`;
-  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+  try {
+    const caminho = `/api/product-versions/${versaoId}`;
+    const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
-  if (resposta.status === 404) {
-    return null;
+    if (resposta.status === 404) {
+      return null;
+    }
+
+    verificarResposta(resposta, caminho);
+
+    const produtoId = numero(comoObjeto(await resposta.json()).productId);
+
+    if (produtoId === null) {
+      return null;
+    }
+
+    const produto = await buscarProdutoPorIdDaApi(produtoId, sinal);
+
+    if (produto === null) {
+      return null;
+    }
+
+    return {
+      slug: produto.slug,
+      name: produto.name,
+      brandName: produto.brand.name,
+      imageUrl: produto.imageUrl,
+    };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar o produto da análise.");
   }
-
-  verificarResposta(resposta, caminho);
-
-  const produtoId = numero(comoObjeto(await resposta.json()).productId);
-
-  if (produtoId === null) {
-    return null;
-  }
-
-  const produto = await buscarProdutoPorIdDaApi(produtoId, sinal);
-
-  if (produto === null) {
-    return null;
-  }
-
-  return {
-    slug: produto.slug,
-    name: produto.name,
-    brandName: produto.brand.name,
-    imageUrl: produto.imageUrl,
-  };
 }
 
 export async function montarAnalises(
@@ -169,17 +205,23 @@ export async function montarAnalises(
 
   const produtos = new Map<number, ProdutoDoPainel | null>();
 
-  await Promise.all(
-    versoes.map(async (versaoId) => {
-      produtos.set(versaoId, await buscarProdutoDaVersao(versaoId, sinal));
-    }),
-  );
+  try {
+    await Promise.all(
+      versoes.map(async (versaoId) => {
+        try {
+          produtos.set(versaoId, await buscarProdutoDaVersao(versaoId, sinal));
+        } catch (erro) {
+          repassarErro(erro, "Não foi possível carregar um produto analisado.");
+        }
+      }),
+    );
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível montar as análises.");
+  }
 
   return analises.flatMap((analise): AnaliseRecente[] => {
     const produto = produtos.get(analise.productVersionId) ?? null;
-    const nota = notas.find(
-      (item) => item.productVersionId === analise.productVersionId,
-    );
+    const nota = notas.find((item) => item.analysisResultId === analise.id);
 
     if (produto === null) {
       return [];
@@ -189,7 +231,7 @@ export async function montarAnalises(
       {
         id: String(analise.id),
         product: produto,
-        finalScore: nota === undefined ? null : nota.finalScore,
+        finalScore: analise.overallScore,
         recommendationLevel:
           nota === undefined ? null : nota.recommendationLevel,
         analyzedAt: analise.createdAt,

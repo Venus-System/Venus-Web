@@ -1,12 +1,24 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+function idDoHash(hash: string): string | null {
+  if (hash === "") {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(hash.slice(1));
+  } catch {
+    return null;
+  }
+}
+
 export function useRolagemDaRota() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    const alvo =
-      hash === "" ? null : document.getElementById(decodeURIComponent(hash.slice(1)));
+    const id = idDoHash(hash);
+    const alvo = id === null ? null : document.getElementById(id);
 
     if (alvo === null) {
       window.scrollTo(0, 0);

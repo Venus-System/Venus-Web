@@ -8,8 +8,6 @@
 
 .link {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
   gap: var(--espaco-2);
   padding: var(--espaco-3);
   color: var(--texto);

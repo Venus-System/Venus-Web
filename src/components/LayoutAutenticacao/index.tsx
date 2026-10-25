@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
 import logo from "../../assets/Logo.svg";
 import styles from "./styles.module.css";
 
@@ -12,12 +11,12 @@ function LayoutAutenticacao({ children, painel }: LayoutAutenticacaoProps) {
   return (
     <div className={styles.pagina}>
       <section className={styles.painelFormulario}>
-        <Link className={styles.marcaTopo} to="/">
+        <div className={styles.marcaTopo}>
           <img className={styles.logo} src={logo} alt="" />
           <span className={styles.nomeMarca}>Venus</span>
-        </Link>
+        </div>
 
-        <div className={styles.conteudo}>{children}</div>
+        <main className={styles.conteudo}>{children}</main>
       </section>
 
       <aside

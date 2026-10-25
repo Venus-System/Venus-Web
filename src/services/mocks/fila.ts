@@ -9,7 +9,11 @@ import type {
   ResultadoAprovacao,
 } from "../../types/admin";
 import { localizarNoTexto } from "../../utils/localizarNoTexto";
-import { ErroCandidatoNaoEncontrado, ErroRevisaoInvalida } from "../erros";
+import {
+  ErroCandidatoNaoEncontrado,
+  ErroRevisaoEmConflito,
+  ErroRevisaoInvalida,
+} from "../erros";
 
 const UM_DIA = 24 * 60 * 60 * 1000;
 
@@ -89,6 +93,7 @@ function montar(produto: ProdutoDoMock): Candidato {
 
   return {
     id: produto.id,
+    status: "pendente",
     name: produto.nome,
     brand: produto.marca,
     category: produto.categoria,
@@ -308,7 +313,7 @@ function opcoes(nomes: string[]): OpcaoDoCatalogo[] {
   return nomes.map((name, indice) => ({ id: indice + 1, name }));
 }
 
-const CATALOGO: CatalogoDaRevisao = {
+const CATALOGO: Omit<CatalogoDaRevisao, "ingredients"> = {
   brands: opcoes([
     "Kapil",
     "Lumina Skin",
@@ -323,7 +328,11 @@ const CATALOGO: CatalogoDaRevisao = {
 };
 
 export function catalogoDaRevisaoDoMock(): CatalogoDaRevisao {
-  return CATALOGO;
+  const ingredients = [...idsDoCatalogo]
+    .map(([name, id]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+  return { ...CATALOGO, ingredients };
 }
 
 function problemaDaDecisao(
@@ -337,11 +346,19 @@ function problemaDaDecisao(
   }
 
   if (decisao === undefined && ingrediente.status === "new") {
-    return `${onde}: decida entre criar ou descartar.`;
+    return `${onde}: decida entre ligar, criar ou descartar.`;
   }
 
   if (decisao === undefined) {
     return null;
+  }
+
+  if (
+    decisao.action === "link" &&
+    ingrediente.status === "new" &&
+    ![...idsDoCatalogo.values()].includes(decisao.ingredientId)
+  ) {
+    return `${onde}: o ingrediente escolhido não existe no catálogo.`;
   }
 
   if (
@@ -374,6 +391,10 @@ export function aprovarNoMock(
 ): ResultadoAprovacao {
   const candidato = buscarPendenteDoMock(id);
 
+  if (candidato.status === "semPublicar") {
+    throw new ErroRevisaoEmConflito();
+  }
+
   const problemas = candidato.ingredients.flatMap((ingrediente) => {
     const decisao = aprovacao.ingredients.find(
       (item) => item.position === ingrediente.position,
@@ -395,14 +416,17 @@ export function aprovarNoMock(
     throw new ErroRevisaoInvalida(problemas);
   }
 
-  tirarDaFilaNoMock(id);
-
   if (falhamNaPrimeiraSincronizacao.has(id)) {
     falhamNaPrimeiraSincronizacao.delete(id);
     aguardandoSincronizacao.add(id);
+    pendentes = pendentes.map((item) =>
+      item.id === id ? { ...item, status: "semPublicar" } : item,
+    );
 
     return { status: "sincronizacaoFalhou" };
   }
+
+  tirarDaFilaNoMock(id);
 
   return publicarNoMock();
 }
@@ -413,6 +437,7 @@ export function sincronizarNoMock(id: string): ResultadoAprovacao {
   }
 
   aguardandoSincronizacao.delete(id);
+  tirarDaFilaNoMock(id);
 
   return publicarNoMock();
 }

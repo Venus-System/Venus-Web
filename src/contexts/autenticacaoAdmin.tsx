@@ -1,11 +1,13 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useAutenticacao } from "../hooks/useAutenticacao";
 import type { Administrador } from "../types/admin";
 import {
   entrarComoAdmin,
   sairComoAdmin,
   sessaoAdminAtual,
 } from "../services/admin";
+import { repassarErro } from "../services/erros";
 
 interface ValorAutenticacaoAdmin {
   administrador: Administrador | null;
@@ -23,18 +25,48 @@ export const ContextoAutenticacaoAdmin =
 export function ProvedorAutenticacaoAdmin({
   children,
 }: ProvedorAutenticacaoAdminProps) {
+  const { usuario, sair: sairDaConta } = useAutenticacao();
+  const usuarioId = usuario === null ? null : usuario.id;
+  const ultimoUsuarioRef = useRef(usuarioId);
   const [administrador, setAdministrador] = useState<Administrador | null>(
     () => sessaoAdminAtual()?.admin ?? null,
   );
 
-  const entrar = useCallback(async (email: string, senha: string) => {
-    const sessao = await entrarComoAdmin(email, senha);
-    setAdministrador(sessao.admin);
-  }, []);
+  useEffect(() => {
+    const anterior = ultimoUsuarioRef.current;
+
+    ultimoUsuarioRef.current = usuarioId;
+
+    if (usuarioId === null || usuarioId === anterior) {
+      return;
+    }
+
+    sairComoAdmin()
+      .then(() => setAdministrador(null))
+      .catch(() => undefined);
+  }, [usuarioId]);
+
+  const entrar = useCallback(
+    async (email: string, senha: string) => {
+      try {
+        const sessao = await entrarComoAdmin(email, senha);
+
+        await sairDaConta();
+        setAdministrador(sessao.admin);
+      } catch (erro) {
+        repassarErro(erro, "Não foi possível entrar como administrador.");
+      }
+    },
+    [sairDaConta],
+  );
 
   const sair = useCallback(async () => {
-    await sairComoAdmin();
-    setAdministrador(null);
+    try {
+      await sairComoAdmin();
+      setAdministrador(null);
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível sair da área administrativa.");
+    }
   }, []);
 
   return (

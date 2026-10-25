@@ -89,11 +89,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--espaco-3);
+  margin-inline: calc(-1 * var(--espaco-4));
+  padding: var(--espaco-5) var(--espaco-4);
+  background-color: var(--faixa-lilas);
 }
 
 .resultsTitle {
-  font-size: var(--tamanho-medio);
-  font-weight: var(--peso-forte);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-grande);
+  font-weight: var(--peso-titulo);
 }
 
 .status {

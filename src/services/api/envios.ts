@@ -1,5 +1,6 @@
 import { URL_API_SCANS } from "../../config/ambiente";
 import type { Envio, SituacaoEnvio } from "../../types/envio";
+import { repassarErro } from "../erros";
 import { lerPaginas } from "./analises";
 import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { buscarProdutoPorIdDaApi } from "./produtos";
@@ -66,34 +67,42 @@ export async function buscarEnviosNaApi(
   usuarioId: number,
   sinal?: AbortSignal,
 ): Promise<Envio[]> {
-  const paginas = await lerPaginas(
-    `/api/scan-sessions/user/${usuarioId}`,
-    sinal,
-    URL_API_SCANS,
-  );
-  const lidos = lerTodos(paginas.itens, lerEnvio);
+  try {
+    const paginas = await lerPaginas(
+      `/api/scan-sessions/user/${usuarioId}`,
+      sinal,
+      URL_API_SCANS,
+    );
+    const lidos = lerTodos(paginas.itens, lerEnvio);
 
-  const produtos = [
-    ...new Set(
-      lidos.flatMap((lido) =>
-        lido.productId === null ? [] : [lido.productId],
+    const produtos = [
+      ...new Set(
+        lidos.flatMap((lido) =>
+          lido.productId === null ? [] : [lido.productId],
+        ),
       ),
-    ),
-  ];
+    ];
 
-  const slugs = new Map<number, string | null>();
+    const slugs = new Map<number, string | null>();
 
-  await Promise.all(
-    produtos.map(async (produtoId) => {
-      slugs.set(produtoId, await slugDoProduto(produtoId, sinal));
-    }),
-  );
+    await Promise.all(
+      produtos.map(async (produtoId) => {
+        try {
+          slugs.set(produtoId, await slugDoProduto(produtoId, sinal));
+        } catch {
+          slugs.set(produtoId, null);
+        }
+      }),
+    );
 
-  return lidos
-    .map((lido) => ({
-      ...lido.envio,
-      productSlug:
-        lido.productId === null ? null : (slugs.get(lido.productId) ?? null),
-    }))
-    .sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt));
+    return lidos
+      .map((lido) => ({
+        ...lido.envio,
+        productSlug:
+          lido.productId === null ? null : (slugs.get(lido.productId) ?? null),
+      }))
+      .sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt));
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar os seus envios.");
+  }
 }

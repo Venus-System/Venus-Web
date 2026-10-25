@@ -2,7 +2,11 @@ import { USAR_MOCK } from "../config/ambiente";
 import type { PaginaDoHistorico } from "../types/historico";
 import { buscarHistoricoNaApi } from "./api/historico";
 import { garantirIdDoUsuarioNaApi } from "./autenticacao";
-import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
+import {
+  ErroDeOrientacao,
+  ErroServicoIndisponivel,
+  repassarErro,
+} from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { historicoDoMock } from "./mocks/historico";
 
@@ -12,21 +16,30 @@ async function paginaDoHistorico(
   pagina: number,
   sinal?: AbortSignal,
 ): Promise<PaginaDoHistorico> {
-  if (USAR_MOCK) {
-    await simularLatencia();
+  try {
+    if (USAR_MOCK) {
+      await simularLatencia();
 
-    return historicoDoMock(pagina, TAMANHO_DA_PAGINA);
-  }
+      return historicoDoMock(pagina, TAMANHO_DA_PAGINA);
+    }
 
-  const usuarioId = await garantirIdDoUsuarioNaApi();
+    const usuarioId = await garantirIdDoUsuarioNaApi();
 
-  if (usuarioId === null) {
-    throw new ErroDeOrientacao(
-      "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+    if (usuarioId === null) {
+      throw new ErroDeOrientacao(
+        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+      );
+    }
+
+    return await buscarHistoricoNaApi(
+      usuarioId,
+      pagina,
+      TAMANHO_DA_PAGINA,
+      sinal,
     );
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar o seu histórico.");
   }
-
-  return buscarHistoricoNaApi(usuarioId, pagina, TAMANHO_DA_PAGINA, sinal);
 }
 
 export async function buscarHistorico(

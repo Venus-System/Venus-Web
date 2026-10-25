@@ -1,8 +1,13 @@
 import { useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { confirmarRedefinicao } from "../../services/autenticacao";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Button from "../../components/Button";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import {
@@ -27,7 +32,8 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 type EstadoEnvio =
   | { situacao: "parado" }
   | { situacao: "enviando" }
-  | { situacao: "erro"; mensagem: string };
+  | { situacao: "erro"; mensagem: string }
+  | { situacao: "linkVencido" };
 
 interface ErrosSenha {
   senha: string | null;
@@ -43,6 +49,7 @@ interface EstadoFormulario {
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
 function NovaSenha() {
+  const { confirmarRedefinicao } = useAutenticacao();
   const navegar = useNavigate();
   const [parametros] = useSearchParams();
   const codigo = parametros.get("oobCode");
@@ -102,7 +109,17 @@ function NovaSenha() {
     }));
 
     try {
-      await confirmarRedefinicao(codigoConfirmado, senha);
+      const resultado = await confirmarRedefinicao(codigoConfirmado, senha);
+
+      if (resultado === "linkVencido") {
+        setFormulario((atual) => ({
+          ...atual,
+          envio: { situacao: "linkVencido" },
+          erros: SEM_ERROS,
+        }));
+        return;
+      }
+
       navegar("/esqueci-senha/pronto", { replace: true });
     } catch {
       setFormulario((atual) => ({
@@ -174,6 +191,13 @@ function NovaSenha() {
           <p className={styles.erro} role="alert">
             {formulario.envio.mensagem}
           </p>
+        ) : null}
+
+        {formulario.envio.situacao === "linkVencido" ? (
+          <div className={styles.erro} role="alert">
+            <p>Este link venceu ou já foi usado.</p>
+            <Link to="/esqueci-senha">Pedir um novo link</Link>
+          </div>
         ) : null}
 
         <Button type="submit" disabled={desabilitado}>

@@ -6,7 +6,7 @@ import { useAutenticacaoAdmin } from "./useAutenticacaoAdmin";
 
 export type EstadoFila =
   | { status: "carregando" }
-  | { status: "pronto"; itens: CandidatoResumo[] }
+  | { status: "pronto"; itens: CandidatoResumo[]; truncated: boolean }
   | { status: "erro"; mensagem: string };
 
 export function useFilaAprovacao(origem: OrigemCandidato | null) {
@@ -21,9 +21,9 @@ export function useFilaAprovacao(origem: OrigemCandidato | null) {
     setEstado({ status: "carregando" });
 
     listarPendentes({ origin: origem }, controle.signal)
-      .then((itens) => {
+      .then(({ itens, truncated }) => {
         if (ativo) {
-          setEstado({ status: "pronto", itens });
+          setEstado({ status: "pronto", itens, truncated });
         }
       })
       .catch((erro: unknown) => {

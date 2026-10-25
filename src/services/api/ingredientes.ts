@@ -1,8 +1,5 @@
-import type {
-  Ingrediente,
-  IngredienteAvaliado,
-  RiskLevel,
-} from "../../types/ingrediente";
+import type { Ingrediente, IngredienteAvaliado } from "../../types/ingrediente";
+import { nivelDoIngrediente } from "../../utils/nivelDoIngrediente";
 import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 
 function lerIngrediente(valor: unknown): Ingrediente | null {
@@ -26,26 +23,6 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
     environmentalRiskLevel: numero(dados.environmentalRiskLevel) ?? 0,
     scientificConfidence: numero(dados.scientificConfidence) ?? 0,
   };
-}
-
-const RISCO_PARA_ATENCAO = 4;
-const RISCO_PARA_EVITAR = 7;
-
-function nivelDoIngrediente(ingrediente: Ingrediente): RiskLevel {
-  if (ingrediente.scientificConfidence === 0) {
-    return "no-data";
-  }
-
-  const riscoParaAPele = Math.max(
-    ingrediente.irritationRiskLevel,
-    ingrediente.comedogenicityScore,
-  );
-
-  if (riscoParaAPele >= RISCO_PARA_EVITAR) {
-    return "avoid";
-  }
-
-  return riscoParaAPele >= RISCO_PARA_ATENCAO ? "warning" : "safe";
 }
 
 function lerItemDoProduto(valor: unknown): IngredienteAvaliado | null {

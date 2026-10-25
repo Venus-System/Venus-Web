@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
 import { buscarCatalogoAlergias } from "../services/alergias";
-import { enviarFotoDePerfil } from "../services/avatar";
+import { apagarFotoDePerfil, enviarFotoDePerfil } from "../services/avatar";
 import { useAutenticacao } from "./useAutenticacao";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
 import type { CondicaoPele, StatusConta } from "../types/usuario";
 import {
-  CAMPOS_BASICOS,
+  TOTAL_DE_CAMPOS,
   contarPreenchidas,
-  totalDeRespostas,
 } from "../utils/progressoPerfil";
+import { limparProgresso } from "../utils/progressoQuestionario";
 import {
   validarFaixaEtaria,
   validarGravidadeDasAlergias,
@@ -78,6 +78,7 @@ export interface Perfil {
   totalDeRespostas: number;
   foto: EstadoDaFoto;
   enviarFoto: (arquivo: File) => Promise<boolean>;
+  removerFoto: () => Promise<boolean>;
   resumoRef: RefObject<HTMLDivElement>;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
@@ -113,11 +114,14 @@ export function usePerfil(): Perfil {
     mensagem: "",
   });
   const [envioDaFoto, setEnvioDaFoto] = useState<EnvioDaFoto>(FOTO_PARADA);
-  const { fotoUrl, definirFoto } = useAutenticacao();
+  const { usuario, fotoUrl, definirFoto } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const resumoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ativo = true;
+
+    setCarregamento({ status: "carregando" });
 
     buscarPerfil()
       .then((carregado) => {
@@ -154,7 +158,7 @@ export function usePerfil(): Perfil {
     return () => {
       ativo = false;
     };
-  }, [definirFoto]);
+  }, [definirFoto, dono]);
 
   useEffect(() => {
     const controle = new AbortController();
@@ -198,6 +202,9 @@ export function usePerfil(): Perfil {
       atual.status === "pronto"
         ? { ...atual, respostas: mudanca(atual.respostas) }
         : atual,
+    );
+    setEnvio((atual) =>
+      atual.situacao === "sucesso" ? { ...atual, situacao: "ocioso" } : atual,
     );
   }
 
@@ -252,6 +259,10 @@ export function usePerfil(): Perfil {
       allergies: [],
     };
 
+    if (usuario !== null) {
+      limparProgresso(usuario.id);
+    }
+
     atualizar(() => limpas);
     void enviarRespostas(limpas);
   }
@@ -273,6 +284,29 @@ export function usePerfil(): Perfil {
           erro instanceof Error
             ? erro.message
             : "Não foi possível salvar a sua foto de perfil.",
+      });
+
+      return false;
+    }
+  }
+
+  async function removerFoto(): Promise<boolean> {
+    setEnvioDaFoto({ situacao: "enviando", mensagem: "" });
+
+    try {
+      await apagarFotoDePerfil();
+
+      definirFoto(null);
+      setEnvioDaFoto(FOTO_PARADA);
+
+      return true;
+    } catch (erro) {
+      setEnvioDaFoto({
+        situacao: "erro",
+        mensagem:
+          erro instanceof Error
+            ? erro.message
+            : "Não foi possível tirar a sua foto de perfil.",
       });
 
       return false;
@@ -330,10 +364,10 @@ export function usePerfil(): Perfil {
     envio,
     itensDoResumo,
     respostasPreenchidas: respostas === null ? 0 : contarPreenchidas(respostas),
-    totalDeRespostas:
-      respostas === null ? CAMPOS_BASICOS : totalDeRespostas(respostas),
+    totalDeRespostas: TOTAL_DE_CAMPOS,
     foto: { url: fotoUrl, ...envioDaFoto },
     enviarFoto: subirFoto,
+    removerFoto,
     resumoRef,
     handleSubmit,
   };

@@ -33,6 +33,8 @@ import {
 } from "../Perguntas/opcoes";
 import styles from "./styles.module.css";
 
+const ID_DA_AUTORIZACAO = "consentimento-saude";
+
 const SECOES = [
   { id: "titulo-conta", rotulo: "Conta" },
   { id: "titulo-pele", rotulo: "Pele & cabelo" },
@@ -54,6 +56,11 @@ interface EstadoDaConta {
   mensagem: string;
 }
 
+type EstadoDaSaida =
+  | { situacao: "ocioso" }
+  | { situacao: "saindo" }
+  | { situacao: "erro"; mensagem: string };
+
 function Perfil() {
   const navegar = useNavigate();
   const { usuario, sair, atualizarNome } = useAutenticacao();
@@ -62,6 +69,7 @@ function Perfil() {
     situacao: "ocioso",
     mensagem: "",
   });
+  const [saida, setSaida] = useState<EstadoDaSaida>({ situacao: "ocioso" });
   const [revogando, setRevogando] = useState(false);
   const [trocandoFoto, setTrocandoFoto] = useState(false);
   const [avatar, setAvatar] = useState<Avatar>(() => lerAvatar());
@@ -77,6 +85,7 @@ function Perfil() {
     totalDeRespostas,
     foto,
     enviarFoto,
+    removerFoto,
     resumoRef,
     trocarCondicoes,
     revogarConsentimento,
@@ -129,11 +138,25 @@ function Perfil() {
     }
   }
 
-  function handleSair() {
-    void sair().then(() => navegar("/login"));
+  async function handleSair() {
+    setSaida({ situacao: "saindo" });
+
+    try {
+      await sair();
+      navegar("/login");
+    } catch {
+      setSaida({
+        situacao: "erro",
+        mensagem: "Não foi possível sair agora. Tente de novo.",
+      });
+    }
   }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
-  const faltando = respostas === null ? [] : camposSemResposta(respostas);
+  const respostasFaltando = totalDeRespostas - respostasPreenchidas;
+  const faltando =
+    respostas === null
+      ? []
+      : camposSemResposta(respostas, ID_DA_AUTORIZACAO);
 
   return (
     <MainLayout>
@@ -153,7 +176,11 @@ function Perfil() {
           <aside className={styles.aside}>
             <button
               type="button"
-              className={`${styles.avatar} ${styles[avatar]}`}
+              className={
+                foto.url === null
+                  ? `${styles.avatar} ${styles[avatar]}`
+                  : styles.avatar
+              }
               onClick={() => setTrocandoFoto(true)}
             >
               {foto.url === null ? (
@@ -205,9 +232,9 @@ function Perfil() {
                       className={styles.faltandoTitulo}
                       tabIndex={-1}
                     >
-                      {faltando.length === 1
+                      {respostasFaltando === 1
                         ? "Falta 1 resposta"
-                        : `Faltam ${faltando.length} respostas`}
+                        : `Faltam ${respostasFaltando} respostas`}
                     </p>
 
                     <ul className={styles.faltandoLista}>
@@ -349,6 +376,11 @@ function Perfil() {
                       onChange={(gender) => responder("gender", gender)}
                     />
                   </div>
+
+                  <p className={styles.cardTexto} aria-live="polite">
+                    {conta.situacao === "salvando" ? "Salvando o nome..." : ""}
+                    {conta.situacao === "salvo" ? "Nome salvo." : ""}
+                  </p>
 
                 </section>
 
@@ -518,7 +550,7 @@ function Perfil() {
                   <p className={styles.cardTexto}>Seus dados, suas regras.</p>
 
                   <Interruptor
-                    id="consentimento-saude"
+                    id={ID_DA_AUTORIZACAO}
                     label="Usar minhas respostas de saúde na análise"
                     checked={respostas.healthDataConsent}
                     onChange={(autorizado) => {
@@ -573,10 +605,25 @@ function Perfil() {
                 salvos e você volta quando quiser.
               </p>
 
-              <button type="button" className={styles.sair} onClick={handleSair}>
+              <button
+                type="button"
+                className={styles.sair}
+                onClick={() => void handleSair()}
+                disabled={saida.situacao === "saindo"}
+              >
                 <LogOut className={styles.sairIcone} aria-hidden="true" />
-                Sair da conta
+                {saida.situacao === "saindo" ? "Saindo…" : "Sair da conta"}
               </button>
+
+              <p className="texto-oculto" aria-live="polite">
+                {saida.situacao === "saindo" ? "Saindo da conta." : ""}
+              </p>
+
+              {saida.situacao === "erro" ? (
+                <p className={styles.estadoErro} role="alert">
+                  {saida.mensagem}
+                </p>
+              ) : null}
 
               <p className={styles.cardTexto}>
                 Para apagar a conta, escreva para venussystem2026@gmail.com.
@@ -633,9 +680,22 @@ function Perfil() {
             return;
           }
 
-          setAvatar(escolha.avatar);
-          guardarAvatar(escolha.avatar);
-          setTrocandoFoto(false);
+          const aplicarAvatar = () => {
+            setAvatar(escolha.avatar);
+            guardarAvatar(escolha.avatar);
+            setTrocandoFoto(false);
+          };
+
+          if (foto.url === null) {
+            aplicarAvatar();
+            return;
+          }
+
+          void removerFoto().then((removeu) => {
+            if (removeu) {
+              aplicarAvatar();
+            }
+          });
         }}
       />
     </MainLayout>

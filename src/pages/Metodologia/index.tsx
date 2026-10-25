@@ -87,7 +87,7 @@ const LIMITES = [
     id: "concentracao",
     titulo: "A concentração exata não é pública.",
     texto:
-      "Os rótulos não informam quanto de cada ingrediente existe, então trabalhamos com estimativa pela ordem da lista.",
+      "Os rótulos não informam quanto de cada ingrediente existe, e a nota ainda não estima isso pela ordem da lista.",
   },
   {
     id: "dermatologista",
@@ -233,13 +233,15 @@ function Metodologia() {
           <p className={styles.eyebrow}>Detalhe importante</p>
 
           <h2 id="titulo-quantidade" className={styles.sectionTitle}>
-            A quantidade também conta
+            A ordem da lista também informa
           </h2>
 
           <p className={styles.text}>
-            A ordem da lista indica concentração: o que aparece no começo está
-            em maior quantidade. Um ingrediente problemático no fim da lista
-            pesa menos do que o mesmo ingrediente logo no início.
+            Pela regra dos rótulos, o que aparece no começo está em maior
+            quantidade. A nota da Venus ainda não usa essa ordem: hoje cada
+            ingrediente avaliado pesa o mesmo. Use a ordem para ler o rótulo: um
+            ingrediente que preocupa no começo merece mais atenção do que no
+            fim.
           </p>
 
           <div className={styles.order}>
@@ -252,9 +254,8 @@ function Metodologia() {
             </ol>
 
             <p className={styles.cardText}>
-              Quanto mais no início, maior o peso na nota. Os primeiros
-              ingredientes definem o produto, os últimos aparecem em quantidade
-              pequena.
+              Os primeiros ingredientes definem o produto. Os últimos aparecem
+              em quantidade pequena.
             </p>
           </div>
         </section>

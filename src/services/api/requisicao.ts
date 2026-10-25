@@ -16,21 +16,25 @@ async function tokenDoUsuario(): Promise<string | null> {
 }
 
 async function comToken(init: RequestInit = {}): Promise<RequestInit> {
-  const cabecalhos = new Headers(init.headers);
+  try {
+    const cabecalhos = new Headers(init.headers);
 
-  if (cabecalhos.has("Authorization")) {
+    if (cabecalhos.has("Authorization")) {
+      return init;
+    }
+
+    const token = await tokenDoUsuario();
+
+    if (token === null) {
+      return init;
+    }
+
+    cabecalhos.set("Authorization", `Bearer ${token}`);
+
+    return { ...init, headers: cabecalhos };
+  } catch {
     return init;
   }
-
-  const token = await tokenDoUsuario();
-
-  if (token === null) {
-    return init;
-  }
-
-  cabecalhos.set("Authorization", `Bearer ${token}`);
-
-  return { ...init, headers: cabecalhos };
 }
 
 export async function pedir(

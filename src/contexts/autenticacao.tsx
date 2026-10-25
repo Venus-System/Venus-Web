@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { Usuario } from "../types/usuario";
+import type { ResultadoDaRedefinicao, Usuario } from "../types/usuario";
 import {
   entrar as entrarNoServico,
   entrarComGoogle as entrarComGoogleNoServico,
@@ -8,8 +8,11 @@ import {
   sair as sairDoServico,
   criarConta as criarContaNoServico,
   atualizarNome as atualizarNomeNoServico,
+  solicitarRedefinicao,
+  confirmarRedefinicao as confirmarRedefinicaoNoServico,
 } from "../services/autenticacao";
 import { buscarFotoDePerfil } from "../services/avatar";
+import { ErroLinkDeSenhaVencido, repassarErro } from "../services/erros";
 
 interface ValorAutenticacao {
   usuario: Usuario | null;
@@ -25,6 +28,11 @@ interface ValorAutenticacao {
   atualizarNome: (nome: string) => Promise<void>;
   entrarComGoogle: (continuarConectado: boolean) => Promise<void>;
   criarConta: (nome: string, email: string, senha: string) => Promise<void>;
+  solicitarRedefinicao: (email: string) => Promise<void>;
+  confirmarRedefinicao: (
+    codigo: string,
+    senha: string,
+  ) => Promise<ResultadoDaRedefinicao>;
 }
 
 interface EstadoAutenticacao {
@@ -58,8 +66,9 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
   }, []);
 
   useEffect(() => {
+    setFotoUrl(null);
+
     if (idUsuario === null) {
-      setFotoUrl(null);
       return;
     }
 
@@ -85,28 +94,65 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
     senha: string,
     continuarConectado: boolean,
   ) {
-    const usuario = await entrarNoServico(email, senha, continuarConectado);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await entrarNoServico(email, senha, continuarConectado);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível entrar.");
+    }
   }
 
   async function entrarComGoogle(continuarConectado: boolean) {
-    const usuario = await entrarComGoogleNoServico(continuarConectado);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await entrarComGoogleNoServico(continuarConectado);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível entrar com o Google.");
+    }
   }
 
   async function sair() {
-    await sairDoServico();
-    setEstado({ usuario: null, carregando: false });
+    try {
+      await sairDoServico();
+      setEstado({ usuario: null, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível sair da conta.");
+    }
   }
 
   async function atualizarNome(nome: string) {
-    const usuario = await atualizarNomeNoServico(nome);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await atualizarNomeNoServico(nome);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível salvar o nome.");
+    }
   }
 
   async function criarConta(nome: string, email: string, senha: string) {
-    const usuario = await criarContaNoServico(nome, email, senha);
-    setEstado({ usuario, carregando: false });
+    try {
+      const usuario = await criarContaNoServico(nome, email, senha);
+      setEstado({ usuario, carregando: false });
+    } catch (erro) {
+      repassarErro(erro, "Não foi possível criar a conta.");
+    }
+  }
+
+  async function confirmarRedefinicao(
+    codigo: string,
+    senha: string,
+  ): Promise<ResultadoDaRedefinicao> {
+    try {
+      await confirmarRedefinicaoNoServico(codigo, senha);
+
+      return "trocada";
+    } catch (erro) {
+      if (erro instanceof ErroLinkDeSenhaVencido) {
+        return "linkVencido";
+      }
+
+      repassarErro(erro, "Não foi possível trocar a senha.");
+    }
   }
 
   return (
@@ -120,6 +166,8 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
         criarConta,
         sair,
         atualizarNome,
+        solicitarRedefinicao,
+        confirmarRedefinicao,
       }}
     >
       {children}

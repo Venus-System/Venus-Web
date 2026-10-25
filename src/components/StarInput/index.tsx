@@ -40,7 +40,11 @@ function StarInput({
 
       <div className={styles.estrelas}>
         {OPCOES.map((estrelas) => (
-          <label key={estrelas} className={styles.opcao}>
+          <label
+            key={estrelas}
+            className={styles.opcao}
+            htmlFor={idDaEstrela(id, estrelas)}
+          >
             <input
               id={idDaEstrela(id, estrelas)}
               type="radio"

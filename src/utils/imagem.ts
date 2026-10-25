@@ -33,9 +33,11 @@ export async function recortarEmQuadrado(
   arquivo: File,
   ladoMaximo: number,
 ): Promise<File> {
-  const imagem = await createImageBitmap(arquivo);
+  let imagem: ImageBitmap | null = null;
 
   try {
+    imagem = await createImageBitmap(arquivo);
+
     const lado = Math.min(imagem.width, imagem.height);
     const destino = Math.min(lado, ladoMaximo);
     const origemX = (imagem.width - lado) / 2;
@@ -70,7 +72,13 @@ export async function recortarEmQuadrado(
     return new File([blob], `${nomeSemExtensao(arquivo.name)}.${extensao}`, {
       type: blob.type,
     });
+  } catch (erro) {
+    if (erro instanceof Error) {
+      throw erro;
+    }
+
+    throw new Error("Não foi possível recortar a imagem.");
   } finally {
-    imagem.close();
+    imagem?.close();
   }
 }

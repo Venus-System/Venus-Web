@@ -59,6 +59,10 @@
   margin-top: var(--espaco-4);
 }
 
+.form[hidden] {
+  display: none;
+}
+
 .catalogStatus {
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);

@@ -77,17 +77,5 @@ export function painelDoMock(): Omit<Painel, "profileCompleteness"> {
         analyzedAt: horasAtras(146),
       },
     ],
-    recommendedSwap: {
-      current: {
-        product: doPainel(locaoClareadoraNoturna),
-        finalScore: 12,
-        note: "Contém retinol e fragrância adicionada",
-      },
-      suggested: {
-        product: doPainel(serumCalmanteAveia),
-        finalScore: 87,
-        note: "Sem fragrância adicionada, com niacinamida",
-      },
-    },
   };
 }

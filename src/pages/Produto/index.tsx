@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
-import { ErroProdutoNaoEncontrado } from "../../services/erros";
-import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
 import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
 import {
@@ -12,12 +10,12 @@ import {
   nivelDaRecomendacao,
   nivelDoRisco,
 } from "../../utils/niveis";
-import type { AnaliseExibicao } from "../../types/analise";
 import type {
   Avaliacao,
   Denuncia,
   NovaAvaliacao,
 } from "../../types/avaliacao";
+import { useAnaliseDoProduto } from "../../hooks/useAnaliseDoProduto";
 import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
@@ -44,12 +42,6 @@ import RiskBadge from "../../components/RiskBadge";
 import RiskLegend from "../../components/RiskLegend";
 import styles from "./styles.module.css";
 
-type EstadoProduto =
-  | { situacao: "carregando" }
-  | { situacao: "sucesso"; analise: AnaliseExibicao }
-  | { situacao: "nao-encontrado" }
-  | { situacao: "erro"; mensagem: string };
-
 type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
@@ -65,9 +57,8 @@ const INGREDIENTES_NA_PAGINA = 3;
 
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
-  const [estado, setEstado] = useState<EstadoProduto>({
-    situacao: "carregando",
-  });
+  const estado = useAnaliseDoProduto(slug);
+  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
   const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
@@ -75,7 +66,10 @@ function Produto() {
     estado: avaliacoes,
     recarregar: recarregarAvaliacoes,
     atualizar: atualizarAvaliacoes,
-  } = useAvaliacoes(slug ?? null);
+  } = useAvaliacoes(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
     todas: false,
@@ -92,7 +86,6 @@ function Produto() {
     limpar: limparDenuncia,
   } = useDenunciarAvaliacao();
   const logado = usuario !== null;
-  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
   const {
     estado: analisePessoal,
     tentarDeNovo: tentarAnaliseDeNovo,
@@ -159,61 +152,13 @@ function Produto() {
 
   function abrirTodas() {
     setModais((atual) => ({ ...atual, todas: true }));
+    atualizarAvaliacoes();
   }
 
   function fecharTodas() {
     setModais((atual) => ({ ...atual, todas: false }));
     atualizarAvaliacoes();
   }
-
-  useEffect(() => {
-    if (!slug) {
-      return;
-    }
-
-    const controle = new AbortController();
-    let expirou = false;
-    const limite = setTimeout(() => {
-      expirou = true;
-      controle.abort();
-    }, 8000);
-
-    async function carregar(slugAtual: string) {
-      setEstado({ situacao: "carregando" });
-
-      try {
-        const analise = await buscarAnalisePublica(slugAtual, controle.signal);
-        setEstado({ situacao: "sucesso", analise });
-      } catch (erro) {
-        if (erro instanceof ErroProdutoNaoEncontrado) {
-          setEstado({ situacao: "nao-encontrado" });
-          return;
-        }
-
-        if (erro instanceof DOMException && erro.name === "AbortError") {
-          if (expirou) {
-            setEstado({
-              situacao: "erro",
-              mensagem: "A busca demorou demais. Tente novamente",
-            });
-          }
-
-          return;
-        }
-
-        setEstado({
-          situacao: "erro",
-          mensagem: "Não foi possível carregar este produto.",
-        });
-      }
-    }
-
-    carregar(slug);
-    return () => {
-      clearTimeout(limite);
-      controle.abort();
-    };
-  }, [slug]);
 
   if (!slug) {
     return (

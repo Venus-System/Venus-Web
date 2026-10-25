@@ -8,7 +8,7 @@ import {
   TAMANHO_MAXIMO_EM_MB,
   TIPOS_DE_IMAGEM,
   validarFoto,
-} from "../../services/avatar";
+} from "../../utils/validacao";
 import Button from "../Button";
 import Modal from "../Modal";
 import styles from "./styles.module.css";
@@ -186,6 +186,8 @@ function ModalFotoPerfil({
           id="foto-do-computador"
           type="file"
           className="texto-oculto"
+          tabIndex={-1}
+          aria-label="Escolher uma foto no computador"
           accept={TIPOS_DE_IMAGEM.join(",")}
           onChange={handleArquivo}
         />
@@ -204,12 +206,12 @@ function ModalFotoPerfil({
       ) : null}
 
       <p className="texto-oculto" aria-live="polite">
-        {enviando ? "Enviando a sua foto." : ""}
+        {enviando ? "Salvando a sua escolha." : ""}
       </p>
 
       <div className={styles.acoes}>
         <Button onClick={handleSalvar} disabled={enviando}>
-          {enviando ? "Enviando…" : "Salvar"}
+          {enviando ? "Salvando…" : "Salvar"}
         </Button>
 
         <Button variant="secondary" onClick={onClose} disabled={enviando}>

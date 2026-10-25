@@ -3,6 +3,23 @@ import type { Estrelas, MotivoDenuncia } from "../types/avaliacao";
 import type { FaixaEtaria } from "../types/perfil";
 import type { AlergiaSelecionada } from "../types/questionario";
 
+export const TIPOS_DE_IMAGEM = ["image/png", "image/jpeg", "image/webp"];
+export const TAMANHO_MAXIMO_EM_MB = 20;
+
+const TAMANHO_MAXIMO_DA_FOTO = TAMANHO_MAXIMO_EM_MB * 1024 * 1024;
+
+export function validarFoto(arquivo: File): string | null {
+  if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
+    return "Envie uma imagem PNG, JPEG ou WebP.";
+  }
+
+  if (arquivo.size > TAMANHO_MAXIMO_DA_FOTO) {
+    return `A imagem precisa ter no máximo ${TAMANHO_MAXIMO_EM_MB} MB.`;
+  }
+
+  return null;
+}
+
 export function validarNome(nome: string): string | null {
   if (nome.trim() === "") {
     return "Informe como podemos te chamar.";
@@ -81,14 +98,6 @@ export function forcaDaSenha(senha: string): ForcaSenha {
   return { pontos, faixa: "forte" };
 }
 
-export function validarCodigo(codigo: string): string | null {
-  if (!/^[0-9]{6}$/.test(codigo.trim())) {
-    return "O código tem 6 dígitos numéricos.";
-  }
-
-  return null;
-}
-
 export function validarConfirmacaoSenha(
   senha: string,
   confirmacao: string,
@@ -163,6 +172,10 @@ export function validarNomeInci(nome: string): string | null {
   return nome.trim() === ""
     ? "Informe o nome INCI do ingrediente novo."
     : null;
+}
+
+export function validarIngredienteCadastrado(id: string): string | null {
+  return id === "" ? "Escolha o ingrediente cadastrado." : null;
 }
 
 export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
