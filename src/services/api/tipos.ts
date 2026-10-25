@@ -3,6 +3,7 @@ export interface ProdutoBaseApi {
   name: string;
   description: string | null;
   slug: string;
+  imageUrl?: string | null;
 }
 
 export interface MarcaApi {

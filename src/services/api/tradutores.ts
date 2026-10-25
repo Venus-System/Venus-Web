@@ -57,7 +57,7 @@ function lerFoto(valor: unknown): FotoLida | null {
 
   if (
     dados.purpose !== "PRODUCT_PHOTO" ||
-    dados.status !== "ACTIVE" ||
+    (dados.status !== "ACTIVE" && dados.status !== "PENDING") ||
     url === null
   ) {
     return null;
@@ -85,7 +85,8 @@ export function paraProduto(resposta: ProductFullResponse): Produto {
     description: resposta.product.description ?? "",
     category: resposta.category.name,
     brand: paraMarca(resposta.brand),
-    imageUrl: fotoDoProduto(resposta.photos),
+    imageUrl:
+      texto(resposta.product.imageUrl) ?? fotoDoProduto(resposta.photos),
     level: nivelDaNota(notas.overallScore),
     scores: notas,
   };
@@ -105,7 +106,7 @@ export function paraProdutoDaListagem(
     description: item.description ?? "",
     category: categoria.name,
     brand: paraMarca(marca),
-    imageUrl: null,
+    imageUrl: texto(item.imageUrl),
     level: nivelDaNota(notas.overallScore),
     scores: notas,
   };
