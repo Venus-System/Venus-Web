@@ -10,7 +10,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
@@ -57,7 +57,11 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function Sidebar() {
+interface SidebarProps {
+  headerAction?: ReactNode;
+}
+
+function Sidebar({ headerAction }: SidebarProps) {
   const { usuario, fotoUrl } = useAutenticacao();
   const navegar = useNavigate();
 
@@ -73,8 +77,16 @@ function Sidebar() {
   }
 
   return (
-    <nav className={styles.sidebar} aria-label="Navegação principal">
+    <nav
+      className={
+        headerAction === undefined
+          ? styles.sidebar
+          : `${styles.sidebar} ${styles.comAcao}`
+      }
+      aria-label="Navegação principal"
+    >
       <div className={styles.brand}>
+        {headerAction}
         <img src={logo} alt="" className={styles.logo} />
         <span className={styles.brandName}>Venus</span>
       </div>
