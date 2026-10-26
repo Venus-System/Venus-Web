@@ -6,7 +6,12 @@ import Input from "../../components/Input";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
-import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
+import {
+  MAXIMO_DA_SENHA,
+  MAXIMO_DO_EMAIL,
+  validarEmail,
+  validarSenhaPreenchida,
+} from "../../utils/validacao";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { FIREBASE_ATIVO } from "../../config/firebase";
 
@@ -135,7 +140,7 @@ function Login() {
         <Button
           variant="secondary"
           onClick={handleGoogle}
-          disabled={desabilitado}
+          busy={desabilitado}
         >
           Continuar com Google
         </Button>
@@ -163,6 +168,7 @@ function Login() {
         <Input
           id="email"
           name="email"
+          maxLength={MAXIMO_DO_EMAIL}
           type="email"
           label="E-mail"
           placeholder="voce@email.com"
@@ -175,6 +181,7 @@ function Login() {
         <Input
           id="senha"
           name="senha"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Senha"
           placeholder="Mínimo 8 caracteres"
@@ -208,7 +215,7 @@ function Login() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Entrando..." : "Entrar"}
         </Button>
       </form>

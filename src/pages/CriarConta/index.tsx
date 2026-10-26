@@ -9,6 +9,9 @@ import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 import {
+  MAXIMO_DA_SENHA,
+  MAXIMO_DO_EMAIL,
+  MAXIMO_DO_NOME,
   forcaDaSenha,
   validarEmail,
   validarNome,
@@ -193,7 +196,7 @@ function CriarConta() {
         <Button
           variant="secondary"
           onClick={handleGoogle}
-          disabled={desabilitado}
+          busy={desabilitado}
         >
           Cadastrar com Google
         </Button>
@@ -221,6 +224,7 @@ function CriarConta() {
         <Input
           id="nome"
           name="nome"
+          maxLength={MAXIMO_DO_NOME}
           label="Nome"
           placeholder="Como podemos te chamar"
           autoComplete="name"
@@ -232,6 +236,7 @@ function CriarConta() {
         <Input
           id="email"
           name="email"
+          maxLength={MAXIMO_DO_EMAIL}
           type="email"
           label="E-mail"
           placeholder="voce@email.com"
@@ -245,6 +250,7 @@ function CriarConta() {
           <Input
             id="senha"
             name="senha"
+            maxLength={MAXIMO_DA_SENHA}
             type="password"
             label="Senha"
             placeholder="Mínimo 8 caracteres"
@@ -333,7 +339,7 @@ function CriarConta() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Criando..." : "Criar minha conta"}
         </Button>
       </form>

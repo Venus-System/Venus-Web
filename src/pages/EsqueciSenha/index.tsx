@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
-import { validarEmail } from "../../utils/validacao";
+import { MAXIMO_DO_EMAIL, validarEmail } from "../../utils/validacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
@@ -93,6 +93,7 @@ function EsqueciSenha() {
           <Input
             id="email"
             name="email"
+            maxLength={MAXIMO_DO_EMAIL}
             type="email"
             label="E-mail"
             placeholder="voce@email.com"
@@ -108,7 +109,7 @@ function EsqueciSenha() {
             </p>
           ) : null}
 
-          <Button type="submit" disabled={desabilitado}>
+          <Button type="submit" busy={desabilitado}>
             {desabilitado ? "Enviando..." : "Enviar link"}
           </Button>
         </form>

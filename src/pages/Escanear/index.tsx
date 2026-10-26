@@ -251,7 +251,7 @@ function Escanear() {
 
                 <span className={styles.lidaTexto}>Imagem enviada</span>
 
-                <Button variant="text" onClick={recomecar} disabled={ocupado}>
+                <Button variant="text" onClick={recomecar} busy={ocupado}>
                   Buscar com outra imagem
                 </Button>
               </div>

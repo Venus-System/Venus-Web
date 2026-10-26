@@ -330,7 +330,7 @@ function Perguntas() {
           <Button
             type="submit"
             className={styles.submit}
-            disabled={formulario.situacao === "enviando"}
+            busy={formulario.situacao === "enviando"}
           >
             {formulario.situacao === "enviando"
               ? "Salvando…"

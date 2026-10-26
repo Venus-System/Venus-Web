@@ -15,6 +15,7 @@ import { agruparPorData } from "../../utils/agruparPorData";
 import { filtrarAnalises } from "../../utils/filtrarAnalises";
 import { nivelDaRecomendacao } from "../../utils/niveis";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 const AVISO_DE_BUSCA_PARCIAL =
@@ -168,6 +169,7 @@ function Historico() {
           <div className={styles.busca} role="search">
             <Input
               id="busca-historico"
+              maxLength={MAXIMO_DA_BUSCA}
               type="search"
               label="Buscar no histórico"
               hideLabel

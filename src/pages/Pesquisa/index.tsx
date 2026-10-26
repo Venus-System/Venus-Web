@@ -14,6 +14,7 @@ import Input from "../../components/Input";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import ProductCard from "../../components/ProductCard";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 type FiltroDeLista = "categoria" | "marca";
@@ -217,6 +218,7 @@ function Pesquisa() {
         >
           <Input
             id="termo-busca"
+            maxLength={MAXIMO_DA_BUSCA}
             name="termo"
             label="Buscar produto"
             hideLabel

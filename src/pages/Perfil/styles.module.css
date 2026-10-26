@@ -232,9 +232,16 @@
   cursor: pointer;
 }
 
-.sair:hover {
+.sair:hover:not([aria-disabled="true"]) {
   background-color: var(--avoid);
   color: var(--texto-invertido);
+}
+
+.sair[aria-disabled="true"] {
+  background-color: var(--prata);
+  border-color: var(--borda-forte);
+  color: var(--texto-suave);
+  cursor: not-allowed;
 }
 
 .sairIcone {

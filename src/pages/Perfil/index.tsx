@@ -32,6 +32,7 @@ import {
   OPCOES_SITUACAO,
 } from "../Perguntas/opcoes";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DO_NOME } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 const ID_DA_AUTORIZACAO = "consentimento-saude";
@@ -337,6 +338,8 @@ function Perfil() {
                     <Input
                       id="perfil-nome"
                       label="Nome"
+                      autoComplete="name"
+                      maxLength={MAXIMO_DO_NOME}
                       value={conta.nome}
                       onChange={(evento) =>
                         setConta({
@@ -354,8 +357,9 @@ function Perfil() {
                       id="perfil-email"
                       label="E-mail"
                       type="email"
+                      autoComplete="email"
                       value={email}
-                      disabled
+                      readOnly
                       hint="Para trocar o e-mail, escreva para venussystem2026@gmail.com."
                     />
 
@@ -588,7 +592,7 @@ function Perfil() {
                 <Button
                   type="submit"
                   className={styles.submit}
-                  disabled={envio.situacao === "enviando"}
+                  busy={envio.situacao === "enviando"}
                 >
                   {envio.situacao === "enviando"
                     ? "Salvando…"
@@ -610,8 +614,10 @@ function Perfil() {
               <button
                 type="button"
                 className={styles.sair}
-                onClick={() => void handleSair()}
-                disabled={saida.situacao === "saindo"}
+                onClick={
+                  saida.situacao === "saindo" ? undefined : () => void handleSair()
+                }
+                aria-disabled={saida.situacao === "saindo"}
               >
                 <LogOut className={styles.sairIcone} aria-hidden="true" />
                 {saida.situacao === "saindo" ? "Saindo…" : "Sair da conta"}

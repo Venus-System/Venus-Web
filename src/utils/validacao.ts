@@ -179,6 +179,14 @@ export function validarIngredienteCadastrado(id: string): string | null {
 }
 
 export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
+export const MAXIMO_DO_TITULO_DA_AVALIACAO = 100;
+export const MAXIMO_DA_DENUNCIA = 500;
+export const MAXIMO_DO_NOME = 100;
+export const MAXIMO_DO_EMAIL = 254;
+export const MAXIMO_DA_SENHA = 128;
+export const MAXIMO_DA_BUSCA = 100;
+export const MAXIMO_DO_NOME_DO_PRODUTO = 200;
+export const MAXIMO_DO_NOME_INCI = 300;
 
 export function validarNotaDaAvaliacao(nota: Estrelas | null): string | null {
   return nota === null ? "Escolha uma nota de 1 a 5 estrelas." : null;

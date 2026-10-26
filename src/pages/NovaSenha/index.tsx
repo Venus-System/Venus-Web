@@ -11,6 +11,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import {
+  MAXIMO_DA_SENHA,
   forcaDaSenha,
   validarConfirmacaoSenha,
   validarSenha,
@@ -148,6 +149,7 @@ function NovaSenha() {
           <Input
             id="senha"
             name="senha"
+            maxLength={MAXIMO_DA_SENHA}
             type="password"
             label="Nova senha"
             placeholder="Mínimo 8 caracteres"
@@ -180,6 +182,7 @@ function NovaSenha() {
         <Input
           id="confirmacao"
           name="confirmacao"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Confirme a senha"
           placeholder="Repita a senha"
@@ -202,7 +205,7 @@ function NovaSenha() {
           </div>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Salvando..." : "Salvar nova senha"}
         </Button>
       </form>

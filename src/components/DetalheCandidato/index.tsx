@@ -536,7 +536,7 @@ function DetalheCandidato({
 
         <div className={styles.acoes}>
           {semSincronizar ? (
-            <Button onClick={onSincronizar} disabled={enviando}>
+            <Button onClick={onSincronizar} busy={enviando}>
               {enviando ? "Publicando..." : "Tentar de novo"}
             </Button>
           ) : (
@@ -544,7 +544,7 @@ function DetalheCandidato({
               <Button
                 variant="danger"
                 onClick={recusar}
-                disabled={enviando}
+                busy={enviando}
                 aria-disabled={podeDecidir ? undefined : true}
                 aria-describedby={descricaoDosBotoes}
               >
@@ -553,7 +553,7 @@ function DetalheCandidato({
 
               <Button
                 onClick={aprovar}
-                disabled={enviando}
+                busy={enviando}
                 aria-disabled={
                   !podeDecidir || bloqueadoPelasFotos ? true : undefined
                 }

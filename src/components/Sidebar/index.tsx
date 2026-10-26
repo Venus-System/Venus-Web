@@ -16,6 +16,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
 import Input from "../Input";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 interface NavLinkItem {
@@ -96,6 +97,7 @@ function Sidebar({ headerAction }: SidebarProps) {
       <form role="search" onSubmit={handleSubmit} className={styles.search}>
         <Input
           id="sidebar-search"
+          maxLength={MAXIMO_DA_BUSCA}
           name="term"
           type="search"
           label="Buscar produto"
