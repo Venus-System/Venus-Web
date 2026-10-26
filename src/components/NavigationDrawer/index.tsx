@@ -13,6 +13,7 @@ interface NavigationDrawerProps {
 
 function NavigationDrawer({ id, open, onClose }: NavigationDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const fecharRef = useRef<HTMLButtonElement>(null);
 
   useTravaDeRolagem(open);
 
@@ -25,6 +26,7 @@ function NavigationDrawer({ id, open, onClose }: NavigationDrawerProps) {
 
     if (open && !dialogo.open) {
       dialogo.showModal();
+      fecharRef.current?.focus();
     }
 
     if (!open && dialogo.open) {
@@ -50,6 +52,7 @@ function NavigationDrawer({ id, open, onClose }: NavigationDrawerProps) {
       <Sidebar
         headerAction={
           <button
+            ref={fecharRef}
             type="button"
             className={styles.fechar}
             onClick={onClose}

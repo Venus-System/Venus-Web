@@ -89,7 +89,7 @@ function EsqueciSenha() {
           </Link>
         </div>
       ) : (
-        <form className={styles.formulario} onSubmit={handleSubmit}>
+        <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
           <Input
             id="email"
             name="email"

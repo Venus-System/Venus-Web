@@ -144,7 +144,7 @@ function NovaSenha() {
         Crie uma <span className={styles.destaque}>senha nova</span>
       </h1>
 
-      <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
         <div className={styles.blocoSenha}>
           <Input
             id="senha"

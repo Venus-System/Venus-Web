@@ -220,7 +220,7 @@ function CriarConta() {
 
       <p className={styles.divisor}>ou com e-mail</p>
 
-      <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
         <Input
           id="nome"
           name="nome"

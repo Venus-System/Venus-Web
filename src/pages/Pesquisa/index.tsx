@@ -213,6 +213,7 @@ function Pesquisa() {
         <form
           className={styles.form}
           role="search"
+          aria-label="Buscar no catálogo"
           onSubmit={handleSubmit}
           ref={formRef}
         >
