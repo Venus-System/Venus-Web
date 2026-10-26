@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import PageLoader from "./components/PageLoader";
 import RotaAdmin from "./components/RotaAdmin";
 import RotaPrivada from "./components/RotaPrivada";
 import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
@@ -38,7 +37,7 @@ const IntegracaoGoogleAgenda = lazy(
 
 function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={null}>
       <Routes>
         <Route path="/" element={<Inicio />} />
         {import.meta.env.DEV ? (
