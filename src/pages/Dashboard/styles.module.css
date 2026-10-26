@@ -217,3 +217,13 @@
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   }
 }
+
+@media (forced-colors: active) {
+  .barra {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .barraPreenchida {
+    background-color: CanvasText;
+  }
+}

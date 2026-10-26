@@ -44,3 +44,9 @@
     padding-inline: var(--espaco-3);
   }
 }
+
+@media (forced-colors: active) {
+  .linkActive {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+}

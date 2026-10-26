@@ -40,7 +40,10 @@ A combinação muda conforme o navegador:
 - Carregamentos, erros e avisos também são anunciados para leitores de tela.
 - Todo campo de formulário tem um rótulo ligado a ele, e os erros aparecem num
   resumo no topo do formulário, com links para cada campo.
-- Os textos têm contraste de pelo menos 4,5 para 1 com o fundo.
+- Os textos têm contraste de pelo menos 4,5 para 1 com o fundo, e ícones,
+  estrelas e bordas de campos, de pelo menos 3 para 1.
+- O site funciona com o modo de alto contraste do Windows: barras de nota,
+  estrelas e o item ativo do menu continuam visíveis com as cores do sistema.
 - O site funciona com zoom de até 400% e em telas a partir de 320 pixels de
   largura, sem rolagem para os lados.
 - As animações respeitam a preferência de movimento reduzido do sistema, e o

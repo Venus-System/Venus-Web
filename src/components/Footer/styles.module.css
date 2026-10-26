@@ -138,3 +138,9 @@
   flex-direction: row;
   gap: var(--espaco-3);
 }
+
+@media (forced-colors: active) {
+  .watermark {
+    display: none;
+  }
+}

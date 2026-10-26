@@ -176,3 +176,13 @@
 .user:hover .userAction {
   color: var(--violeta);
 }
+
+@media (forced-colors: active) {
+  .link {
+    border-left-color: Canvas;
+  }
+
+  .linkActive {
+    border-left-color: CanvasText;
+  }
+}

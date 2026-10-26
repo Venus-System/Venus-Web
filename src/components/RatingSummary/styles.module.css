@@ -72,3 +72,13 @@
 .vazio {
   color: var(--texto-suave);
 }
+
+@media (forced-colors: active) {
+  .trilha {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .preenchida {
+    background-color: CanvasText;
+  }
+}

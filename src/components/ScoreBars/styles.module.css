@@ -45,3 +45,13 @@
   background-color: var(--violeta);
   border-radius: var(--raio-pilula);
 }
+
+@media (forced-colors: active) {
+  .track {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .fill {
+    background-color: CanvasText;
+  }
+}
