@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import logo from "../../assets/Logo.svg";
+import ContrastToggle from "../ContrastToggle";
 import styles from "./styles.module.css";
 
 interface LayoutAutenticacaoProps {
@@ -14,6 +15,7 @@ function LayoutAutenticacao({ children, painel }: LayoutAutenticacaoProps) {
         <header className={styles.marcaTopo}>
           <img className={styles.logo} src={logo} alt="" />
           <span className={styles.nomeMarca}>Venus</span>
+          <ContrastToggle />
         </header>
 
         <main className={styles.conteudo} tabIndex={-1}>

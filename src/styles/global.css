@@ -119,6 +119,14 @@ main:focus-visible {
   outline: none;
 }
 
+:root[data-contraste="alto"] {
+  color-scheme: dark;
+}
+
+:root[data-contraste="alto"] a {
+  text-decoration: underline;
+}
+
 :focus-visible {
   outline: var(--foco-largura) solid var(--foco-cor);
   outline-offset: var(--foco-offset);

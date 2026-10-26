@@ -19,11 +19,17 @@
   top: var(--espaco-3);
 }
 
+.topo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-5);
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
   gap: var(--espaco-2);
-  margin-bottom: var(--espaco-5);
   color: var(--roxo);
   font-family: var(--fonte-titulo);
   font-size: var(--tamanho-medio);

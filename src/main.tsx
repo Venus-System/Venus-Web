@@ -5,8 +5,11 @@ import App from "./App";
 import { ProvedorAutenticacao } from "./contexts/autenticacao";
 import { ProvedorAutenticacaoAdmin } from "./contexts/autenticacaoAdmin";
 import { ProvedorChat } from "./contexts/chat";
+import { aplicarAltoContraste, lerAltoContraste } from "./utils/altoContraste";
 import "./styles/tokens.css";
 import "./styles/global.css";
+
+aplicarAltoContraste(lerAltoContraste());
 
 const raiz = document.getElementById("root");
 

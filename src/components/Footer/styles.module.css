@@ -144,3 +144,7 @@
     display: none;
   }
 }
+
+:global(:root[data-contraste="alto"]) .watermark {
+  display: none;
+}

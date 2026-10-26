@@ -42,8 +42,13 @@ A combinação muda conforme o navegador:
   resumo no topo do formulário, com links para cada campo.
 - Os textos têm contraste de pelo menos 4,5 para 1 com o fundo, e ícones,
   estrelas e bordas de campos, de pelo menos 3 para 1.
-- O site funciona com o modo de alto contraste do Windows: barras de nota,
-  estrelas e o item ativo do menu continuam visíveis com as cores do sistema.
+- O botão **Alto contraste** (o círculo meio preenchido ao lado do logo, no
+  topo do menu) deixa o site com fundo preto, texto branco e links amarelos
+  sublinhados, com contraste de pelo menos 7 para 1, como pede o eMAG. A
+  escolha fica salva neste navegador.
+- O site também funciona com o modo de alto contraste do Windows: barras de
+  nota, estrelas e o item ativo do menu continuam visíveis com as cores do
+  sistema.
 - O site funciona com zoom de até 400% e em telas a partir de 320 pixels de
   largura, sem rolagem para os lados.
 - As animações respeitam a preferência de movimento reduzido do sistema, e o

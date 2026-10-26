@@ -94,3 +94,55 @@
 
   --trilha: #f2ecf8;
 }
+
+:root[data-contraste="alto"] {
+  --amarelo-contraste: #fff333;
+
+  --roxo: #ffffff;
+  --violeta: var(--amarelo-contraste);
+  --lavanda: #ffffff;
+  --crimson: var(--amarelo-contraste);
+  --crimson-escuro: var(--amarelo-contraste);
+  --prata: #000000;
+  --violeta-escuro: #ffffff;
+  --faixa-lilas: #000000;
+
+  --fundo: #000000;
+  --card: #000000;
+  --borda: #ffffff;
+  --texto: #ffffff;
+  --texto-suave: #ffffff;
+
+  --safe: #7cf29a;
+  --safe-fundo: #000000;
+  --warning: #ffd166;
+  --warning-fundo: #000000;
+  --avoid: #ff9ec4;
+  --avoid-fundo: #000000;
+  --no-data: #ffffff;
+  --no-data-fundo: #000000;
+
+  --foco-cor: var(--amarelo-contraste);
+  --sobreposicao: rgb(0 0 0 / 0.85);
+  --superficie-suave: #000000;
+  --lavanda-clara: #000000;
+  --lavanda-media: #000000;
+  --texto-invertido: #000000;
+  --borda-forte: #ffffff;
+
+  --gradiente-primario: linear-gradient(
+    var(--amarelo-contraste),
+    var(--amarelo-contraste)
+  );
+  --gradiente-marca: var(--gradiente-primario);
+  --gradiente-conversa: var(--gradiente-primario);
+  --gradiente-flutuante: var(--gradiente-primario);
+  --sombra-cartao: none;
+
+  --tom-roxo: none;
+  --tom-verde: none;
+  --tom-rosa: none;
+  --tom-azul: none;
+
+  --trilha: #666666;
+}

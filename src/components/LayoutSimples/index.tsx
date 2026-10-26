@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/Logo.svg";
+import ContrastToggle from "../ContrastToggle";
 import { useRolagemDaRota } from "../../hooks/useRolagemDaRota";
 import styles from "./styles.module.css";
 
@@ -17,11 +18,13 @@ function LayoutSimples({ children }: LayoutSimplesProps) {
         Ir para o conteúdo [1]
       </a>
 
-      <header>
+      <header className={styles.topo}>
         <Link className={styles.brand} to="/">
           <img className={styles.logo} src={logo} alt="" />
           <span>Venus</span>
         </Link>
+
+        <ContrastToggle />
       </header>
 
       <main id="conteudo" tabIndex={-1}>

@@ -15,6 +15,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
+import ContrastToggle from "../ContrastToggle";
 import Input from "../Input";
 import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
@@ -92,9 +93,15 @@ function Sidebar({ headerAction }: SidebarProps) {
         {headerAction}
         <img src={logo} alt="" className={styles.logo} />
         <span className={styles.brandName}>Venus</span>
+        <ContrastToggle />
       </div>
 
-      <form role="search" onSubmit={handleSubmit} className={styles.search}>
+      <form
+        role="search"
+        aria-label="Busca rápida"
+        onSubmit={handleSubmit}
+        className={styles.search}
+      >
         <Input
           id="sidebar-search"
           maxLength={MAXIMO_DA_BUSCA}
