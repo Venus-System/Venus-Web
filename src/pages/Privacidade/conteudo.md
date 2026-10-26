@@ -1,5 +1,5 @@
 ---
-atualizado: 15 de outubro de 2026
+atualizado: 26 de outubro de 2026
 ---
 
 ## Quem somos
@@ -109,6 +109,7 @@ eles processam dados em nosso nome:
 | Langfuse | Acompanhar o funcionamento da IA, quando ativado | Fora do Brasil |
 | Google Agenda | Ver horários livres e criar eventos, só se você conectar | Servidores da Google, fora do Brasil |
 | Vercel | Hospedagem da aplicação web | Fora do Brasil |
+| VLibras, do Governo Federal | Traduzir para Libras o texto em que você clicar, só se você ativar o tradutor. O programa do tradutor é baixado dos servidores do governo a cada visita | Servidores do governo brasileiro |
 
 ### Conversa com a Veninha
 

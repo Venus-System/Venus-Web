@@ -26,6 +26,7 @@ const Perguntas = lazy(() => import("./pages/Perguntas"));
 const Privacidade = lazy(() => import("./pages/Privacidade"));
 const Termos = lazy(() => import("./pages/Termos"));
 const Cookies = lazy(() => import("./pages/Cookies"));
+const Acessibilidade = lazy(() => import("./pages/Acessibilidade"));
 const Enviados = lazy(() => import("./pages/Enviados"));
 const Historico = lazy(() => import("./pages/Historico"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
@@ -133,6 +134,7 @@ function App() {
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/cookies" element={<Cookies />} />
+        <Route path="/acessibilidade" element={<Acessibilidade />} />
         <Route path="*" element={<NaoEncontrado />} />
       </Routes>
     </Suspense>

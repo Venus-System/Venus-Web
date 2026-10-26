@@ -36,7 +36,7 @@ const COLUMNS: LinkColumn[] = [
 
 function Footer({ year = new Date().getFullYear() }: FooterProps) {
   return (
-    <footer className={styles.footer}>
+    <footer id="rodape" className={styles.footer} tabIndex={-1}>
       <div className={styles.top}>
         <div className={styles.brand}>
           <Link to="/" className={styles.brandLink}>
@@ -99,6 +99,11 @@ function Footer({ year = new Date().getFullYear() }: FooterProps) {
           <li>
             <Link to="/cookies" className={styles.link}>
               Cookies
+            </Link>
+          </li>
+          <li>
+            <Link to="/acessibilidade" className={styles.link}>
+              Acessibilidade
             </Link>
           </li>
         </ul>
