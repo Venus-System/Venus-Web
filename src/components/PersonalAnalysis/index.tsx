@@ -148,11 +148,11 @@ function PersonalAnalysis({
             {state.analise.breakdown.qualityPoints !== null &&
             state.analise.breakdown.profilePoints !== null ? (
               <p className={styles.pontos}>
-                {notaTravada ? "A conta dava " : "De onde vem a nota: "}
-                {emPontos(state.analise.breakdown.qualityPoints)} de 35 pontos
-                pela qualidade do produto e{" "}
-                {emPontos(state.analise.breakdown.profilePoints)} de 65 pelo que
-                a fórmula combina com o seu perfil.
+                {notaTravada ? "A conta dava " : "A nota soma duas partes: "}
+                {emPontos(state.analise.breakdown.qualityPoints)} de 35 pela
+                qualidade do produto e{" "}
+                {emPontos(state.analise.breakdown.profilePoints)} de 65 por
+                combinar com o seu perfil.
                 {notaTravada
                   ? " A segurança vem antes: o alerta abaixo mudou a nota final."
                   : ""}
@@ -181,11 +181,11 @@ function PersonalAnalysis({
 
               {temAlergia || !state.analise.complete ? null : (
                 <li className={styles.motivo}>
-                  <RiskBadge level="safe" label="Sem alérgenos seus" />
+                  <RiskBadge level="safe" label="Sem alergia" />
 
                   <p className={styles.motivoTexto}>
-                    Nenhum ingrediente desta fórmula bate com as alergias do seu
-                    perfil.
+                    Nenhum ingrediente deste produto está nas alergias que você
+                    cadastrou.
                   </p>
                 </li>
               )}
