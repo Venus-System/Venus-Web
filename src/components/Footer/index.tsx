@@ -80,9 +80,7 @@ function Footer({ year = new Date().getFullYear() }: FooterProps) {
         </div>
       </div>
 
-      <p className={styles.watermark} aria-hidden="true">
-        Venus
-      </p>
+      <div className={styles.watermark} aria-hidden="true" />
 
       <div className={styles.bottom}>
         <small>© {year} Venus</small>

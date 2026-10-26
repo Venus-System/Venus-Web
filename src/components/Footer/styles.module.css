@@ -118,6 +118,10 @@
   user-select: none;
 }
 
+.watermark::after {
+  content: "Venus";
+}
+
 .bottom {
   display: flex;
   flex-wrap: wrap;
