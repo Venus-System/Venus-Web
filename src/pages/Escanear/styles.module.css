@@ -268,6 +268,7 @@
   display: block;
   max-width: 100%;
   max-height: 75vh;
+  max-height: 75dvh;
   margin-inline: auto;
   object-fit: contain;
 }

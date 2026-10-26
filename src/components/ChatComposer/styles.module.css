@@ -27,9 +27,15 @@
   border: none;
   color: var(--texto);
   font-family: var(--fonte-corpo);
-  font-size: var(--tamanho-pequeno);
+  font-size: var(--tamanho-base);
   line-height: 1.5;
   resize: none;
+}
+
+@media (max-height: 30rem) {
+  .campo {
+    height: 1.5em;
+  }
 }
 
 .campo::placeholder {

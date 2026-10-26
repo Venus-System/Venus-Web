@@ -69,6 +69,7 @@
 }
 
 .moldura {
+  position: relative;
   max-width: 66rem;
   overflow-x: auto;
   background-color: var(--card);
@@ -97,13 +98,17 @@
 }
 
 .tabela th[scope="row"] {
-  width: 11rem;
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  width: 7.5rem;
+  padding-inline: var(--espaco-2);
   background-color: var(--superficie-suave);
+  box-shadow: inset calc(var(--borda-largura) * -1) 0 0 var(--borda);
   color: var(--texto-suave);
   font-family: var(--fonte-corpo);
-  font-size: var(--tamanho-base);
+  font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
-  letter-spacing: 0.06em;
 }
 
 .tabela td + td,
@@ -311,4 +316,13 @@
   display: block;
   color: var(--violeta);
   font-weight: var(--peso-forte);
+}
+
+@media (min-width: 48rem) {
+  .tabela th[scope="row"] {
+    width: 11rem;
+    padding-inline: var(--espaco-4);
+    font-size: var(--tamanho-base);
+    letter-spacing: 0.06em;
+  }
 }

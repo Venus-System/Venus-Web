@@ -16,7 +16,7 @@ if (!raiz) {
 
 ReactDOM.createRoot(raiz).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true }}>
       <ProvedorAutenticacao>
         <ProvedorAutenticacaoAdmin>
           <ProvedorChat>

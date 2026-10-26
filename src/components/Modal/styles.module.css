@@ -1,6 +1,7 @@
 .dialog {
   width: min(100%, 34rem);
   max-height: 85vh;
+  max-height: 85dvh;
   padding: 0;
   overflow: auto;
   background-color: var(--card);

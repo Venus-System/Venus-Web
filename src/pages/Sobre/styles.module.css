@@ -110,7 +110,7 @@
 .cards {
   display: grid;
   gap: var(--espaco-3);
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -139,7 +139,7 @@
 .limits {
   display: grid;
   gap: var(--espaco-3);
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -164,7 +164,7 @@
 
 .photos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: var(--espaco-3);
 }
 

@@ -9,6 +9,16 @@
   border-right: var(--borda-largura) solid var(--borda);
 }
 
+.comAcao {
+  padding-top: var(--espaco-2);
+}
+
+@media (max-height: 48rem) {
+  .sidebar {
+    gap: var(--espaco-1);
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;

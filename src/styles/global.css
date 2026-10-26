@@ -21,6 +21,16 @@ ol {
 
 html {
   scrollbar-gutter: stable;
+  scroll-padding-top: 4.5rem;
+  scroll-padding-bottom: calc(var(--botao-flutuante) + var(--espaco-4));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: var(--espaco-4);
+  }
 }
 
 body {

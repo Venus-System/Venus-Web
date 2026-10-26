@@ -1,133 +1,139 @@
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import Componentes from "./pages/Componentes";
-import CriarConta from "./pages/CriarConta";
-import EsqueciSenha from "./pages/EsqueciSenha";
-import Fontes from "./pages/Fontes";
-import Login from "./pages/Login";
-import AdminLogin from "./pages/AdminLogin";
-import FilaAprovacao from "./pages/FilaAprovacao";
 import RotaAdmin from "./components/RotaAdmin";
-import Inicio from "./pages/Inicio";
-import Metodologia from "./pages/Metodologia";
-import NovaSenha from "./pages/NovaSenha";
-import SenhaAlterada from "./pages/SenhaAlterada";
-import Pesquisa from "./pages/Pesquisa";
-import Produto from "./pages/Produto";
-import Sobre from "./pages/Sobre";
-import NaoEncontrado from "./pages/NaoEncontrado";
-import Dashboard from "./pages/Dashboard";
 import RotaPrivada from "./components/RotaPrivada";
-import Perfil from "./pages/Perfil";
-import Perguntas from "./pages/Perguntas";
-import Privacidade from "./pages/Privacidade";
-import Termos from "./pages/Termos";
-import Cookies from "./pages/Cookies";
-import Enviados from "./pages/Enviados";
-import Historico from "./pages/Historico";
-import Favoritos from "./pages/Favoritos";
-import Comparar from "./pages/Comparar";
-import Escanear from "./pages/Escanear";
-import Reacao from "./pages/Reacao";
-import IntegracaoGoogleAgenda from "./pages/IntegracaoGoogleAgenda";
 import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
+
+const Componentes = lazy(() => import("./pages/Componentes"));
+const CriarConta = lazy(() => import("./pages/CriarConta"));
+const EsqueciSenha = lazy(() => import("./pages/EsqueciSenha"));
+const Fontes = lazy(() => import("./pages/Fontes"));
+const Login = lazy(() => import("./pages/Login"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const FilaAprovacao = lazy(() => import("./pages/FilaAprovacao"));
+const Inicio = lazy(() => import("./pages/Inicio"));
+const Metodologia = lazy(() => import("./pages/Metodologia"));
+const NovaSenha = lazy(() => import("./pages/NovaSenha"));
+const SenhaAlterada = lazy(() => import("./pages/SenhaAlterada"));
+const Pesquisa = lazy(() => import("./pages/Pesquisa"));
+const Produto = lazy(() => import("./pages/Produto"));
+const Sobre = lazy(() => import("./pages/Sobre"));
+const NaoEncontrado = lazy(() => import("./pages/NaoEncontrado"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Perfil = lazy(() => import("./pages/Perfil"));
+const Perguntas = lazy(() => import("./pages/Perguntas"));
+const Privacidade = lazy(() => import("./pages/Privacidade"));
+const Termos = lazy(() => import("./pages/Termos"));
+const Cookies = lazy(() => import("./pages/Cookies"));
+const Enviados = lazy(() => import("./pages/Enviados"));
+const Historico = lazy(() => import("./pages/Historico"));
+const Favoritos = lazy(() => import("./pages/Favoritos"));
+const Comparar = lazy(() => import("./pages/Comparar"));
+const Escanear = lazy(() => import("./pages/Escanear"));
+const Reacao = lazy(() => import("./pages/Reacao"));
+const IntegracaoGoogleAgenda = lazy(
+  () => import("./pages/IntegracaoGoogleAgenda"),
+);
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Inicio />} />
-      {import.meta.env.DEV ? (
-        <Route path="/componentes" element={<Componentes />} />
-      ) : null}
-      <Route path="/login" element={<Login />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route
-        path="/admin/fila/:id?"
-        element={
-          <RotaAdmin>
-            <FilaAprovacao />
-          </RotaAdmin>
-        }
-      />
-      <Route path="/criar-conta" element={<CriarConta />} />
-      <Route path="/esqueci-senha" element={<EsqueciSenha />} />
-      <Route path="/esqueci-senha/nova" element={<NovaSenha />} />
-      <Route path="/esqueci-senha/pronto" element={<SenhaAlterada />} />
-      <Route path="/pesquisa" element={<Pesquisa />} />
-      <Route path="/produto/:slug" element={<Produto />} />
-      <Route path="/comparar" element={<Comparar />} />
-      <Route
-        path="/escanear"
-        element={
-          <RotaPrivada>
-            <Escanear />
-          </RotaPrivada>
-        }
-      />
-      <Route path="/reacao" element={<Reacao />} />
-      <Route path="/sobre" element={<Sobre />} />
-      <Route path="/metodologia" element={<Metodologia />} />
-      <Route path="/fontes" element={<Fontes />} />
-      <Route
-        path="/dashboard"
-        element={
-          <RotaPrivada>
-            <Dashboard />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path="/historico"
-        element={
-          <RotaPrivada>
-            <Historico />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path="/favoritos"
-        element={
-          <RotaPrivada>
-            <Favoritos />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path="/historico/enviados"
-        element={
-          <RotaPrivada>
-            <Enviados />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path="/perfil"
-        element={
-          <RotaPrivada>
-            <Perfil />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path="/perguntas"
-        element={
-          <RotaPrivada>
-            <Perguntas />
-          </RotaPrivada>
-        }
-      />
-      <Route
-        path={CAMINHO_DE_VOLTA}
-        element={
-          <RotaPrivada>
-            <IntegracaoGoogleAgenda />
-          </RotaPrivada>
-        }
-      />
-      <Route path="/privacidade" element={<Privacidade />} />
-      <Route path="/termos" element={<Termos />} />
-      <Route path="/cookies" element={<Cookies />} />
-      <Route path="*" element={<NaoEncontrado />} />
-    </Routes>
+    <Suspense fallback={null}>
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+        {import.meta.env.DEV ? (
+          <Route path="/componentes" element={<Componentes />} />
+        ) : null}
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/fila/:id?"
+          element={
+            <RotaAdmin>
+              <FilaAprovacao />
+            </RotaAdmin>
+          }
+        />
+        <Route path="/criar-conta" element={<CriarConta />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/esqueci-senha/nova" element={<NovaSenha />} />
+        <Route path="/esqueci-senha/pronto" element={<SenhaAlterada />} />
+        <Route path="/pesquisa" element={<Pesquisa />} />
+        <Route path="/produto/:slug" element={<Produto />} />
+        <Route path="/comparar" element={<Comparar />} />
+        <Route
+          path="/escanear"
+          element={
+            <RotaPrivada>
+              <Escanear />
+            </RotaPrivada>
+          }
+        />
+        <Route path="/reacao" element={<Reacao />} />
+        <Route path="/sobre" element={<Sobre />} />
+        <Route path="/metodologia" element={<Metodologia />} />
+        <Route path="/fontes" element={<Fontes />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RotaPrivada>
+              <Dashboard />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path="/historico"
+          element={
+            <RotaPrivada>
+              <Historico />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path="/favoritos"
+          element={
+            <RotaPrivada>
+              <Favoritos />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path="/historico/enviados"
+          element={
+            <RotaPrivada>
+              <Enviados />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <RotaPrivada>
+              <Perfil />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path="/perguntas"
+          element={
+            <RotaPrivada>
+              <Perguntas />
+            </RotaPrivada>
+          }
+        />
+        <Route
+          path={CAMINHO_DE_VOLTA}
+          element={
+            <RotaPrivada>
+              <IntegracaoGoogleAgenda />
+            </RotaPrivada>
+          }
+        />
+        <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/termos" element={<Termos />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="*" element={<NaoEncontrado />} />
+      </Routes>
+    </Suspense>
   );
 }
 
