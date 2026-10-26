@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { ArrowLeft } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -76,6 +77,7 @@ function FilaAprovacao() {
   const { estado: catalogo, recarregar: recarregarCatalogo } =
     useCatalogoDaRevisao();
   const tituloFilaRef = useRef<HTMLHeadingElement>(null);
+  const tinhaProdutoAbertoRef = useRef(false);
   const {
     decisao,
     abrirRecusa,
@@ -89,6 +91,14 @@ function FilaAprovacao() {
     aoAvancar: irParaOProximo,
     aoExpirar: () => void sair(),
   });
+
+  useEffect(() => {
+    if (idSelecionado === null && tinhaProdutoAbertoRef.current) {
+      tituloFilaRef.current?.focus();
+    }
+
+    tinhaProdutoAbertoRef.current = idSelecionado !== null;
+  }, [idSelecionado]);
 
   const podeDecidir =
     administrador !== null && administrador.role !== "analyst";
@@ -113,16 +123,19 @@ function FilaAprovacao() {
       pathname: proximo === null ? "/admin/fila" : `/admin/fila/${proximo}`,
       search: localizacao.search,
     });
-
-    if (proximo === null) {
-      tituloFilaRef.current?.focus();
-    }
   }
 
   return (
     <LayoutAdmin onSair={() => void sair()}>
       <div className={styles.pagina}>
-        <section className={styles.fila} aria-labelledby="titulo-fila">
+        <section
+          className={
+            idSelecionado === null
+              ? styles.fila
+              : `${styles.fila} ${styles.escondidaNoCelular}`
+          }
+          aria-labelledby="titulo-fila"
+        >
           <div className={styles.topo}>
             <h1
               id="titulo-fila"
@@ -260,7 +273,24 @@ function FilaAprovacao() {
           ) : null}
         </section>
 
-        <section className={styles.detalhe} aria-label="Produto selecionado">
+        <section
+          className={
+            idSelecionado === null
+              ? `${styles.detalhe} ${styles.escondidaNoCelular}`
+              : styles.detalhe
+          }
+          aria-label="Produto selecionado"
+        >
+          {idSelecionado !== null && estadoCandidato.status !== "erro" ? (
+            <Link
+              className={styles.voltarDoCelular}
+              to={{ pathname: "/admin/fila", search: localizacao.search }}
+            >
+              <ArrowLeft className={styles.iconeVoltar} aria-hidden="true" />
+              Voltar para a fila
+            </Link>
+          ) : null}
+
           {estadoCandidato.status === "nenhum" ? (
             <p className={styles.estado}>
               Selecione um produto da fila para revisar.
