@@ -40,6 +40,7 @@ import IngredientsModal from "../../components/IngredientsModal";
 import PersonalAnalysis from "../../components/PersonalAnalysis";
 import RiskBadge from "../../components/RiskBadge";
 import RiskLegend from "../../components/RiskLegend";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type AcaoDeAvaliacao =
@@ -59,9 +60,13 @@ function Produto() {
   const { slug } = useParams<{ slug: string }>();
   const estado = useAnaliseDoProduto(slug);
   const carregado = estado.situacao === "sucesso" ? estado.analise : null;
+  const titulo =
+    carregado?.product.name ??
+    (estado.situacao === "nao-encontrado" ? "Produto não encontrado" : "Produto");
   const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
+  useTituloDaPagina(titulo);
   const {
     estado: avaliacoes,
     recarregar: recarregarAvaliacoes,

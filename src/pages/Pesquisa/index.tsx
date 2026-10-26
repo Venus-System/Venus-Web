@@ -13,6 +13,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import ProductCard from "../../components/ProductCard";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type FiltroDeLista = "categoria" | "marca";
@@ -79,6 +80,7 @@ function textoDeStatus(
 }
 
 function Pesquisa() {
+  useTituloDaPagina("Buscar produto");
   const [parametros, setParametros] = useSearchParams();
   const termoDaUrl = (parametros.get("termo") ?? "").trim();
   const [busca, setBusca] = useState<BuscaDaPesquisa>(() => ({

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
@@ -46,6 +47,7 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function Login() {
+  useTituloDaPagina("Login");
   const { usuario, entrar, entrarComGoogle } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },

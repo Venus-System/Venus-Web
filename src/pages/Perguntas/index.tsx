@@ -32,11 +32,13 @@ import {
   OPCOES_SENSIBILIDADE,
   OPCOES_SITUACAO,
 } from "./opcoes";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type Guia = "cabelo" | "pele" | "fototipo" | null;
 
 function Perguntas() {
+  useTituloDaPagina("Questionário de perfil");
   const [guia, setGuia] = useState<Guia>(null);
   const {
     respostas,

@@ -1,3 +1,4 @@
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import { extrairAtualizacao, extrairTitulos } from "../../utils/markdown";
 import LayoutSimples from "../LayoutSimples";
 import Markdown from "../Markdown";
@@ -10,6 +11,7 @@ interface DocumentLayoutProps {
 }
 
 function DocumentLayout({ title, content }: DocumentLayoutProps) {
+  useTituloDaPagina(title);
   const secoes = extrairTitulos(content).map((titulo) => ({
     id: titulo.id,
     text: titulo.texto,

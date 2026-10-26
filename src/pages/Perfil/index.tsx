@@ -31,6 +31,7 @@ import {
   OPCOES_SENSIBILIDADE,
   OPCOES_SITUACAO,
 } from "../Perguntas/opcoes";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const ID_DA_AUTORIZACAO = "consentimento-saude";
@@ -62,6 +63,7 @@ type EstadoDaSaida =
   | { situacao: "erro"; mensagem: string };
 
 function Perfil() {
+  useTituloDaPagina("Meu perfil");
   const navegar = useNavigate();
   const { usuario, sair, atualizarNome } = useAutenticacao();
   const [conta, setConta] = useState<EstadoDaConta>({

@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import RotaAdmin from "./components/RotaAdmin";
 import RotaPrivada from "./components/RotaPrivada";
+import RouteAnnouncer from "./components/RouteAnnouncer";
 import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
 
 const Componentes = lazy(() => import("./pages/Componentes"));
@@ -38,6 +39,7 @@ const IntegracaoGoogleAgenda = lazy(
 function App() {
   return (
     <Suspense fallback={null}>
+      <RouteAnnouncer />
       <Routes>
         <Route path="/" element={<Inicio />} />
         {import.meta.env.DEV ? (

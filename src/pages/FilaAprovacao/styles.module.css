@@ -162,6 +162,31 @@
   display: none;
 }
 
+@media (width < 60rem) {
+  .filaRecolhida {
+    border-bottom: none;
+  }
+
+  .filaRecolhida > :not(.topo),
+  .filaRecolhida .topo > :not(.titulo) {
+    display: none;
+  }
+
+  .filaRecolhida .topo {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .filaRecolhida .titulo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 .voltarDoCelular {
   display: inline-flex;
   align-items: center;

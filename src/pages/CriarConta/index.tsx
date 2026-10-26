@@ -6,6 +6,7 @@ import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 import {
   forcaDaSenha,
@@ -54,6 +55,7 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 };
 
 function CriarConta() {
+  useTituloDaPagina("Criar conta");
   const { usuario, criarConta, entrarComGoogle } = useAutenticacao();
   const navegar = useNavigate();
 

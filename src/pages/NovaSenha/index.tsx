@@ -16,6 +16,7 @@ import {
   validarSenha,
 } from "../../utils/validacao";
 import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const SEGMENTOS = [1, 2, 3, 4];
@@ -49,6 +50,7 @@ interface EstadoFormulario {
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
 function NovaSenha() {
+  useTituloDaPagina("Nova senha");
   const { confirmarRedefinicao } = useAutenticacao();
   const navegar = useNavigate();
   const [parametros] = useSearchParams();

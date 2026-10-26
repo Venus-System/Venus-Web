@@ -7,6 +7,7 @@ import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { useAutenticacaoAdmin } from "../../hooks/useAutenticacaoAdmin";
 import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type EstadoEnvio =
@@ -45,6 +46,7 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function AdminLogin() {
+  useTituloDaPagina("Login da área administrativa");
   const { administrador, entrar } = useAutenticacaoAdmin();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },

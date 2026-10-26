@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { validarEmail } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 
@@ -20,6 +21,7 @@ interface EstadoFormulario {
 }
 
 function EsqueciSenha() {
+  useTituloDaPagina("Esqueci a senha");
   const { solicitarRedefinicao } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },

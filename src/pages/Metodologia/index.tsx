@@ -6,6 +6,7 @@ import Chip from "../../components/Chip";
 import ScoreBadge from "../../components/ScoreBadge";
 import RiskBadge from "../../components/RiskBadge";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const ETAPAS = [
@@ -122,6 +123,7 @@ const LIMITES = [
 ];
 
 function Metodologia() {
+  useTituloDaPagina("Metodologia");
   return (
     <MainLayout>
       <div className={styles.page}>
