@@ -26,6 +26,12 @@
   height: 100vh;
 }
 
+.atalhos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .skipLink {
   position: fixed;
   z-index: 10;

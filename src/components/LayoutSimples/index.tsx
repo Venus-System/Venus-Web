@@ -13,8 +13,8 @@ function LayoutSimples({ children }: LayoutSimplesProps) {
 
   return (
     <div className={styles.page}>
-      <a className={styles.skipLink} href="#conteudo">
-        Pular para o conteúdo
+      <a className={styles.skipLink} href="#conteudo" accessKey="1">
+        Ir para o conteúdo [1]
       </a>
 
       <header>

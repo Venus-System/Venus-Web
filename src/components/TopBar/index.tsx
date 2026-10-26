@@ -12,6 +12,7 @@ function TopBar({ menuId, menuOpen, onOpenMenu }: TopBarProps) {
   return (
     <header className={styles.barra}>
       <button
+        id="botao-do-menu"
         type="button"
         className={styles.menu}
         aria-label="Abrir menu"

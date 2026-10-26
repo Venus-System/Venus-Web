@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ChatButton from "../ChatButton";
 import ChatDrawer from "../ChatDrawer";
 import Footer from "../Footer";
@@ -33,9 +33,44 @@ function MainLayout({ children, chatProductName }: MainLayoutProps) {
 
   return (
     <div className={styles.layout}>
-      <a href="#main-content" className={styles.skipLink}>
-        Pular para o conteúdo
-      </a>
+      <nav aria-label="Atalhos">
+        <ul className={styles.atalhos}>
+          <li>
+            <a href="#main-content" className={styles.skipLink} accessKey="1">
+              Ir para o conteúdo [1]
+            </a>
+          </li>
+          <li>
+            <a
+              href={telaLarga ? "#navegacao-principal" : "#botao-do-menu"}
+              className={styles.skipLink}
+              accessKey="2"
+            >
+              Ir para o menu [2]
+            </a>
+          </li>
+          <li>
+            {telaLarga ? (
+              <a href="#sidebar-search" className={styles.skipLink} accessKey="3">
+                Ir para a busca [3]
+              </a>
+            ) : (
+              <Link
+                to={{ pathname: "/pesquisa", hash: "#termo-busca" }}
+                className={styles.skipLink}
+                accessKey="3"
+              >
+                Ir para a busca [3]
+              </Link>
+            )}
+          </li>
+          <li>
+            <a href="#rodape" className={styles.skipLink} accessKey="4">
+              Ir para o rodapé [4]
+            </a>
+          </li>
+        </ul>
+      </nav>
 
       {telaLarga ? null : (
         <TopBar

@@ -78,6 +78,8 @@ function Sidebar({ headerAction }: SidebarProps) {
 
   return (
     <nav
+      id="navegacao-principal"
+      tabIndex={-1}
       className={
         headerAction === undefined
           ? styles.sidebar

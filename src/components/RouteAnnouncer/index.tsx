@@ -4,18 +4,16 @@ import { useLocation } from "react-router-dom";
 const ESPERA_DO_TITULO = 400;
 
 function RouteAnnouncer() {
-  const { pathname, hash } = useLocation();
+  const { pathname } = useLocation();
   const [anuncio, setAnuncio] = useState("");
-  const enderecoAnteriorRef = useRef(pathname + hash);
+  const paginaAnteriorRef = useRef(pathname);
 
   useEffect(() => {
-    const endereco = pathname + hash;
-
-    if (enderecoAnteriorRef.current === endereco) {
+    if (paginaAnteriorRef.current === pathname) {
       return;
     }
 
-    enderecoAnteriorRef.current = endereco;
+    paginaAnteriorRef.current = pathname;
     setAnuncio("");
 
     const espera = window.setTimeout(() => {
@@ -25,14 +23,15 @@ function RouteAnnouncer() {
       const foco = document.activeElement;
       const focoForaDoConteudo =
         foco === null || foco === document.body || !conteudo?.contains(foco);
+      const temAlvoNaUrl = window.location.hash !== "";
 
-      if (hash === "" && conteudo instanceof HTMLElement && focoForaDoConteudo) {
+      if (!temAlvoNaUrl && conteudo instanceof HTMLElement && focoForaDoConteudo) {
         conteudo.focus({ preventScroll: true });
       }
     }, ESPERA_DO_TITULO);
 
     return () => window.clearTimeout(espera);
-  }, [pathname, hash]);
+  }, [pathname]);
 
   return (
     <p className="texto-oculto" aria-live="polite">

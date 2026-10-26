@@ -11,8 +11,8 @@ interface LayoutAdminProps {
 function LayoutAdmin({ children, onSair }: LayoutAdminProps) {
   return (
     <div className={styles.layout}>
-      <a href="#conteudo-admin" className={styles.pular}>
-        Pular para o conteúdo
+      <a href="#conteudo-admin" className={styles.pular} accessKey="1">
+        Ir para o conteúdo [1]
       </a>
 
       <header className={styles.cabecalho}>
