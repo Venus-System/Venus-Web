@@ -13,8 +13,12 @@ import { pedir, verificarResposta } from "./requisicao";
 const RECUSAS = [
   "ANALYSIS_NOT_FOUND",
   "PROFILE_NOT_FOUND",
+  "PRODUCT_NOT_FOUND",
+  "VERSION_NOT_FOUND",
   "VERSION_UNDER_REVIEW",
   "NO_INGREDIENTS",
+  "SCORING_MODEL_NOT_FOUND",
+  "NO_ACTIVE_SCORING_MODEL",
 ] as const;
 
 export type RecusaDaClassificacao = (typeof RECUSAS)[number];
@@ -57,7 +61,14 @@ function nomesDoMotivo(
   source: OrigemDoMotivo,
   text: string,
   ingredientName: string | null,
+  nomesDaApi: unknown,
 ): string[] {
+  const nomes = lerTodos(Array.isArray(nomesDaApi) ? nomesDaApi : [], texto);
+
+  if (nomes.length > 0) {
+    return nomes;
+  }
+
   if (source === "allergy") {
     return nomesNaFraseDeAlergia(text);
   }
@@ -95,7 +106,12 @@ function lerMotivo(
       impacto === 0,
     bonus: !warning && impacto !== null && impacto > 0,
     ingredientName,
-    ingredientNames: nomesDoMotivo(source, text, ingredientName),
+    ingredientNames: nomesDoMotivo(
+      source,
+      text,
+      ingredientName,
+      dados.ingredientNames,
+    ),
     profileTagSlug,
   };
 }

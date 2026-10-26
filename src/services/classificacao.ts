@@ -16,10 +16,14 @@ import { analisesPessoaisMock } from "./mocks/classificacao";
 import { lerPerfilFalso } from "./mocks/perfil";
 
 const SEM_FORMULA =
-  "Este produto está sem a lista de ingredientes, então não dá para cruzar a fórmula com o seu perfil.";
+  "Este produto ainda não tem a lista de ingredientes, então não dá para dar a nota.";
 
 const EM_REVISAO =
-  "A fórmula deste produto está em revisão pela equipe Venus. Enquanto isso, vale a avaliação geral.";
+  "Este produto ainda está em revisão. A nota sai assim que terminar.";
+
+const NAO_ACHADO = "Não achamos este produto.";
+
+const SEM_MODELO = "Não deu para calcular a nota agora. Tente de novo mais tarde.";
 
 const FORA_DO_AR =
   "A análise para o seu perfil não está disponível agora. Vale a avaliação geral.";
@@ -42,10 +46,16 @@ function paraSituacao(leitura: LeituraDaClassificacao): AnalisePessoal {
       return { situacao: "pronta", analise: leitura.analise };
     case "PROFILE_NOT_FOUND":
       return { situacao: "sem-perfil" };
+    case "PRODUCT_NOT_FOUND":
+    case "VERSION_NOT_FOUND":
+      return { situacao: "indisponivel", mensagem: NAO_ACHADO };
     case "VERSION_UNDER_REVIEW":
       return { situacao: "indisponivel", mensagem: EM_REVISAO };
     case "NO_INGREDIENTS":
       return { situacao: "indisponivel", mensagem: SEM_FORMULA };
+    case "SCORING_MODEL_NOT_FOUND":
+    case "NO_ACTIVE_SCORING_MODEL":
+      return { situacao: "indisponivel", mensagem: SEM_MODELO };
     case "ANALYSIS_NOT_FOUND":
       throw new Error(FALHA);
   }
