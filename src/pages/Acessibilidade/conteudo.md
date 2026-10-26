@@ -48,6 +48,9 @@ A combinação muda conforme o navegador:
   largura, sem rolagem para os lados.
 - As animações respeitam a preferência de movimento reduzido do sistema, e o
   som da Veninha pode ser desligado no topo da conversa.
+- No chat, dá para ditar a pergunta pelo botão de microfone, nos navegadores
+  que têm reconhecimento de voz (como Chrome, Edge e Safari). O texto ditado
+  vai para o campo e só é enviado depois que você revisa.
 - O conteúdo pode ser traduzido para Libras pelo **VLibras**, o tradutor do
   Governo Federal: use o botão do VLibras na lateral da tela e depois clique no
   texto que quer traduzir.

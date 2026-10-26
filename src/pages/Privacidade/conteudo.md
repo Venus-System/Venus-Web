@@ -109,6 +109,7 @@ eles processam dados em nosso nome:
 | Langfuse | Acompanhar o funcionamento da IA, quando ativado | Fora do Brasil |
 | Google Agenda | Ver horários livres e criar eventos, só se você conectar | Servidores da Google, fora do Brasil |
 | Vercel | Hospedagem da aplicação web | Fora do Brasil |
+| Reconhecimento de voz do navegador (Google no Chrome, Microsoft no Edge) | Transformar em texto o que você ditar no chat, só se você apertar o microfone | Servidores da Google ou da Microsoft, fora do Brasil |
 | VLibras, do Governo Federal | Traduzir para Libras o texto em que você clicar, só se você ativar o tradutor. O programa do tradutor é baixado dos servidores do governo a cada visita | Servidores do governo brasileiro |
 
 ### Conversa com a Veninha
@@ -118,6 +119,15 @@ modelos de linguagem de terceiros (Groq, Mistral AI e Google Gemini) para
 gerar as respostas. Esses serviços recebem o texto das mensagens para
 responder. **Não escreva na conversa dados que você não quer compartilhar**,
 como documentos, endereço ou informações de outras pessoas.
+
+### Ditado por voz no chat
+
+Se você apertar o microfone no campo da conversa, quem transforma a sua fala
+em texto é o próprio navegador. No Chrome, o áudio vai para os servidores da
+Google; no Edge, para os da Microsoft. O Venus não recebe nem guarda o áudio:
+recebe só o texto, depois que você revisa e envia, como se tivesse digitado. Na
+primeira vez, o navegador pede permissão para usar o microfone, e você pode
+tirar essa permissão a qualquer momento nas configurações do site.
 
 ### Google Agenda
 
