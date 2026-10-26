@@ -1,5 +1,4 @@
 import { useState } from "react";
-import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
@@ -93,10 +92,6 @@ function Reacao() {
   return (
     <MainLayout>
       <div className={styles.page}>
-        <div className={styles.voltar}>
-          <BackButton fallback="/pesquisa" />
-        </div>
-
         <header className={styles.header}>
           <h1 className={styles.title}>
             Um produto{" "}
