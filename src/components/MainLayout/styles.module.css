@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .columns {
@@ -11,7 +12,10 @@
 }
 
 .content {
+  width: 100%;
+  max-width: 80rem;
   min-width: 0;
+  margin-inline: auto;
   padding: var(--espaco-3) var(--espaco-4)
     calc(var(--botao-flutuante) + var(--espaco-6));
 }
