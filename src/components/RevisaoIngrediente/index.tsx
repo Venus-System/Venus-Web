@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import GrupoRadio from "../GrupoRadio";
 import type { RadioOption } from "../GrupoRadio";
 import Input from "../Input";
@@ -79,6 +80,31 @@ function RevisaoIngrediente({
   const podeLigar =
     ingredientesDoCatalogo !== null && ingredientesDoCatalogo.length > 0;
 
+  const listaDoCatalogo = useMemo(() => {
+    if (escolha.opcao !== OPCAO_LIGAR || ingredientesDoCatalogo === null) {
+      return null;
+    }
+
+    return (
+      <ListaSuspensa
+        id={idDoIngredienteCadastrado(ingrediente)}
+        label="Ingrediente cadastrado"
+        placeholder="Escolha o ingrediente"
+        options={ingredientesDoCatalogo.map((opcao) => ({
+          value: String(opcao.id),
+          label: opcao.name,
+        }))}
+        value={escolha.ingredientId}
+        onChange={(ingredientId) =>
+          onMudar({ ...escolha, ingredientId, erroDoIngrediente: null })
+        }
+        onClear={() => onMudar({ ...escolha, ingredientId: "" })}
+        error={escolha.erroDoIngrediente ?? undefined}
+        fullWidth
+      />
+    );
+  }, [ingrediente, escolha, ingredientesDoCatalogo, onMudar]);
+
   return (
     <div className={styles.decisao}>
       <GrupoRadio
@@ -91,24 +117,7 @@ function RevisaoIngrediente({
         error={escolha.erro ?? undefined}
       />
 
-      {escolha.opcao === OPCAO_LIGAR && ingredientesDoCatalogo !== null ? (
-        <ListaSuspensa
-          id={idDoIngredienteCadastrado(ingrediente)}
-          label="Ingrediente cadastrado"
-          placeholder="Escolha o ingrediente"
-          options={ingredientesDoCatalogo.map((opcao) => ({
-            value: String(opcao.id),
-            label: opcao.name,
-          }))}
-          value={escolha.ingredientId}
-          onChange={(ingredientId) =>
-            onMudar({ ...escolha, ingredientId, erroDoIngrediente: null })
-          }
-          onClear={() => onMudar({ ...escolha, ingredientId: "" })}
-          error={escolha.erroDoIngrediente ?? undefined}
-          fullWidth
-        />
-      ) : null}
+      {listaDoCatalogo}
 
       {escolha.opcao === OPCAO_CRIAR ? (
         <Input
