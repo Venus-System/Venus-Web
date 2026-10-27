@@ -210,11 +210,11 @@ function ModalFotoPerfil({
       </p>
 
       <div className={styles.acoes}>
-        <Button onClick={handleSalvar} disabled={enviando}>
+        <Button onClick={handleSalvar} busy={enviando}>
           {enviando ? "Salvando…" : "Salvar"}
         </Button>
 
-        <Button variant="secondary" onClick={onClose} disabled={enviando}>
+        <Button variant="secondary" onClick={onClose} busy={enviando}>
           Cancelar
         </Button>
       </div>

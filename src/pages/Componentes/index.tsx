@@ -27,6 +27,7 @@ import type { HumorDaVeninha, MensagemDoChat } from "../../types/chat";
 import type { RiskLevel } from "../../types/ingrediente";
 import { SUGESTOES_DO_PRODUTO, SUGESTOES_GERAIS } from "../../utils/chat";
 import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const LEVELS: RiskLevel[] = ["safe", "warning", "avoid", "no-data"];
@@ -51,6 +52,7 @@ const CONVERSA_DE_EXEMPLO: MensagemDoChat[] = [
 ];
 
 function Componentes() {
+  useTituloDaPagina("Componentes");
   const [alergias, setAlergias] = useState<string[]>(CHIPS_INICIAIS);
   const [favorito, setFavorito] = useState(false);
   const [conversa, setConversa] =

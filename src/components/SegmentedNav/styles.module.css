@@ -54,3 +54,9 @@
   color: var(--no-data);
   white-space: nowrap;
 }
+
+@media (forced-colors: active) {
+  .ativo {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+}

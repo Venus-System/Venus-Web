@@ -6,7 +6,13 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { useAutenticacaoAdmin } from "../../hooks/useAutenticacaoAdmin";
-import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
+import {
+  MAXIMO_DA_SENHA,
+  MAXIMO_DO_EMAIL,
+  validarEmail,
+  validarSenhaPreenchida,
+} from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type EstadoEnvio =
@@ -45,6 +51,7 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function AdminLogin() {
+  useTituloDaPagina("Login da área administrativa");
   const { administrador, entrar } = useAutenticacaoAdmin();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
@@ -134,6 +141,7 @@ function AdminLogin() {
         <Input
           id="email"
           name="email"
+          maxLength={MAXIMO_DO_EMAIL}
           type="email"
           label="E-mail"
           placeholder="voce@email.com"
@@ -147,6 +155,7 @@ function AdminLogin() {
         <Input
           id="senha"
           name="senha"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Senha"
           placeholder="Mínimo 8 caracteres"
@@ -163,7 +172,7 @@ function AdminLogin() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={enviando}>
+        <Button type="submit" busy={enviando}>
           {enviando ? "Entrando..." : "Entrar"}
           {enviando ? null : (
             <ArrowRight className={styles.icone} aria-hidden="true" />

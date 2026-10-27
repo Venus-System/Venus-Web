@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import Chip from "../Chip";
 import Input from "../Input";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 const LIMITE_RESULTADOS = 6;
@@ -127,6 +128,7 @@ function BuscaComChips<T extends string>({
       <Input
         ref={campoRef}
         id={id}
+        maxLength={MAXIMO_DA_BUSCA}
         label={label}
         hideLabel={hideLabel}
         labelVariant="title"

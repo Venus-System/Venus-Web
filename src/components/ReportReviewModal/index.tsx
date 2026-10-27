@@ -9,7 +9,10 @@ import {
   MOTIVOS_DE_DENUNCIA,
   ROTULO_DO_MOTIVO_DE_DENUNCIA,
 } from "../../utils/motivosDenuncia";
-import { validarMotivoDaDenuncia } from "../../utils/validacao";
+import {
+  MAXIMO_DA_DENUNCIA,
+  validarMotivoDaDenuncia,
+} from "../../utils/validacao";
 import Button from "../Button";
 import GrupoRadio from "../GrupoRadio";
 import type { RadioOption } from "../GrupoRadio";
@@ -102,6 +105,7 @@ function FormularioDenuncia({
           id={ID_COMENTARIO}
           className={styles.campo}
           rows={4}
+          maxLength={MAXIMO_DA_DENUNCIA}
           placeholder="Descreva o problema com suas palavras."
           value={campos.comentario}
           onChange={(evento) =>
@@ -114,8 +118,8 @@ function FormularioDenuncia({
         />
 
         <p id={ID_AVISO} className={styles.aviso}>
-          Um moderador analisa a denúncia. A avaliação continua visível até a
-          análise terminar.
+          Até {MAXIMO_DA_DENUNCIA} caracteres. Um moderador analisa a denúncia.
+          A avaliação continua visível até a análise terminar.
         </p>
       </div>
 

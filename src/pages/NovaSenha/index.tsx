@@ -11,11 +11,13 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import {
+  MAXIMO_DA_SENHA,
   forcaDaSenha,
   validarConfirmacaoSenha,
   validarSenha,
 } from "../../utils/validacao";
 import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const SEGMENTOS = [1, 2, 3, 4];
@@ -49,6 +51,7 @@ interface EstadoFormulario {
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
 function NovaSenha() {
+  useTituloDaPagina("Nova senha");
   const { confirmarRedefinicao } = useAutenticacao();
   const navegar = useNavigate();
   const [parametros] = useSearchParams();
@@ -141,11 +144,12 @@ function NovaSenha() {
         Crie uma <span className={styles.destaque}>senha nova</span>
       </h1>
 
-      <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
         <div className={styles.blocoSenha}>
           <Input
             id="senha"
             name="senha"
+            maxLength={MAXIMO_DA_SENHA}
             type="password"
             label="Nova senha"
             placeholder="Mínimo 8 caracteres"
@@ -178,6 +182,7 @@ function NovaSenha() {
         <Input
           id="confirmacao"
           name="confirmacao"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Confirme a senha"
           placeholder="Repita a senha"
@@ -200,7 +205,7 @@ function NovaSenha() {
           </div>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Salvando..." : "Salvar nova senha"}
         </Button>
       </form>

@@ -13,6 +13,7 @@ import MainLayout from "../../components/MainLayout";
 import Modal from "../../components/Modal";
 import PhotoDropZone from "../../components/PhotoDropZone";
 import ProductCard from "../../components/ProductCard";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Ampliada {
@@ -81,6 +82,7 @@ function imagemDaBusca(busca: BuscaPorFoto): ImagemLida | null {
 }
 
 function Escanear() {
+  useTituloDaPagina("Buscar por foto");
   const {
     busca,
     ocupado,
@@ -249,7 +251,7 @@ function Escanear() {
 
                 <span className={styles.lidaTexto}>Imagem enviada</span>
 
-                <Button variant="text" onClick={recomecar} disabled={ocupado}>
+                <Button variant="text" onClick={recomecar} busy={ocupado}>
                   Buscar com outra imagem
                 </Button>
               </div>

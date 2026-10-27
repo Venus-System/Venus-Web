@@ -83,3 +83,31 @@
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
 }
+
+.microfone {
+  composes: enviar;
+}
+
+.ouvindo,
+.ouvindo:hover {
+  background-color: var(--violeta);
+  color: var(--texto-invertido);
+}
+
+.ouvindoTexto {
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.erroDoDitado {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+@media (forced-colors: active) {
+  .ouvindo {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+}

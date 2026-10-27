@@ -4,6 +4,7 @@ import MySpaceNav from "../../components/MySpaceNav";
 import SubmissionRow from "../../components/SubmissionRow";
 import { useEnvios } from "../../hooks/useEnvios";
 import type { Envio } from "../../types/envio";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface GrupoDeEnvios {
@@ -30,6 +31,7 @@ function agrupar(envios: Envio[]): GrupoDeEnvios[] {
 }
 
 function Enviados() {
+  useTituloDaPagina("Enviados");
   const { estado, recarregar } = useEnvios();
   const envios = estado.status === "pronto" ? estado.envios : null;
 

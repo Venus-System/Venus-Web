@@ -27,6 +27,7 @@ import {
 } from "../../utils/niveis";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import { tomDoProduto } from "../../utils/tomDoProduto";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type Lado = 0 | 1;
@@ -313,6 +314,7 @@ function selosEAlertas({ product, ingredients }: ProdutoComparado) {
 }
 
 function Comparar() {
+  useTituloDaPagina("Comparar produtos");
   const [parametros, setParametros] = useSearchParams();
   const slugs: [string | null, string | null] = [
     parametros.get("a"),

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Mic } from "lucide-react";
+import { useDitado } from "../../hooks/useDitado";
+import type { EstadoDoDitado } from "../../hooks/useDitado";
 import { TAMANHO_MAXIMO_DA_MENSAGEM } from "../../utils/chat";
 import styles from "./styles.module.css";
 
@@ -10,8 +12,27 @@ interface ChatComposerProps {
   onSend: (texto: string) => void;
 }
 
+function avisoDoDitado(estado: EstadoDoDitado): string {
+  if (estado.status === "ouvindo") {
+    return "Ouvindo… Fale a sua pergunta. Aperte o microfone de novo para parar.";
+  }
+
+  return estado.status === "parado" ? estado.anuncio : "";
+}
+
 function ChatComposer({ id, blocked, onSend }: ChatComposerProps) {
   const [texto, setTexto] = useState("");
+  const campoRef = useRef<HTMLTextAreaElement>(null);
+  const { disponivel, estado: ditado, alternar } = useDitado((fala) => {
+    setTexto((atual) =>
+      (atual.trim() === "" ? fala : `${atual.trimEnd()} ${fala}`).slice(
+        0,
+        TAMANHO_MAXIMO_DA_MENSAGEM,
+      ),
+    );
+    campoRef.current?.focus();
+  });
+  const ouvindo = ditado.status === "ouvindo";
   const dicaId = `${id}-dica`;
   const semTexto = texto.trim() === "";
   const noLimite = texto.length >= TAMANHO_MAXIMO_DA_MENSAGEM;
@@ -45,6 +66,7 @@ function ChatComposer({ id, blocked, onSend }: ChatComposerProps) {
         </label>
 
         <textarea
+          ref={campoRef}
           id={id}
           className={styles.campo}
           rows={3}
@@ -55,6 +77,22 @@ function ChatComposer({ id, blocked, onSend }: ChatComposerProps) {
           onKeyDown={handleKeyDown}
           aria-describedby={dicaId}
         />
+
+        {disponivel ? (
+          <button
+            type="button"
+            className={
+              ouvindo
+                ? `${styles.microfone} ${styles.ouvindo}`
+                : styles.microfone
+            }
+            onClick={alternar}
+            aria-pressed={ouvindo}
+            aria-label="Ditar a pergunta"
+          >
+            <Mic className={styles.enviarIcone} aria-hidden="true" />
+          </button>
+        ) : null}
 
         <button
           type="submit"
@@ -69,6 +107,19 @@ function ChatComposer({ id, blocked, onSend }: ChatComposerProps) {
       <p id={dicaId} className="texto-oculto">
         Enter envia a mensagem. Shift com Enter quebra a linha.
       </p>
+
+      <p
+        className={ouvindo ? styles.ouvindoTexto : "texto-oculto"}
+        role="status"
+      >
+        {avisoDoDitado(ditado)}
+      </p>
+
+      {ditado.status === "erro" ? (
+        <p className={styles.erroDoDitado} role="alert">
+          {ditado.mensagem}
+        </p>
+      ) : null}
 
       {noLimite ? (
         <p className={styles.limite} role="status">

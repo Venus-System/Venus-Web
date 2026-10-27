@@ -13,6 +13,8 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import ProductCard from "../../components/ProductCard";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 type FiltroDeLista = "categoria" | "marca";
@@ -79,6 +81,7 @@ function textoDeStatus(
 }
 
 function Pesquisa() {
+  useTituloDaPagina("Buscar produto");
   const [parametros, setParametros] = useSearchParams();
   const termoDaUrl = (parametros.get("termo") ?? "").trim();
   const [busca, setBusca] = useState<BuscaDaPesquisa>(() => ({
@@ -210,11 +213,13 @@ function Pesquisa() {
         <form
           className={styles.form}
           role="search"
+          aria-label="Buscar no catálogo"
           onSubmit={handleSubmit}
           ref={formRef}
         >
           <Input
             id="termo-busca"
+            maxLength={MAXIMO_DA_BUSCA}
             name="termo"
             label="Buscar produto"
             hideLabel

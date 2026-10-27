@@ -6,6 +6,7 @@ import type {
   IngredienteInterpretado,
   OpcaoDoCatalogo,
 } from "../../types/admin";
+import { MAXIMO_DO_NOME_INCI } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 export interface EscolhaDoIngrediente {
@@ -112,6 +113,7 @@ function RevisaoIngrediente({
       {escolha.opcao === OPCAO_CRIAR ? (
         <Input
           id={idDoNomeInci(ingrediente)}
+          maxLength={MAXIMO_DO_NOME_INCI}
           label="Nome INCI do ingrediente novo"
           hint="Confira a grafia. É com este nome que ele entra na base."
           value={escolha.inciName}

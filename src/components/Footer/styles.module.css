@@ -118,6 +118,10 @@
   user-select: none;
 }
 
+.watermark::after {
+  content: "Venus";
+}
+
 .bottom {
   display: flex;
   flex-wrap: wrap;
@@ -133,4 +137,14 @@
 .legal {
   flex-direction: row;
   gap: var(--espaco-3);
+}
+
+@media (forced-colors: active) {
+  .watermark {
+    display: none;
+  }
+}
+
+:global(:root[data-contraste="alto"]) .watermark {
+  display: none;
 }

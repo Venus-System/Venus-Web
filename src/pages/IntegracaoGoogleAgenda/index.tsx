@@ -8,6 +8,7 @@ import { useLinkDaAgenda } from "../../hooks/useLinkDaAgenda";
 import { useVoltaDaAgenda } from "../../hooks/useVoltaDaAgenda";
 import type { Volta } from "../../hooks/useVoltaDaAgenda";
 import type { HumorDaVeninha } from "../../types/chat";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const HUMOR_DA_VOLTA: Record<Volta["status"], HumorDaVeninha> = {
@@ -17,6 +18,7 @@ const HUMOR_DA_VOLTA: Record<Volta["status"], HumorDaVeninha> = {
 };
 
 function IntegracaoGoogleAgenda() {
+  useTituloDaPagina("Google Agenda");
   const navigate = useNavigate();
   const { usuario } = useAutenticacao();
   const usuarioId = usuario === null ? null : usuario.id;

@@ -5,6 +5,7 @@ import type { ProdutoDoPainel } from "../../types/painel";
 import { tomDoProduto } from "../../utils/tomDoProduto";
 import {
   MAXIMO_DO_COMENTARIO_DA_AVALIACAO,
+  MAXIMO_DO_TITULO_DA_AVALIACAO,
   validarComentarioDaAvaliacao,
   validarNotaDaAvaliacao,
   validarTituloDaAvaliacao,
@@ -146,6 +147,7 @@ function FormularioAvaliacao({
         ref={tituloRef}
         id={ID_TITULO}
         label="Título"
+        maxLength={MAXIMO_DO_TITULO_DA_AVALIACAO}
         placeholder="Resuma sua experiência em uma frase"
         value={campos.titulo}
         onChange={(evento) =>

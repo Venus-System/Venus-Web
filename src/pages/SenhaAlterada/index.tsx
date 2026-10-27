@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 import { CircleCheck } from "lucide-react";
 import Button from "../../components/Button";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 function SenhaAlterada() {
+  useTituloDaPagina("Senha trocada");
   const tituloRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {

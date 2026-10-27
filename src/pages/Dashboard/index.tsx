@@ -11,6 +11,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { usePainel } from "../../hooks/usePainel";
 import type { ContagemPorPeriodo, Painel } from "../../types/painel";
 import { nivelDaNota, nivelDaRecomendacao } from "../../utils/niveis";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const FORMATO_MES = new Intl.DateTimeFormat("pt-BR", {
@@ -85,6 +86,7 @@ function resumoDoTopo(painel: Painel): string {
 }
 
 function Dashboard() {
+  useTituloDaPagina("Dashboard");
   const { usuario } = useAutenticacao();
   const { estado, recarregar } = usePainel();
   const nome = primeiroNome(usuario?.name ?? "");

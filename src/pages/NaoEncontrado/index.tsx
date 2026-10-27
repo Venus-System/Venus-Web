@@ -1,9 +1,11 @@
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import Veninha from "../../components/Veninha";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 function NaoEncontrado() {
+  useTituloDaPagina("Página não encontrada");
   return (
     <MainLayout>
       <div className={styles.page}>

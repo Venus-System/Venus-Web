@@ -13,6 +13,7 @@ import type { MotivoDaAnalise } from "../../types/analise";
 import type { IngredienteAvaliado } from "../../types/ingrediente";
 import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
 import { ehFragrancia } from "../../utils/selos";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Escolha {
@@ -54,6 +55,7 @@ function notaDoIngrediente(
 }
 
 function Reacao() {
+  useTituloDaPagina("Tive uma reação");
   const [escolha, setEscolha] = useState<Escolha>(SEM_ESCOLHA);
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDeProduto();

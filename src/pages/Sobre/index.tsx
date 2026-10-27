@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import fotoDaEquipeUm from "../../assets/equipe-1.jpg";
 import fotoDaEquipeDois from "../../assets/equipe-2.jpg";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Integrante {
@@ -65,6 +66,7 @@ const TRADUCAO = [
 ];
 
 function Sobre() {
+  useTituloDaPagina("Sobre");
   const trilhaRef = useRef<HTMLUListElement>(null);
 
   function rolar(direcao: number) {

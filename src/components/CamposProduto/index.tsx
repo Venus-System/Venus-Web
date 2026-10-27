@@ -4,6 +4,7 @@ import ListaSuspensa from "../ListaSuspensa";
 import type { SelectOption } from "../ListaSuspensa";
 import type { EstadoCatalogo } from "../../hooks/useCatalogoDaRevisao";
 import type { OpcaoDoCatalogo } from "../../types/admin";
+import { MAXIMO_DO_NOME_DO_PRODUTO } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 export interface ValoresDoProduto {
@@ -51,6 +52,7 @@ function CamposProduto({
 
       <Input
         id={ID_NOME_DO_PRODUTO}
+        maxLength={MAXIMO_DO_NOME_DO_PRODUTO}
         label="Nome do produto"
         value={valores.nome}
         onChange={(evento) => onMudar({ ...valores, nome: evento.target.value })}

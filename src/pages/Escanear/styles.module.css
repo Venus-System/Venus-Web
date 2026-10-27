@@ -208,7 +208,7 @@
   font-size: var(--tamanho-enorme);
   font-weight: var(--peso-titulo);
   line-height: 1;
-  -webkit-text-stroke: 1.5px var(--lavanda);
+  -webkit-text-stroke: 1.5px var(--borda-forte);
 }
 
 .passoTitulo {

@@ -32,6 +32,7 @@ import {
   rotuloDePendencias,
 } from "./rotulos";
 import { nomeCurto } from "../../utils/nomeCurto";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Filtro {
@@ -74,6 +75,11 @@ function FilaAprovacao() {
   const idSelecionado = id === undefined ? null : id;
   const { estado, recarregar } = useFilaAprovacao(origem);
   const estadoCandidato = useCandidato(idSelecionado);
+  useTituloDaPagina(
+    estadoCandidato.status === "pronto"
+      ? `${estadoCandidato.candidato.name} – Fila de aprovação`
+      : "Fila de aprovação",
+  );
   const { estado: catalogo, recarregar: recarregarCatalogo } =
     useCatalogoDaRevisao();
   const tituloFilaRef = useRef<HTMLHeadingElement>(null);
@@ -132,7 +138,7 @@ function FilaAprovacao() {
           className={
             idSelecionado === null
               ? styles.fila
-              : `${styles.fila} ${styles.escondidaNoCelular}`
+              : `${styles.fila} ${styles.filaRecolhida}`
           }
           aria-labelledby="titulo-fila"
         >

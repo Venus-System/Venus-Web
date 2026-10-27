@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import RotaAdmin from "./components/RotaAdmin";
 import RotaPrivada from "./components/RotaPrivada";
+import RouteAnnouncer from "./components/RouteAnnouncer";
 import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
 
 const Componentes = lazy(() => import("./pages/Componentes"));
@@ -25,6 +26,7 @@ const Perguntas = lazy(() => import("./pages/Perguntas"));
 const Privacidade = lazy(() => import("./pages/Privacidade"));
 const Termos = lazy(() => import("./pages/Termos"));
 const Cookies = lazy(() => import("./pages/Cookies"));
+const Acessibilidade = lazy(() => import("./pages/Acessibilidade"));
 const Enviados = lazy(() => import("./pages/Enviados"));
 const Historico = lazy(() => import("./pages/Historico"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
@@ -38,6 +40,7 @@ const IntegracaoGoogleAgenda = lazy(
 function App() {
   return (
     <Suspense fallback={null}>
+      <RouteAnnouncer />
       <Routes>
         <Route path="/" element={<Inicio />} />
         {import.meta.env.DEV ? (
@@ -131,6 +134,7 @@ function App() {
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/cookies" element={<Cookies />} />
+        <Route path="/acessibilidade" element={<Acessibilidade />} />
         <Route path="*" element={<NaoEncontrado />} />
       </Routes>
     </Suspense>

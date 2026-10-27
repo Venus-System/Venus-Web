@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/Logo.svg";
+import ContrastToggle from "../ContrastToggle";
 import styles from "./styles.module.css";
 
 interface LayoutAdminProps {
@@ -11,8 +12,8 @@ interface LayoutAdminProps {
 function LayoutAdmin({ children, onSair }: LayoutAdminProps) {
   return (
     <div className={styles.layout}>
-      <a href="#conteudo-admin" className={styles.pular}>
-        Pular para o conteúdo
+      <a href="#conteudo-admin" className={styles.pular} accessKey="1">
+        Ir para o conteúdo [1]
       </a>
 
       <header className={styles.cabecalho}>
@@ -26,6 +27,8 @@ function LayoutAdmin({ children, onSair }: LayoutAdminProps) {
         <button type="button" className={styles.sair} onClick={onSair}>
           Sair
         </button>
+
+        <ContrastToggle />
       </header>
 
       <main id="conteudo-admin" className={styles.conteudo} tabIndex={-1}>

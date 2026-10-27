@@ -326,3 +326,13 @@
     letter-spacing: 0.06em;
   }
 }
+
+@media (forced-colors: active) {
+  .trilha {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .preenchida {
+    background-color: CanvasText;
+  }
+}

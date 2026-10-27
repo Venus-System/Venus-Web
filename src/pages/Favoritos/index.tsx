@@ -6,6 +6,7 @@ import MySpaceNav from "../../components/MySpaceNav";
 import ProductRow from "../../components/ProductRow";
 import { useFavoritos } from "../../hooks/useFavoritos";
 import type { EstadoFavoritos } from "../../hooks/useFavoritos";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 function avisoDoFavorito(estado: EstadoFavoritos): string {
@@ -21,6 +22,7 @@ function avisoDoFavorito(estado: EstadoFavoritos): string {
 }
 
 function Favoritos() {
+  useTituloDaPagina("Favoritos");
   const { estado, recarregar, alternar } = useFavoritos();
 
   return (

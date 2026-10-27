@@ -61,11 +61,11 @@ function ModalAprovacao({
         )}
 
         <div className={styles.acoes}>
-          <Button onClick={onConfirmar} disabled={enviando}>
+          <Button onClick={onConfirmar} busy={enviando}>
             {enviando ? "Aprovando..." : "Aprovar mesmo assim"}
           </Button>
 
-          <Button variant="secondary" onClick={onClose} disabled={enviando}>
+          <Button variant="secondary" onClick={onClose} busy={enviando}>
             Voltar e revisar
           </Button>
         </div>
