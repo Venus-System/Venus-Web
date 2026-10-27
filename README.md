@@ -1,17 +1,40 @@
 # Venus
 
-An application that reads a cosmetic's ingredient list and explains what each
-ingredient does for the person's skin, for the planet, and for the people who
-produce it.
+Aplicação que lê a lista de ingredientes de um cosmético e explica o que cada
+ingrediente faz para a pele da pessoa, para o planeta e para quem produz.
 
-**Live application:** https://venus-web-application.vercel.app/
+**Aplicação publicada:** https://venus-web-application.vercel.app/
 
-Interdisciplinary project for Germinare. React interface written in TypeScript,
-built with Vite and routed by React Router.
+Projeto interdisciplinar do Instituto J&F Germinare. Este repositório é a
+interface web, feita em React com TypeScript, Vite e React Router.
 
-## Running the project
+## O que dá para fazer
 
-Requires Node 18 or newer.
+- **Pesquisar produtos** por nome, categoria e marca, e abrir a análise de cada
+  um: nota geral, quatro notas de qualidade (saúde, meio ambiente, ética e
+  desempenho) e o semáforo de cada ingrediente.
+- **Responder o questionário de perfil** (pele, cabelo, faixa etária e, com
+  autorização, dados de saúde e alergias) para ver a nota pessoal de cada
+  produto. Ingrediente contraindicado ou alérgeno derruba a nota, mesmo que o
+  produto seja bom no resto.
+- **Comparar dois produtos** lado a lado.
+- **Buscar pela foto** do rótulo: o texto é lido no próprio navegador e a
+  Venus procura o produto no catálogo. Produtos novos são enviados pelo app
+  Venus no celular e passam pela fila de aprovação; a web mostra os envios de
+  cada pessoa.
+- **Conversar com a Veninha**, a assistente de IA, que explica ingredientes e
+  produtos e pode montar uma rotina na Google Agenda, se a pessoa conectar.
+- **Avaliar produtos**, votar em avaliações úteis e denunciar avaliações.
+- **Guardar favoritos** e consultar o histórico de análises e de envios.
+- **Área administrativa**: fila de aprovação dos produtos enviados, com a foto
+  do rótulo, o texto lido e a decisão sobre cada ingrediente novo.
+
+Sem conta, a página de produto mostra só a avaliação geral, sem nenhum dado
+pessoal.
+
+## Como rodar
+
+Precisa do Node 20 ou mais novo (a CI usa o 20).
 
 ```bash
 npm install
@@ -19,114 +42,147 @@ cp .env.example .env
 npm run dev
 ```
 
-Vite serves the app at `http://localhost:5173`.
+O Vite abre a aplicação em `http://localhost:5173`.
 
-Other commands:
+Com o `.env.example` copiado sem mudanças, a aplicação roda com **dados
+falsos** (`VITE_USAR_MOCK=true`): não precisa de backend nem de Firebase. Para
+entrar, use qualquer e-mail e uma senha de pelo menos 8 caracteres.
+
+Outros comandos:
 
 ```bash
-npm run build     # type check with tsc, then a production build into dist/
-npm run preview   # serves dist/ locally, to inspect the build
+npm run build     # confere os tipos com tsc e gera o build de produção em dist/
+npm run preview   # serve o dist/ localmente, para conferir o build
 ```
 
-## Structure of `src/`
+## Variáveis de ambiente
 
-| Folder        | Purpose                                             |
-| ------------- | --------------------------------------------------- |
-| `assets/`     | versioned images and icons                          |
-| `components/` | reusable interface pieces                           |
-| `config/`     | the only place that reads environment variables     |
-| `contexts/`   | global state providers, such as authentication      |
-| `hooks/`      | custom hooks, reused across screens                 |
-| `pages/`      | one folder per screen                               |
-| `services/`   | all communication with the API and with Firebase    |
-| `types/`      | domain interfaces, organized by subject             |
-| `styles/`     | design tokens and global styles                     |
-| `utils/`      | helper functions, such as validation                |
+Os valores de exemplo, com a explicação de cada um, estão no `.env.example`. O
+único lugar do código que lê variáveis de ambiente é `src/config/`.
 
-The rule behind the layout: a component handles appearance, a service handles
-talking to the API, a type describes the shape of the data. No component calls
-the API directly, and no service decides how anything is displayed.
+| Variável | Para quê | Obrigatória |
+|---|---|---|
+| `VITE_USAR_MOCK` | `true` usa os dados falsos de `src/services/mocks/`; `false` chama as APIs reais | não (sem ela, vale `true`) |
+| `VITE_API_URL` | endereço da API principal (Venus-CRUD) | sim, quando `VITE_USAR_MOCK=false` |
+| `VITE_API_SCANS_URL` | endereço da API usado só nas rotas de scan (fila do admin e Enviados) | não (sem ela, usa o `VITE_API_URL`) |
+| `VITE_CLASSIFICACAO_URL` | API de Classificação, que calcula a nota pessoal | não (sem ela, só aparece a avaliação geral) |
+| `VITE_IA_API_URL` | API da IA, que responde o chat da Veninha | não (sem ela, o chat avisa que está indisponível) |
+| `VITE_GOOGLE_CLIENT_ID` | cliente OAuth da Google Agenda | não (sem ela, o chat não oferece conectar a agenda) |
+| `VITE_FIREBASE_*` (seis variáveis) | Firebase Authentication | sim, para entrar com conta real |
 
-Every component and every page lives in `Name/index.tsx` inside its own folder.
+Os endereços vão sem barra no fim. Se `VITE_USAR_MOCK=false` e o
+`VITE_API_URL` estiver vazio, a aplicação para ao abrir e diz qual variável
+falta, em vez de mandar pedidos para um endereço errado.
 
-Inside `services/`, `api/` describes the backend's own format and translates it
-into the domain types, and `mocks/` holds fake data already in the domain
-format.
+Das seis variáveis do Firebase, só `API_KEY`, `AUTH_DOMAIN` e `PROJECT_ID` são
+necessárias para autenticar. Sem elas, o login cai no modo falso e o botão de
+entrar com Google aparece desabilitado, com a explicação. A `apiKey` do
+Firebase não é segredo: ela identifica o projeto e vai no pacote publicado. O
+que protege o projeto é a validação do token no servidor.
 
-## Routes
+No console do Firebase, três configurações importam:
 
-| Route                    | Screen                                        |
-| ------------------------ | --------------------------------------------- |
-| `/`                      | home                                          |
-| `/pesquisa`              | product search                                |
-| `/produto/:slug`         | product analysis                              |
-| `/sobre`                 | about the project                             |
-| `/metodologia`           | how the scores are calculated                 |
-| `/fontes`                | where the data comes from                     |
-| `/privacidade`           | privacy policy                                |
-| `/termos`                | terms of use                                  |
-| `/cookies`               | cookie policy                                 |
-| `/login`                 | sign in                                       |
-| `/criar-conta`           | sign up                                       |
-| `/esqueci-senha`         | password recovery, in three steps             |
-| `/dashboard`             | private, requires sign in                     |
-| `/perguntas`             | private, the profile questionnaire            |
-| `/componentes`           | **internal tool**, see below                  |
-| `*`                      | not found, with a way back                    |
+- ativar **E-mail/senha** e **Google** em Sign-in method;
+- incluir o domínio publicado em Authorized domains;
+- apontar o link do e-mail de redefinição de senha para `/esqueci-senha/nova`.
+  Sem isso, o link abre a página do próprio Firebase e nunca chega à tela do
+  projeto.
 
-`/componentes` is a development screen: it renders every component in every
-state on a single page. It is kept in the build on purpose, because it is the
-fastest way to audit contrast and focus, but it is not linked from anywhere in
-the interface and is not meant for end users.
+## Rotas
 
-## Environment variables
+| Rota | Tela | Acesso |
+|---|---|---|
+| `/` | página inicial, ainda em construção | público |
+| `/pesquisa` | busca de produtos | público |
+| `/produto/:slug` | análise do produto | público (nota pessoal com conta) |
+| `/comparar` | comparação de dois produtos | público |
+| `/reacao` | "Tive uma reação": o que na fórmula merece atenção | público |
+| `/sobre` | sobre o projeto e a equipe | público |
+| `/metodologia` | como as notas são calculadas | público |
+| `/fontes` | de onde vêm os dados | público |
+| `/privacidade`, `/termos`, `/cookies` | documentos legais | público |
+| `/acessibilidade` | declaração de acessibilidade e atalhos | público |
+| `/login`, `/criar-conta` | entrar e criar conta | público |
+| `/esqueci-senha`, `/esqueci-senha/nova`, `/esqueci-senha/pronto` | recuperação de senha | público |
+| `/dashboard` | painel da pessoa | com conta |
+| `/perfil` | perfil, foto, autorização de saúde e saída | com conta |
+| `/perguntas` | questionário de perfil | com conta |
+| `/escanear` | busca pela foto do rótulo | com conta |
+| `/historico`, `/favoritos`, `/historico/enviados` | histórico, favoritos e envios | com conta |
+| `/integracoes/google-agenda` | volta da conexão com a Google Agenda | com conta |
+| `/admin/login` | entrada da área administrativa | público |
+| `/admin/fila/:id?` | fila de aprovação | equipe administrativa |
+| `*` | página não encontrada, com caminho de volta | público |
 
-Example values live in `.env.example`. Copy that file to `.env` before running.
+As rotas com conta redirecionam para o login e voltam para a página pedida
+depois de entrar. Em desenvolvimento existe também `/componentes`, uma vitrine
+de todos os componentes em todos os estados, usada para conferir contraste e
+foco. Ela não entra no build publicado.
 
-### `VITE_USAR_MOCK`
+## Estrutura de `src/`
 
-Decides where the data comes from.
+| Pasta | O que guarda |
+|---|---|
+| `assets/` | imagens e ícones versionados, como o logo e a Veninha |
+| `components/` | peças reutilizáveis da interface, uma pasta por componente |
+| `config/` | o único lugar que lê variáveis de ambiente |
+| `contexts/` | estado global: autenticação, autenticação do admin e chat |
+| `hooks/` | hooks próprios, reaproveitados entre telas |
+| `pages/` | uma pasta por tela |
+| `services/` | toda a comunicação com as APIs e com o Firebase |
+| `types/` | interfaces do domínio, organizadas por assunto |
+| `styles/` | tokens de design (cores, fontes, espaços) e estilos globais |
+| `utils/` | funções auxiliares, como validação de formulários |
 
-- `true` — services return fake data, kept in `src/services/mocks/`
-- `false` — services call the real API, at the address in `VITE_API_URL`
+A regra que organiza tudo: **componente cuida da aparência, serviço cuida de
+conversar com a API, tipo descreve o formato do dado.** Nenhum componente nem
+página chama a API diretamente: eles usam um hook, e o hook chama o serviço.
+Nenhum serviço decide como algo é exibido.
 
-The whole application is built with `VITE_USAR_MOCK=true`, because the API is not
-ready yet. The service function signatures are already the final ones, so
-flipping the switch to `false` should not change any screen.
+Todo componente e toda página ficam em `Nome/index.tsx`, na própria pasta, com
+o CSS ao lado em `styles.module.css`. Cores, fontes e raios vêm sempre das
+variáveis de `src/styles/tokens.css`.
 
-### `VITE_API_URL`
+Dentro de `services/`, a pasta `api/` conhece o formato de cada backend e
+traduz as respostas para os tipos do domínio, e a pasta `mocks/` guarda dados
+falsos já no formato do domínio. As funções de serviço têm a mesma assinatura
+nos dois modos, então trocar `VITE_USAR_MOCK` não muda nenhuma tela.
 
-Address of the API. Only read when `VITE_USAR_MOCK=false`, and required in that
-case: the application fails on startup naming the missing variable, instead of
-sending requests to a relative path.
+## Acessibilidade
 
-Write it without a trailing slash — the services build paths as
-`${VITE_API_URL}/api/...`.
+O site segue a WCAG 2.2 no nível AA e o eMAG. Tudo funciona só com o teclado,
+há links de pular para o conteúdo (com teclas de atalho), anúncio da troca de
+página para leitores de tela, botão de alto contraste, suporte ao modo de alto
+contraste do Windows e tradução para Libras pelo VLibras. A lista completa, com
+as limitações conhecidas, está na página
+[/acessibilidade](https://venus-web-application.vercel.app/acessibilidade).
 
-### Firebase
+## Qualidade e publicação
 
-Six variables configure authentication:
+A cada pull request para `develop` ou `main`, a CI do GitHub Actions
+(`.github/workflows/ci.yml`) instala as dependências, roda o build (que inclui
+a checagem de tipos) e confere as regras do projeto:
 
-```
-VITE_FIREBASE_API_KEY
-VITE_FIREBASE_AUTH_DOMAIN
-VITE_FIREBASE_PROJECT_ID
-VITE_FIREBASE_STORAGE_BUCKET
-VITE_FIREBASE_MESSAGING_SENDER_ID
-VITE_FIREBASE_APP_ID
-```
+- nenhum `any` em `src/`;
+- nenhum arquivo `.js` ou `.jsx` em `src/`;
+- nenhum `fetch` em páginas ou componentes;
+- nenhuma lista com `key={index}`;
+- nenhum `window.location.href`;
+- nenhum `console.log`.
 
-Only the first three are required to authenticate; the console hands all six
-when you register a web app. Without them, sign-in falls back to fake data and
-the Google button is rendered disabled, with an explanation.
+A publicação é feita pela Vercel a partir do repositório. O `vercel.json`
+manda todas as rotas para o `index.html`, para o React Router funcionar ao
+abrir um endereço direto.
 
-The `apiKey` is not a secret: it identifies the project and ships in the public
-bundle. What protects the project is token validation on the server.
+Os commits seguem o padrão Conventional Commits (`feat:`, `fix:`, `refactor:`,
+`docs:`), com a mensagem em português.
 
-In the Firebase console, three settings matter:
+## Equipe
 
-- enable **Email/password** and **Google** under Sign-in method;
-- add the deployed domain under Authorized domains;
-- set a **custom action URL** on the password reset template, pointing to
-  `/esqueci-senha/nova`. Without it the reset link opens Firebase's own hosted
-  page and never reaches the screen in this project.
+Matheus Orestes, Rafael Lopes, Sophia Castro, Laura Gonçalves, Felipe Augusto,
+Akira Komati, Bianca Bazoni, Bruno Vinicius, Miguel Oliveira, Sarah Delatorre
+e Gustavo Herance.
+
+## Licença
+
+MIT. Veja o arquivo `LICENSE`.
