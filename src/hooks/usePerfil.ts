@@ -118,6 +118,7 @@ export function usePerfil(): Perfil {
   const dono = usuario === null ? null : usuario.id;
   const resumoRef = useRef<HTMLDivElement>(null);
   const filaDeSalvamentoRef = useRef<Promise<void>>(Promise.resolve());
+  const edicoesRef = useRef(0);
 
   useEffect(() => {
     let ativo = true;
@@ -199,6 +200,7 @@ export function usePerfil(): Perfil {
   function atualizar(
     mudanca: (atuais: RespostasQuestionario) => RespostasQuestionario,
   ) {
+    edicoesRef.current += 1;
     setCarregamento((atual) =>
       atual.status === "pronto"
         ? { ...atual, respostas: mudanca(atual.respostas) }
@@ -229,6 +231,7 @@ export function usePerfil(): Perfil {
   async function enviarRespostas(dados: RespostasQuestionario) {
     setEnvio((atual) => ({ ...atual, situacao: "enviando" }));
 
+    const edicoesNoEnvio = edicoesRef.current;
     const salvamento = filaDeSalvamentoRef.current.then(() =>
       salvarPerfil(dados),
     );
@@ -242,7 +245,11 @@ export function usePerfil(): Perfil {
       await salvamento;
 
       if (filaDeSalvamentoRef.current === fila) {
-        setEnvio({ erros: SEM_ERROS, situacao: "sucesso", mensagem: "" });
+        setEnvio({
+          erros: SEM_ERROS,
+          situacao: edicoesRef.current === edicoesNoEnvio ? "sucesso" : "ocioso",
+          mensagem: "",
+        });
       }
     } catch (erro) {
       if (filaDeSalvamentoRef.current === fila) {
