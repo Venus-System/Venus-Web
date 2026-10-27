@@ -56,6 +56,7 @@ function ModalFotoPerfil({
   const [imagem, setImagem] = useState<EstadoDoArquivo>(SEM_ARQUIVO);
   const [arrastando, setArrastando] = useState(false);
   const campoRef = useRef<HTMLInputElement>(null);
+  const enviando = situacao === "enviando";
 
   useEffect(() => {
     if (imagem.previa === "") {
@@ -66,7 +67,7 @@ function ModalFotoPerfil({
   }, [imagem.previa]);
 
   function receber(arquivo: File | undefined) {
-    if (arquivo === undefined) {
+    if (arquivo === undefined || enviando) {
       return;
     }
 
@@ -102,8 +103,6 @@ function ModalFotoPerfil({
 
     onSave({ tipo: "avatar", avatar: escolhido });
   }
-
-  const enviando = situacao === "enviando";
 
   return (
     <Modal open={open} title="Foto de perfil" onClose={onClose}>
@@ -149,7 +148,7 @@ function ModalFotoPerfil({
         className={`${styles.area} ${arrastando ? styles.areaAtiva : ""}`}
         onDragOver={(evento) => {
           evento.preventDefault();
-          setArrastando(true);
+          setArrastando(!enviando);
         }}
         onDragLeave={() => setArrastando(false)}
         onDrop={handleSoltar}
