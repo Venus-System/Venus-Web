@@ -17,6 +17,7 @@
 
 .primary {
   background-image: var(--gradiente-primario);
+  background-origin: border-box;
   color: var(--texto-invertido);
 }
 
