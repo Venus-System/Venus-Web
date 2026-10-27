@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
@@ -29,7 +30,7 @@ function RotaPrivada({ children }: RotaPrivadaProps) {
     );
   }
 
-  return <>{children}</>;
+  return <Fragment key={usuario.id}>{children}</Fragment>;
 }
 
 export default RotaPrivada;
