@@ -59,6 +59,7 @@ export interface Questionario {
   respostasDeSaude: number;
   resumoRef: RefObject<HTMLDivElement>;
   decisaoRef: RefObject<HTMLDivElement>;
+  conclusaoRef: RefObject<HTMLDivElement>;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   enviar: () => void;
   voltarParaConsentimento: () => void;
@@ -123,6 +124,7 @@ export function useQuestionario(): Questionario {
   });
   const resumoRef = useRef<HTMLDivElement>(null);
   const decisaoRef = useRef<HTMLDivElement>(null);
+  const conclusaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const controle = new AbortController();
@@ -192,6 +194,12 @@ export function useQuestionario(): Questionario {
     }
   }, [formulario.aguardandoDecisao]);
 
+  useEffect(() => {
+    if (formulario.situacao === "sucesso") {
+      conclusaoRef.current?.focus();
+    }
+  }, [formulario.situacao]);
+
   function esquecerSucesso() {
     setFormulario((atual) =>
       atual.situacao === "sucesso" ? { ...atual, situacao: "ocioso" } : atual,
@@ -248,11 +256,7 @@ export function useQuestionario(): Questionario {
   }
 
   async function enviarRespostas() {
-    setFormulario((atual) => ({
-      ...atual,
-      situacao: "enviando",
-      aguardandoDecisao: false,
-    }));
+    setFormulario((atual) => ({ ...atual, situacao: "enviando" }));
 
     try {
       await salvarPerfil(respostas);
@@ -261,7 +265,11 @@ export function useQuestionario(): Questionario {
         limparProgresso(usuarioId);
       }
 
-      setFormulario((atual) => ({ ...atual, situacao: "sucesso" }));
+      setFormulario((atual) => ({
+        ...atual,
+        situacao: "sucesso",
+        aguardandoDecisao: false,
+      }));
     } catch (erro) {
       setFormulario((atual) => ({
         ...atual,
@@ -286,7 +294,7 @@ export function useQuestionario(): Questionario {
       ...atual,
       erros,
       situacao: "ocioso",
-      aguardandoDecisao: false,
+      aguardandoDecisao: temErro ? false : atual.aguardandoDecisao,
     }));
 
     if (!temErro) {
@@ -334,6 +342,7 @@ export function useQuestionario(): Questionario {
     respostasDeSaude: contarRespostasDeSaude(respostas),
     resumoRef,
     decisaoRef,
+    conclusaoRef,
     handleSubmit,
     enviar: validarEEnviar,
     voltarParaConsentimento,
