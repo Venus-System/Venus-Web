@@ -1,13 +1,14 @@
 import { URL_API } from "../../config/ambiente";
 import type { NivelRecomendacao } from "../../types/analise";
 import type { AnaliseRecente, ProdutoDoPainel } from "../../types/painel";
+import { LIMITE_DAS_LISTAS } from "../../utils/listas";
 import { repassarErro } from "../erros";
 import { comoObjeto, numero, texto } from "./leitura";
 import { buscarProdutoPorIdDaApi } from "./produtos";
 import { pedir, verificarResposta } from "./requisicao";
 
 const TAMANHO_DA_PAGINA = 100;
-const LIMITE_DE_PAGINAS = 5;
+const LIMITE_DE_PAGINAS = LIMITE_DAS_LISTAS / TAMANHO_DA_PAGINA;
 
 const NIVEIS: NivelRecomendacao[] = [
   "ideal",

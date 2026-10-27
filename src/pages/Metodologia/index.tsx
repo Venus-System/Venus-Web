@@ -211,9 +211,12 @@ function Metodologia() {
             </h3>
 
             <p className={styles.highlightText}>
-              Quando existe contraindicação real, nenhuma qualidade do produto
-              compensa. A nota vai a zero e o produto aparece como
-              contraindicado, mesmo que seja excelente em todo o resto.
+              Quando um ingrediente é contraindicado para você, ou você tem
+              alergia crítica a ele, nenhuma qualidade do produto compensa. A
+              nota vai a zero e o produto aparece como contraindicado, mesmo
+              que seja excelente em todo o resto. Com alergia alta, a nota fica
+              em no máximo 15 e o produto também aparece como contraindicado.
+              Alergias médias e leves baixam a nota, sem zerar.
             </p>
           </div>
 

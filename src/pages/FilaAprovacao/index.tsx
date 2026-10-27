@@ -368,13 +368,16 @@ function FilaAprovacao() {
       {estadoCandidato.status === "pronto" ? (
         <>
           <ModalAprovacao
-            open={decisao.modal === "aprovar"}
+            open={decisaoDoAberto && decisao.modal === "aprovar"}
             nomeDoProduto={estadoCandidato.candidato.name}
             novos={novosDaAprovacao(decisao.aprovacao)}
             enviando={decisao.enviando}
             mensagemDeErro={decisao.mensagem}
             onConfirmar={() => {
-              if (decisao.aprovacao !== null) {
+              if (
+                decisao.aprovacao !== null &&
+                decisao.idDoCandidato === estadoCandidato.candidato.id
+              ) {
                 void executar(estadoCandidato.candidato, {
                   tipo: "aprovar",
                   aprovacao: decisao.aprovacao,
@@ -385,19 +388,21 @@ function FilaAprovacao() {
           />
 
           <ModalRecusa
-            open={decisao.modal === "recusar"}
+            open={decisaoDoAberto && decisao.modal === "recusar"}
             candidato={estadoCandidato.candidato}
             rotuloDaOrigem={
               ROTULO_ORIGEM_DETALHE[estadoCandidato.candidato.origin]
             }
             enviando={decisao.enviando}
             mensagemDeErro={decisao.mensagem}
-            onConfirmar={(recusa) =>
-              void executar(estadoCandidato.candidato, {
-                tipo: "recusar",
-                recusa,
-              })
-            }
+            onConfirmar={(recusa) => {
+              if (decisao.idDoCandidato === estadoCandidato.candidato.id) {
+                void executar(estadoCandidato.candidato, {
+                  tipo: "recusar",
+                  recusa,
+                });
+              }
+            }}
             onClose={fecharModal}
           />
         </>

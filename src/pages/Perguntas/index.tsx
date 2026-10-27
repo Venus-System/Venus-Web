@@ -53,6 +53,7 @@ function Perguntas() {
     respostasDeSaude,
     resumoRef,
     decisaoRef,
+    conclusaoRef,
     handleSubmit,
     enviar,
     voltarParaConsentimento,
@@ -296,7 +297,11 @@ function Perguntas() {
             </p>
 
             <div className={styles.decisaoAcoes}>
-              <Button type="button" onClick={enviar}>
+              <Button
+                type="button"
+                onClick={enviar}
+                busy={formulario.situacao === "enviando"}
+              >
                 Continuar sem essas respostas
               </Button>
 
@@ -322,7 +327,7 @@ function Perguntas() {
         ) : null}
 
         {formulario.situacao === "sucesso" ? (
-          <div className={styles.conclusao}>
+          <div ref={conclusaoRef} className={styles.conclusao} tabIndex={-1}>
             <p role="status">Perfil salvo.</p>
             <Button to="/perfil">Ver meu perfil</Button>
           </div>

@@ -17,10 +17,11 @@
 }
 
 .convite {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: var(--espaco-3);
+  column-gap: var(--espaco-3);
+  row-gap: var(--espaco-2);
   padding: var(--espaco-3);
   background-color: var(--superficie-suave);
   border-radius: var(--raio-grande);
@@ -34,7 +35,6 @@
 }
 
 .texto {
-  flex: 1 1 9rem;
   margin: 0;
   font-size: var(--tamanho-pequeno);
 }
@@ -64,7 +64,8 @@
 }
 
 .conectar {
-  flex-shrink: 0;
+  grid-column: 2 / -1;
+  justify-self: start;
   padding-inline: var(--espaco-3);
   font-size: var(--tamanho-pequeno);
 }

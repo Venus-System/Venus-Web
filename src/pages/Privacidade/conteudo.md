@@ -1,5 +1,5 @@
 ---
-atualizado: 26 de outubro de 2026
+atualizado: 27 de outubro de 2026
 ---
 
 ## Quem somos
@@ -25,7 +25,8 @@ Tipo de pele, fototipo, sensibilidade, tendência a acne, tipo de cabelo, tipo
 de couro cabeludo, faixa etária e gênero.
 
 **Dados sobre condições de saúde**
-Gestação, hiperpigmentação, melasma, rosácea, eczema e alergias declaradas,
+Gestação, amamentação, hiperpigmentação, melasma, rosácea, eczema e alergias
+declaradas,
 com o grau de severidade de cada uma.
 
 > Estes são **dados pessoais sensíveis** na definição do artigo 5º, inciso II,
@@ -36,7 +37,8 @@ com o grau de severidade de cada uma.
 **Preferências**
 Se você prefere produtos veganos, livres de crueldade, sem parabenos, sem
 sulfatos, sem silicones, sem álcool, livres de óleo, naturais, orgânicos,
-hipoalergênicos, não comedogênicos ou testados por dermatologistas.
+hipoalergênicos, não comedogênicos, testados por dermatologistas ou com
+embalagem reciclável.
 
 **Dados de uso**
 Produtos que você analisou ou favoritou, e a data de cada ação. Avaliações que
@@ -109,6 +111,8 @@ eles processam dados em nosso nome:
 | Langfuse | Acompanhar o funcionamento da IA, quando ativado | Fora do Brasil |
 | Google Agenda | Ver horários livres e criar eventos, só se você conectar | Servidores da Google, fora do Brasil |
 | Vercel | Hospedagem da aplicação web | Fora do Brasil |
+| Google Fonts | Baixar as fontes do site a cada visita. A Google recebe o endereço de IP e o navegador, como em qualquer download | Servidores da Google, fora do Brasil |
+| GitHub | Mostrar as fotos dos integrantes na página Sobre, baixadas do GitHub ao abrir a página | Servidores do GitHub, fora do Brasil |
 | Reconhecimento de voz do navegador (Google no Chrome, Microsoft no Edge) | Transformar em texto o que você ditar no chat, só se você apertar o microfone | Servidores da Google ou da Microsoft, fora do Brasil |
 | VLibras, do Governo Federal | Traduzir para Libras o texto em que você clicar, só se você ativar o tradutor. O programa do tradutor é baixado dos servidores do governo a cada visita | Servidores do governo brasileiro |
 

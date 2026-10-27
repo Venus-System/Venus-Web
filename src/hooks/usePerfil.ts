@@ -117,6 +117,8 @@ export function usePerfil(): Perfil {
   const { usuario, fotoUrl, definirFoto } = useAutenticacao();
   const dono = usuario === null ? null : usuario.id;
   const resumoRef = useRef<HTMLDivElement>(null);
+  const filaDeSalvamentoRef = useRef<Promise<void>>(Promise.resolve());
+  const edicoesRef = useRef(0);
 
   useEffect(() => {
     let ativo = true;
@@ -198,6 +200,7 @@ export function usePerfil(): Perfil {
   function atualizar(
     mudanca: (atuais: RespostasQuestionario) => RespostasQuestionario,
   ) {
+    edicoesRef.current += 1;
     setCarregamento((atual) =>
       atual.status === "pronto"
         ? { ...atual, respostas: mudanca(atual.respostas) }
@@ -228,17 +231,35 @@ export function usePerfil(): Perfil {
   async function enviarRespostas(dados: RespostasQuestionario) {
     setEnvio((atual) => ({ ...atual, situacao: "enviando" }));
 
-    try {
-      await salvarPerfil(dados);
+    const edicoesNoEnvio = edicoesRef.current;
+    const salvamento = filaDeSalvamentoRef.current.then(() =>
+      salvarPerfil(dados),
+    );
+    const fila = salvamento.then(
+      () => undefined,
+      () => undefined,
+    );
+    filaDeSalvamentoRef.current = fila;
 
-      setEnvio({ erros: SEM_ERROS, situacao: "sucesso", mensagem: "" });
+    try {
+      await salvamento;
+
+      if (filaDeSalvamentoRef.current === fila) {
+        setEnvio({
+          erros: SEM_ERROS,
+          situacao: edicoesRef.current === edicoesNoEnvio ? "sucesso" : "ocioso",
+          mensagem: "",
+        });
+      }
     } catch (erro) {
-      setEnvio((atual) => ({
-        ...atual,
-        situacao: "erro",
-        mensagem:
-          erro instanceof Error ? erro.message : "Não foi possível salvar.",
-      }));
+      if (filaDeSalvamentoRef.current === fila) {
+        setEnvio((atual) => ({
+          ...atual,
+          situacao: "erro",
+          mensagem:
+            erro instanceof Error ? erro.message : "Não foi possível salvar.",
+        }));
+      }
     }
   }
 

@@ -123,7 +123,11 @@ export function ProvedorAutenticacao({ children }: ProvedorAutenticacaoProps) {
   async function atualizarNome(nome: string) {
     try {
       const usuario = await atualizarNomeNoServico(nome);
-      setEstado({ usuario, carregando: false });
+      setEstado((atual) =>
+        atual.usuario !== null && atual.usuario.id === usuario.id
+          ? { usuario, carregando: false }
+          : atual,
+      );
     } catch (erro) {
       repassarErro(erro, "Não foi possível salvar o nome.");
     }

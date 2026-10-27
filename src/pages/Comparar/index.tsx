@@ -55,6 +55,10 @@ function maiorNota(a: number | null, b: number | null): Lado | null {
 }
 
 function vencedorGeral(a: Produto, b: Produto): Lado | null {
+  if (a.scores.overallScore === null || b.scores.overallScore === null) {
+    return null;
+  }
+
   const evitarA = a.level === "avoid";
   const evitarB = b.level === "avoid";
 
@@ -327,7 +331,7 @@ function Comparar() {
   const [categoriaEscolhida, setCategoriaEscolhida] = useState<string | null>(
     null,
   );
-  const catalogo = opcoes.status === "pronto" ? opcoes.produtos : [];
+  const catalogo = opcoes.status === "pronto" ? opcoes.dados : [];
   const produtoA = catalogo.find((produto) => produto.slug === slugs[0]);
   const categoria = categoriaEscolhida ?? produtoA?.category ?? "";
   const categorias = [

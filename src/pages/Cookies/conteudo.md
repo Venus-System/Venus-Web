@@ -1,5 +1,5 @@
 ---
-atualizado: 15 de outubro de 2026
+atualizado: 27 de outubro de 2026
 ---
 
 ## O resumo
@@ -15,7 +15,7 @@ conversa e as suas escolhas no chat com a Veninha.
 
 | O quê | Onde | Para quê | Quando some |
 |---|---|---|---|
-| Sessão do Firebase Authentication | `localStorage` ou `IndexedDB` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "Lembrar de mim" |
+| Sessão do Firebase Authentication | `IndexedDB`, `localStorage` ou `sessionStorage` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "Lembrar de mim" |
 | Nome e e-mail da conta ativa | `localStorage` ou `sessionStorage` | Mostrar seu nome sem consultar o servidor a cada página | Ao sair da conta |
 | Progresso do questionário | `localStorage` | Permitir retomar o questionário depois | Ao concluir o questionário ou limpar os dados do navegador |
 | Avatar escolhido no perfil | `localStorage` | Mostrar o avatar que você escolheu | Ao limpar os dados do navegador |
@@ -23,8 +23,9 @@ conversa e as suas escolhas no chat com a Veninha.
 | Sessão da área administrativa | `sessionStorage` | Manter a equipe conectada na fila de aprovação de produtos | Ao sair da área administrativa ou fechar a aba |
 | Conversa com a Veninha | `sessionStorage` | Mostrar a conversa de novo ao trocar de página | Ao fechar a aba ou sair da conta |
 | Som da Veninha ligado ou desligado | `localStorage` | Lembrar a sua escolha no botão de som | Ao limpar os dados do navegador |
+| Alto contraste ligado ou desligado | `localStorage` | Lembrar a sua escolha no botão de alto contraste | Ao limpar os dados do navegador |
 | Convite da Google Agenda fechado | `localStorage` | Não mostrar de novo o convite que você fechou | Ao limpar os dados do navegador |
-| Pedido de conexão com a Google Agenda | `sessionStorage` | Conferir que a volta da Google é a do pedido que você fez | Ao terminar a conexão ou fechar a aba |
+| Pedido de conexão com a Google Agenda | `sessionStorage` | Conferir que a volta da Google é a do pedido que você fez | Ao terminar a conexão, ao pedir outra ou ao fechar a aba |
 
 **Nenhum desses itens guarda senha.**
 
@@ -64,7 +65,7 @@ para o navegador.
 Você pode limpar o armazenamento local a qualquer momento pelas configurações
 do seu navegador. Se fizer isso, será desconectado e perderá o progresso não
 concluído do questionário, a conversa aberta com a Veninha e as escolhas
-guardadas, como o avatar e o som. Nada do que está salvo na sua conta é
+guardadas, como o avatar, o som e o alto contraste. Nada do que está salvo na sua conta é
 apagado.
 
 No aplicativo, a coleta de uso pode ser interrompida desinstalando o

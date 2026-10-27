@@ -8,6 +8,21 @@
   scrollbar-gutter: auto;
 }
 
+.skipLink {
+  position: absolute;
+  left: var(--espaco-3);
+  top: -5rem;
+  z-index: 10;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--violeta);
+  border-radius: var(--raio-pequeno);
+}
+
+.skipLink:focus {
+  top: var(--espaco-3);
+}
+
 .painelFormulario {
   display: flex;
   flex-direction: column;

@@ -78,6 +78,17 @@ export function useDecisaoNaFila({
 
   useEffect(() => {
     idAbertoRef.current = idAberto;
+    setDecisao((atual) =>
+      atual.modal === "nenhum" || atual.idDoCandidato === idAberto
+        ? atual
+        : {
+            ...atual,
+            modal: "nenhum",
+            aprovacao: null,
+            mensagem: "",
+            detalhes: [],
+          },
+    );
   }, [idAberto]);
 
   function abrirRecusa(candidato: Candidato) {

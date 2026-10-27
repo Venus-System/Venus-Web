@@ -1,5 +1,5 @@
 ---
-atualizado: 26 de outubro de 2026
+atualizado: 27 de outubro de 2026
 ---
 
 ## Nosso compromisso
@@ -15,16 +15,21 @@ com as exceções descritas em **Limitações conhecidas**, mais abaixo.
 
 ## Atalhos de teclado
 
-No topo de cada página há links para ir direto a cada parte dela. Eles aparecem
-quando você aperta **Tab** logo depois de abrir a página, e também funcionam
-com teclas de atalho.
+No topo de cada página há um link para ir direto ao conteúdo principal. Nas
+páginas que têm menu, busca e rodapé, há também um link para cada um deles. Os
+links aparecem quando você aperta **Tab** logo depois de abrir a página, e
+também funcionam com teclas de atalho.
 
-| Tecla | Vai para |
-|---|---|
-| 1 | Conteúdo principal |
-| 2 | Menu |
-| 3 | Busca |
-| 4 | Rodapé |
+| Tecla | Vai para | Onde existe |
+|---|---|---|
+| 1 | Conteúdo principal | Em todas as páginas |
+| 2 | Menu | Nas páginas com o menu lateral |
+| 3 | Busca | Nas páginas com o menu lateral |
+| 4 | Rodapé | Nas páginas com o menu lateral |
+
+Entrar, criar conta, recuperar a senha, o questionário de perfil, os
+documentos (como esta página) e a área administrativa não têm menu lateral,
+então nelas só existe o atalho 1.
 
 A combinação muda conforme o navegador:
 
@@ -38,8 +43,10 @@ A combinação muda conforme o navegador:
 - Cada página tem um título próprio, e a troca de página é anunciada para
   leitores de tela.
 - Carregamentos, erros e avisos também são anunciados para leitores de tela.
-- Todo campo de formulário tem um rótulo ligado a ele, e os erros aparecem num
-  resumo no topo do formulário, com links para cada campo.
+- Todo campo de formulário tem um rótulo ligado a ele, e o erro de cada campo
+  aparece logo abaixo dele e é anunciado para leitores de tela. Nos
+  formulários longos, o do perfil e o do questionário, os erros também
+  aparecem num resumo no topo, com links para cada campo.
 - Os textos têm contraste de pelo menos 4,5 para 1 com o fundo, e ícones,
   estrelas e bordas de campos, de pelo menos 3 para 1.
 - O botão **Alto contraste** (o círculo meio preenchido ao lado do logo, no
