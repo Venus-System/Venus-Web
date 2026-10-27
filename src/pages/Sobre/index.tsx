@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import fotoDaEquipeUm from "../../assets/equipe-1.jpg";
 import fotoDaEquipeDois from "../../assets/equipe-2.jpg";
+import { useMovimentoReduzido } from "../../hooks/useMovimentoReduzido";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
@@ -68,6 +69,7 @@ const TRADUCAO = [
 function Sobre() {
   useTituloDaPagina("Sobre");
   const trilhaRef = useRef<HTMLUListElement>(null);
+  const movimentoReduzido = useMovimentoReduzido();
 
   function rolar(direcao: number) {
     const trilha = trilhaRef.current;
@@ -78,7 +80,7 @@ function Sobre() {
 
     trilha.scrollBy({
       left: trilha.clientWidth * 0.8 * direcao,
-      behavior: "smooth",
+      behavior: movimentoReduzido ? "auto" : "smooth",
     });
   }
 
