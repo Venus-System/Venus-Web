@@ -380,6 +380,12 @@ function DetalheCandidato({
     }
   }
 
+  function sincronizar() {
+    if (podeDecidir && !enviando) {
+      onSincronizar();
+    }
+  }
+
   const descricaoDosBotoes = podeDecidir ? undefined : ID_AVISO_DO_PAPEL;
   const bloqueadoPelasFotos = podeDecidir && fotosFaltando.length > 0;
   const descricaoDoAprovar = bloqueadoPelasFotos
@@ -505,7 +511,7 @@ function DetalheCandidato({
           {podeDecidir ? null : (
             <p id={ID_AVISO_DO_PAPEL}>
               Como analista, você pode revisar a fila, mas só moderação e
-              administração aprovam ou recusam.
+              administração aprovam, recusam ou publicam.
             </p>
           )}
 
@@ -536,7 +542,12 @@ function DetalheCandidato({
 
         <div className={styles.acoes}>
           {semSincronizar ? (
-            <Button onClick={onSincronizar} busy={enviando}>
+            <Button
+              onClick={sincronizar}
+              busy={enviando}
+              aria-disabled={podeDecidir ? undefined : true}
+              aria-describedby={descricaoDosBotoes}
+            >
               {enviando ? "Publicando..." : "Tentar de novo"}
             </Button>
           ) : (
