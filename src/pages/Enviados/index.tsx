@@ -33,7 +33,7 @@ function agrupar(envios: Envio[]): GrupoDeEnvios[] {
 function Enviados() {
   useTituloDaPagina("Enviados");
   const { estado, recarregar } = useEnvios();
-  const envios = estado.status === "pronto" ? estado.envios : null;
+  const envios = estado.status === "pronto" ? estado.dados : null;
 
   return (
     <MainLayout>

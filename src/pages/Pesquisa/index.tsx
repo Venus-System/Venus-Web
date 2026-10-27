@@ -258,7 +258,7 @@ function Pesquisa() {
                 id="filtro-categoria"
                 label="Categoria"
                 placeholder="Todas as categorias"
-                options={opcoes.opcoes.categorias.map((nome) => ({
+                options={opcoes.dados.categorias.map((nome) => ({
                   value: nome,
                   label: nome,
                 }))}
@@ -272,7 +272,7 @@ function Pesquisa() {
                 id="filtro-marca"
                 label="Marca"
                 placeholder="Todas as marcas"
-                options={opcoes.opcoes.marcas.map((nome) => ({
+                options={opcoes.dados.marcas.map((nome) => ({
                   value: nome,
                   label: nome,
                 }))}

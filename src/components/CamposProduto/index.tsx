@@ -85,7 +85,7 @@ function CamposProduto({
             id={ID_MARCA}
             label="Marca"
             placeholder="Escolha a marca"
-            options={paraOpcoes(catalogo.catalogo.brands)}
+            options={paraOpcoes(catalogo.dados.brands)}
             value={valores.marcaId}
             onChange={(marcaId) => onMudar({ ...valores, marcaId })}
             error={erros.marca ?? undefined}
@@ -95,7 +95,7 @@ function CamposProduto({
             id={ID_CATEGORIA}
             label="Categoria"
             placeholder="Escolha a categoria"
-            options={paraOpcoes(catalogo.catalogo.categories)}
+            options={paraOpcoes(catalogo.dados.categories)}
             value={valores.categoriaId}
             onChange={(categoriaId) => onMudar({ ...valores, categoriaId })}
             error={erros.categoria ?? undefined}

@@ -68,7 +68,7 @@ function Reacao() {
     carregada?.versionId ?? null,
   );
 
-  const produtos = opcoes.status === "pronto" ? opcoes.produtos : [];
+  const produtos = opcoes.status === "pronto" ? opcoes.dados : [];
   const marcas = [...new Set(produtos.map((produto) => produto.brand.name))].sort(
     (a, b) => POR_NOME.compare(a, b),
   );

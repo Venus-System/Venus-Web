@@ -327,7 +327,7 @@ function Comparar() {
   const [categoriaEscolhida, setCategoriaEscolhida] = useState<string | null>(
     null,
   );
-  const catalogo = opcoes.status === "pronto" ? opcoes.produtos : [];
+  const catalogo = opcoes.status === "pronto" ? opcoes.dados : [];
   const produtoA = catalogo.find((produto) => produto.slug === slugs[0]);
   const categoria = categoriaEscolhida ?? produtoA?.category ?? "";
   const categorias = [

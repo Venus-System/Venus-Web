@@ -102,7 +102,7 @@ function Dashboard() {
           </h1>
 
           {estado.status === "pronto" ? (
-            <p className={styles.subtitle}>{resumoDoTopo(estado.painel)}</p>
+            <p className={styles.subtitle}>{resumoDoTopo(estado.dados)}</p>
           ) : null}
         </header>
 
@@ -129,45 +129,45 @@ function Dashboard() {
             <section className={styles.stats} aria-label="Seus números">
               <StatCard
                 label="Análises feitas"
-                value={valorDaContagem(estado.painel.analyses)}
-                valueLabel={rotuloDaContagem(estado.painel.analyses)}
-                description={desdeQuando(estado.painel)}
-                trend={tendencia(estado.painel.analyses)}
+                value={valorDaContagem(estado.dados.analyses)}
+                valueLabel={rotuloDaContagem(estado.dados.analyses)}
+                description={desdeQuando(estado.dados)}
+                trend={tendencia(estado.dados.analyses)}
               />
 
               <StatCard
                 label="Nota média"
                 value={
-                  estado.painel.summary.averageScore === null
+                  estado.dados.summary.averageScore === null
                     ? "—"
-                    : String(estado.painel.summary.averageScore)
+                    : String(estado.dados.summary.averageScore)
                 }
                 suffix={
-                  estado.painel.summary.averageScore === null
+                  estado.dados.summary.averageScore === null
                     ? undefined
                     : "/100"
                 }
                 valueLabel={
-                  estado.painel.summary.averageScore === null
+                  estado.dados.summary.averageScore === null
                     ? "sem nota"
-                    : `${estado.painel.summary.averageScore} de 100`
+                    : `${estado.dados.summary.averageScore} de 100`
                 }
                 description={descricaoDaMedia(
-                  estado.painel.summary.productCount,
+                  estado.dados.summary.productCount,
                 )}
               />
 
               <StatCard
                 label="Alertas no seu perfil"
-                value={valorDaContagem(estado.painel.alerts)}
-                valueLabel={rotuloDaContagem(estado.painel.alerts)}
+                value={valorDaContagem(estado.dados.alerts)}
+                valueLabel={rotuloDaContagem(estado.dados.alerts)}
                 description="Contraindicados para você"
-                trend={tendencia(estado.painel.alerts)}
+                trend={tendencia(estado.dados.alerts)}
               />
 
               <StatCard
                 label="Favoritos"
-                value={String(estado.painel.favoriteCount)}
+                value={String(estado.dados.favoriteCount)}
                 description="Os produtos que você guardou"
               >
                 <Link to="/favoritos" className={styles.verTudo}>
@@ -191,7 +191,7 @@ function Dashboard() {
 
                 <ScoreExplanation />
 
-                {estado.painel.summary.productCount === 0 ? (
+                {estado.dados.summary.productCount === 0 ? (
                   <p className={styles.vazio}>
                     Quando você analisar um produto, as quatro notas dele
                     aparecem aqui.
@@ -199,28 +199,28 @@ function Dashboard() {
                 ) : (
                   <div className={styles.saude}>
                     <ScoreRing
-                      score={estado.painel.summary.averageScore}
-                      level={nivelDaNota(estado.painel.summary.averageScore)}
+                      score={estado.dados.summary.averageScore}
+                      level={nivelDaNota(estado.dados.summary.averageScore)}
                       label="Nota média"
                     />
 
                     <div className={styles.barras}>
-                      <ScoreBars notas={estado.painel.summary} />
+                      <ScoreBars notas={estado.dados.summary} />
                     </div>
 
                     <ul className={styles.legenda}>
                       <li className={styles.aprovados}>
                         {plural(
-                          estado.painel.summary.approved,
+                          estado.dados.summary.approved,
                           "produto aprovado",
                           "produtos aprovados",
                         )}
                       </li>
                       <li className={styles.atencao}>
-                        {estado.painel.summary.warning} com atenção
+                        {estado.dados.summary.warning} com atenção
                       </li>
                       <li className={styles.substituir}>
-                        {estado.painel.summary.replace} para substituir
+                        {estado.dados.summary.replace} para substituir
                       </li>
                     </ul>
                   </div>
@@ -238,7 +238,7 @@ function Dashboard() {
                   O que personaliza cada análise.
                 </p>
 
-                {estado.painel.profileCompleteness === null ? (
+                {estado.dados.profileCompleteness === null ? (
                   <>
                     <p className={styles.perfilAviso}>
                       Você ainda não respondeu o questionário. Sem ele, as
@@ -258,32 +258,32 @@ function Dashboard() {
                       aria-label="Perfil completo"
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-valuenow={estado.painel.profileCompleteness}
-                      aria-valuetext={`${estado.painel.profileCompleteness}%`}
+                      aria-valuenow={estado.dados.profileCompleteness}
+                      aria-valuetext={`${estado.dados.profileCompleteness}%`}
                     >
                       <div
                         className={styles.barraPreenchida}
                         style={{
-                          width: `${estado.painel.profileCompleteness}%`,
+                          width: `${estado.dados.profileCompleteness}%`,
                         }}
                       />
                     </div>
 
                     <p className={styles.perfilAviso}>
-                      {estado.painel.profileCompleteness < 100
-                        ? `Os ${100 - estado.painel.profileCompleteness}% que faltam deixam as análises menos precisas. Complete para os alertas funcionarem melhor.`
+                      {estado.dados.profileCompleteness < 100
+                        ? `Os ${100 - estado.dados.profileCompleteness}% que faltam deixam as análises menos precisas. Complete para os alertas funcionarem melhor.`
                         : "Seu perfil está completo. Cada análise já leva tudo em conta."}
                     </p>
 
                     <Button
                       variant="secondary"
                       to={
-                        estado.painel.profileCompleteness < 100
+                        estado.dados.profileCompleteness < 100
                           ? "/perfil#titulo-faltando"
                           : "/perfil"
                       }
                     >
-                      {estado.painel.profileCompleteness < 100
+                      {estado.dados.profileCompleteness < 100
                         ? "Completar agora"
                         : "Ver meu perfil"}
                       <ArrowRight className={styles.icone} aria-hidden="true" />
@@ -313,7 +313,7 @@ function Dashboard() {
                 </Button>
               </div>
 
-              {estado.painel.recentAnalyses.length === 0 ? (
+              {estado.dados.recentAnalyses.length === 0 ? (
                 <p className={styles.vazio}>
                   Você ainda não analisou nenhum produto.{" "}
                   <Link to="/pesquisa" className={styles.link}>
@@ -323,7 +323,7 @@ function Dashboard() {
                 </p>
               ) : (
                 <ul className={styles.lista}>
-                  {estado.painel.recentAnalyses.map((analise) => (
+                  {estado.dados.recentAnalyses.map((analise) => (
                     <li key={analise.id}>
                       <ProductRow
                         produto={analise.product}

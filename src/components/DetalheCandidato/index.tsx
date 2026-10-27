@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Button from "../Button";
 import CamposProduto, {
@@ -259,12 +259,12 @@ function DetalheCandidato({
     marcaId:
       campos.marcaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.brands, candidato.brand)
+        ? sugerirDoCatalogo(catalogo.dados.brands, candidato.brand)
         : ""),
     categoriaId:
       campos.categoriaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.categories, candidato.category)
+        ? sugerirDoCatalogo(catalogo.dados.categories, candidato.category)
         : ""),
   };
 
@@ -317,14 +317,14 @@ function DetalheCandidato({
     }));
   }
 
-  function mudarEscolha(nova: EscolhaDoIngrediente) {
+  const mudarEscolha = useCallback((nova: EscolhaDoIngrediente) => {
     setCampos((atual) => ({
       ...atual,
       escolhas: atual.escolhas.map((escolha) =>
         escolha.position === nova.position ? nova : escolha,
       ),
     }));
-  }
+  }, []);
 
   function aprovar() {
     if (!podeDecidir || enviando) {
@@ -484,7 +484,7 @@ function DetalheCandidato({
                 escolha={escolha}
                 ingredientesDoCatalogo={
                   catalogo.status === "pronto"
-                    ? catalogo.catalogo.ingredients
+                    ? catalogo.dados.ingredients
                     : null
                 }
                 onMudar={mudarEscolha}
