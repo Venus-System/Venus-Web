@@ -1,5 +1,6 @@
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import { extrairAtualizacao, extrairTitulos } from "../../utils/markdown";
+import BackButton from "../BackButton";
 import LayoutSimples from "../LayoutSimples";
 import Markdown from "../Markdown";
 import TableOfContents from "../TableOfContents";
@@ -21,7 +22,10 @@ function DocumentLayout({ title, content }: DocumentLayoutProps) {
   return (
     <LayoutSimples>
       <article className={styles.document}>
-        <h1 className={styles.title}>{title}</h1>
+        <div className={styles.cabecalho}>
+          <BackButton fallback="/pesquisa" />
+          <h1 className={styles.title}>{title}</h1>
+        </div>
         {atualizacao === null ? null : (
           <p className={styles.updated}>Última atualização: {atualizacao}</p>
         )}
