@@ -55,6 +55,10 @@ function maiorNota(a: number | null, b: number | null): Lado | null {
 }
 
 function vencedorGeral(a: Produto, b: Produto): Lado | null {
+  if (a.scores.overallScore === null || b.scores.overallScore === null) {
+    return null;
+  }
+
   const evitarA = a.level === "avoid";
   const evitarB = b.level === "avoid";
 
