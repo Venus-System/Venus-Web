@@ -66,6 +66,19 @@
   filter: brightness(0.85);
 }
 
+.primary:hover,
+.violet:hover {
+  color: var(--texto-invertido);
+}
+
+.soft:hover {
+  color: var(--roxo);
+}
+
+.danger:hover {
+  color: var(--avoid);
+}
+
 .secondary:hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--violeta);
   color: var(--violeta);
