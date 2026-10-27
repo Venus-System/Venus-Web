@@ -89,12 +89,6 @@ function ChatAgenda({
             Conecte a sua Google Agenda para eu montar a sua rotina.
           </p>
 
-          {connectLink.status === "pronto" ? (
-            <Button href={connectLink.url} className={styles.conectar}>
-              Conectar
-            </Button>
-          ) : null}
-
           <button
             type="button"
             className={styles.fechar}
@@ -103,6 +97,12 @@ function ChatAgenda({
           >
             <X className={styles.fecharIcone} aria-hidden="true" />
           </button>
+
+          {connectLink.status === "pronto" ? (
+            <Button href={connectLink.url} className={styles.conectar}>
+              Conectar
+            </Button>
+          ) : null}
         </div>
       ) : null}
     </>
