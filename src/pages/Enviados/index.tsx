@@ -5,6 +5,7 @@ import SubmissionRow from "../../components/SubmissionRow";
 import { useEnvios } from "../../hooks/useEnvios";
 import type { Envio } from "../../types/envio";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { LIMITE_DAS_LISTAS } from "../../utils/listas";
 import styles from "./styles.module.css";
 
 interface GrupoDeEnvios {
@@ -97,6 +98,12 @@ function Enviados() {
                 </ul>
               </section>
             ))}
+
+        {envios !== null && envios.length > 0 ? (
+          <p className={styles.limite}>
+            A lista mostra até os {LIMITE_DAS_LISTAS} envios mais recentes.
+          </p>
+        ) : null}
       </div>
     </MainLayout>
   );

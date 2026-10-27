@@ -7,6 +7,7 @@ import ProductRow from "../../components/ProductRow";
 import { useFavoritos } from "../../hooks/useFavoritos";
 import type { EstadoFavoritos } from "../../hooks/useFavoritos";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { LIMITE_DAS_LISTAS } from "../../utils/listas";
 import styles from "./styles.module.css";
 
 function avisoDoFavorito(estado: EstadoFavoritos): string {
@@ -102,6 +103,12 @@ function Favoritos() {
               </li>
             ))}
           </ul>
+        ) : null}
+
+        {estado.status === "pronto" && estado.produtos.length > 0 ? (
+          <p className={styles.limite}>
+            A lista mostra até os {LIMITE_DAS_LISTAS} favoritos mais recentes.
+          </p>
         ) : null}
       </div>
     </MainLayout>
