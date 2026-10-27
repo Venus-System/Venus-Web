@@ -114,12 +114,22 @@ function Pesquisa() {
     setParametros(termo === "" ? {} : { termo }, { replace: true });
   }
 
+  function tentarDeNovo() {
+    setBusca((atual) => ({ ...atual }));
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const valor = new FormData(event.currentTarget).get("termo");
+    const termo = typeof valor === "string" ? valor.trim() : "";
 
-    trocarTermo(typeof valor === "string" ? valor.trim() : "");
+    if (termo === termoDaUrl) {
+      setBusca((atual) => ({ ...atual, pagina: 0 }));
+      return;
+    }
+
+    trocarTermo(termo);
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -301,9 +311,15 @@ function Pesquisa() {
           </p>
 
           {estado.situacao === "erro" ? (
-            <p className={styles.error} role="alert">
-              {estado.mensagem}
-            </p>
+            <div className={styles.erroDaBusca}>
+              <p className={styles.error} role="alert">
+                {estado.mensagem}
+              </p>
+
+              <Button variant="secondary" onClick={tentarDeNovo}>
+                Tentar de novo
+              </Button>
+            </div>
           ) : null}
 
           {estado.situacao === "sucesso" &&
