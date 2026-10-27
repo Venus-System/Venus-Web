@@ -1,39 +1,45 @@
 import { lazy, Suspense } from "react";
+import type { ComponentType } from "react";
 import { Route, Routes } from "react-router-dom";
 import RotaAdmin from "./components/RotaAdmin";
 import RotaPrivada from "./components/RotaPrivada";
 import RouteAnnouncer from "./components/RouteAnnouncer";
+import ErroAoCarregar from "./pages/ErroAoCarregar";
 import { CAMINHO_DE_VOLTA } from "./utils/conexaoGoogle";
 
-const Componentes = lazy(() => import("./pages/Componentes"));
-const CriarConta = lazy(() => import("./pages/CriarConta"));
-const EsqueciSenha = lazy(() => import("./pages/EsqueciSenha"));
-const Fontes = lazy(() => import("./pages/Fontes"));
-const Login = lazy(() => import("./pages/Login"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const FilaAprovacao = lazy(() => import("./pages/FilaAprovacao"));
-const Inicio = lazy(() => import("./pages/Inicio"));
-const Metodologia = lazy(() => import("./pages/Metodologia"));
-const NovaSenha = lazy(() => import("./pages/NovaSenha"));
-const SenhaAlterada = lazy(() => import("./pages/SenhaAlterada"));
-const Pesquisa = lazy(() => import("./pages/Pesquisa"));
-const Produto = lazy(() => import("./pages/Produto"));
-const Sobre = lazy(() => import("./pages/Sobre"));
-const NaoEncontrado = lazy(() => import("./pages/NaoEncontrado"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Perfil = lazy(() => import("./pages/Perfil"));
-const Perguntas = lazy(() => import("./pages/Perguntas"));
-const Privacidade = lazy(() => import("./pages/Privacidade"));
-const Termos = lazy(() => import("./pages/Termos"));
-const Cookies = lazy(() => import("./pages/Cookies"));
-const Acessibilidade = lazy(() => import("./pages/Acessibilidade"));
-const Enviados = lazy(() => import("./pages/Enviados"));
-const Historico = lazy(() => import("./pages/Historico"));
-const Favoritos = lazy(() => import("./pages/Favoritos"));
-const Comparar = lazy(() => import("./pages/Comparar"));
-const Escanear = lazy(() => import("./pages/Escanear"));
-const Reacao = lazy(() => import("./pages/Reacao"));
-const IntegracaoGoogleAgenda = lazy(
+function carregarPagina(importar: () => Promise<{ default: ComponentType }>) {
+  return lazy(() => importar().catch(() => ({ default: ErroAoCarregar })));
+}
+
+const Componentes = carregarPagina(() => import("./pages/Componentes"));
+const CriarConta = carregarPagina(() => import("./pages/CriarConta"));
+const EsqueciSenha = carregarPagina(() => import("./pages/EsqueciSenha"));
+const Fontes = carregarPagina(() => import("./pages/Fontes"));
+const Login = carregarPagina(() => import("./pages/Login"));
+const AdminLogin = carregarPagina(() => import("./pages/AdminLogin"));
+const FilaAprovacao = carregarPagina(() => import("./pages/FilaAprovacao"));
+const Inicio = carregarPagina(() => import("./pages/Inicio"));
+const Metodologia = carregarPagina(() => import("./pages/Metodologia"));
+const NovaSenha = carregarPagina(() => import("./pages/NovaSenha"));
+const SenhaAlterada = carregarPagina(() => import("./pages/SenhaAlterada"));
+const Pesquisa = carregarPagina(() => import("./pages/Pesquisa"));
+const Produto = carregarPagina(() => import("./pages/Produto"));
+const Sobre = carregarPagina(() => import("./pages/Sobre"));
+const NaoEncontrado = carregarPagina(() => import("./pages/NaoEncontrado"));
+const Dashboard = carregarPagina(() => import("./pages/Dashboard"));
+const Perfil = carregarPagina(() => import("./pages/Perfil"));
+const Perguntas = carregarPagina(() => import("./pages/Perguntas"));
+const Privacidade = carregarPagina(() => import("./pages/Privacidade"));
+const Termos = carregarPagina(() => import("./pages/Termos"));
+const Cookies = carregarPagina(() => import("./pages/Cookies"));
+const Acessibilidade = carregarPagina(() => import("./pages/Acessibilidade"));
+const Enviados = carregarPagina(() => import("./pages/Enviados"));
+const Historico = carregarPagina(() => import("./pages/Historico"));
+const Favoritos = carregarPagina(() => import("./pages/Favoritos"));
+const Comparar = carregarPagina(() => import("./pages/Comparar"));
+const Escanear = carregarPagina(() => import("./pages/Escanear"));
+const Reacao = carregarPagina(() => import("./pages/Reacao"));
+const IntegracaoGoogleAgenda = carregarPagina(
   () => import("./pages/IntegracaoGoogleAgenda"),
 );
 
