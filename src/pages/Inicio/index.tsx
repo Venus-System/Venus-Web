@@ -206,7 +206,7 @@ const PERGUNTAS: PerguntaFrequente[] = [
     id: "dados",
     pergunta: "Meus dados ficam seguros?",
     resposta:
-      "Sim. Seguimos a LGPD: seus dados são usados só para personalizar as análises e não são vendidos para ninguém.",
+      "Seus dados são usados só para as análises e não são vendidos para ninguém. A política de privacidade, escrita com base na LGPD, explica o que coletamos, para quê e como pedir a exclusão.",
     link: { to: "/privacidade", texto: "Ler a política de privacidade" },
   },
   {
