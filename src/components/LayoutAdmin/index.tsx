@@ -28,7 +28,7 @@ function LayoutAdmin({ children, onSair }: LayoutAdminProps) {
           Sair
         </button>
 
-        <ContrastToggle />
+        <ContrastToggle className={styles.contraste} />
       </header>
 
       <main id="conteudo-admin" className={styles.conteudo} tabIndex={-1}>
