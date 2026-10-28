@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
@@ -240,7 +241,10 @@ function Pesquisa() {
             onChange={handleChange}
           />
 
-          <Button type="submit">Analisar</Button>
+          <Button type="submit">
+            Analisar
+            <ArrowRight className={styles.submitIcone} aria-hidden="true" />
+          </Button>
         </form>
 
         <fieldset className={styles.filters} ref={filtrosRef}>
