@@ -31,7 +31,7 @@ import ReviewCard from "../../components/ReviewCard";
 import ReportReviewModal from "../../components/ReportReviewModal";
 import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
-import ScoreBadge from "../../components/ScoreBadge";
+import BigScore from "../../components/BigScore";
 import ScoreBars from "../../components/ScoreBars";
 import ScoreExplanation from "../../components/ScoreExplanation";
 import Chip from "../../components/Chip";
@@ -264,10 +264,7 @@ function Produto() {
 
             {pessoal === null ? (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={product.scores.overallScore}
-                  level={product.level}
-                />
+                <BigScore score={product.scores.overallScore} />
                 <p className={styles.scoreCaption}>
                   Avaliação geral da Venus, de 0 a 100. É a mesma para todo
                   mundo.
@@ -275,10 +272,7 @@ function Produto() {
               </div>
             ) : (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={pessoal.finalScore}
-                  level={nivelDaRecomendacao(pessoal.recommendationLevel)}
-                />
+                <BigScore score={pessoal.finalScore} />
 
                 <div className={styles.veredito}>
                   <div className={styles.chips}>
