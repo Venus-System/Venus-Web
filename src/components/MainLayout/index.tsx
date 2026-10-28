@@ -82,9 +82,9 @@ function MainLayout({ children, chatProductName }: MainLayoutProps) {
 
       <div className={styles.columns}>
         {telaLarga ? (
-          <div className={styles.aside}>
+          <header className={styles.aside}>
             <Sidebar />
-          </div>
+          </header>
         ) : (
           <NavigationDrawer
             id={ID_DO_MENU}
