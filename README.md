@@ -167,7 +167,7 @@ código que serve de exemplo para cada um.
 | Requisito | Onde ver |
 |---|---|
 | 1. Vite com React e TypeScript, sem `.js` nem `.jsx` em `src/` | `package.json`, `tsconfig.json` (modo estrito) e a checagem da CI |
-| 2. Componentes e páginas em pasta própria com `index.tsx` | `src/components/` (76 pastas) e `src/pages/` (30 pastas) |
+| 2. Componentes e páginas em pasta própria com `index.tsx` | `src/components/` (77 pastas) e `src/pages/` (30 pastas) |
 | 3. Componentes com responsabilidade única | `Button`, `Chip`, `Selo`, `RiskBadge`, `ScoreBadge` e `StatCard`, em `src/components/`; nenhum componente importa serviço |
 | 4. Props tipadas e tipos do domínio em `src/types/`, sem `any` | `ButtonProps` em `src/components/Button/index.tsx`; `src/types/produto.ts`; a checagem de `any` da CI |
 | 5. Comunicação só em `src/services/`, com `Promise<Tipo>` e `try/catch` | `src/services/produtos.ts` (padrão dos serviços), `src/services/api/requisicao.ts` e `src/services/erros.ts`; variáveis só em `src/config/ambiente.ts` |
@@ -194,7 +194,7 @@ código que serve de exemplo para cada um.
 | 7. Proteção contra XSS | nenhum `dangerouslySetInnerHTML`; respostas da IA renderizadas como texto em `src/components/ChatMessage/index.tsx`; Markdown com HTML bruto desligado em `src/utils/markdown.ts` |
 | 8. Validação de formulários em `src/utils/` | `src/utils/validacao.ts`: uma função por campo e os tamanhos máximos |
 | 9. Rotas privadas com Context | `src/components/RotaPrivada/index.tsx` e `src/components/RotaAdmin/index.tsx` |
-| 10. Acessibilidade avançada | modais e menu como `<dialog>` com `showModal` em `src/components/Modal/index.tsx` e `src/components/NavigationDrawer/index.tsx`; `aria-expanded` em `src/components/TopBar/index.tsx`; anúncio da troca de página em `src/components/RouteAnnouncer/index.tsx`; regiões `nav`, `main` e `footer` em `src/components/MainLayout/index.tsx`, com `header` na barra do celular (`src/components/TopBar/index.tsx`) |
+| 10. Acessibilidade avançada | modais e menu como `<dialog>` com `showModal` em `src/components/Modal/index.tsx` e `src/components/NavigationDrawer/index.tsx`; `aria-expanded` em `src/components/TopBar/index.tsx`; anúncio da troca de página em `src/components/RouteAnnouncer/index.tsx`; regiões `header`, `nav`, `main` e `footer` em `src/components/MainLayout/index.tsx` (no celular, o `header` é a barra de `src/components/TopBar/index.tsx`) |
 
 ## Qualidade e publicação
 
