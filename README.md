@@ -157,6 +157,45 @@ contraste do Windows e tradução para Libras pelo VLibras. A lista completa, co
 as limitações conhecidas, está na página
 [/acessibilidade](https://venus-web-application.vercel.app/acessibilidade).
 
+## Onde está cada requisito da disciplina
+
+Requisitos de Desenvolvimento de Aplicações Dinâmicas (DAD), com o lugar do
+código que serve de exemplo para cada um.
+
+### Mínimo
+
+| Requisito | Onde ver |
+|---|---|
+| 1. Vite com React e TypeScript, sem `.js` nem `.jsx` em `src/` | `package.json`, `tsconfig.json` (modo estrito) e a checagem da CI |
+| 2. Componentes e páginas em pasta própria com `index.tsx` | `src/components/` (76 pastas) e `src/pages/` (30 pastas) |
+| 3. Componentes com responsabilidade única | `Button`, `Chip`, `Selo`, `RiskBadge`, `ScoreBadge` e `StatCard`, em `src/components/`; nenhum componente importa serviço |
+| 4. Props tipadas e tipos do domínio em `src/types/`, sem `any` | `ButtonProps` em `src/components/Button/index.tsx`; `src/types/produto.ts`; a checagem de `any` da CI |
+| 5. Comunicação só em `src/services/`, com `Promise<Tipo>` e `try/catch` | `src/services/produtos.ts` (padrão dos serviços), `src/services/api/requisicao.ts` e `src/services/erros.ts`; variáveis só em `src/config/ambiente.ts` |
+| 6. Estado agrupado em objeto, sem mutação direta | `busca` (filtros e página) em `src/pages/Pesquisa/index.tsx`; `envio` em `src/hooks/usePerfil.ts` |
+| 7. `useEffect` com dependências corretas | `src/hooks/useRequisicao.ts`: tirar `tentativa` quebra o "Tentar de novo"; tirar `dono` mantém dados da conta anterior |
+| 8. `key` com identificador do dado | listas de ingredientes (`item.id`) em `src/pages/Produto/index.tsx`; opções (`option.value`) em `src/components/ListaSuspensa/index.tsx` |
+| 9. `useParams` com verificação | `src/pages/FilaAprovacao/index.tsx` (`id` ausente vira `null`); `src/pages/Produto/index.tsx` |
+| 10. Rotas com React Router, `<Link>`/`useNavigate` e rota `*` | `src/App.tsx`; `src/pages/NaoEncontrado/index.tsx`; `src/components/BackButton/index.tsx` |
+| 11. Acessibilidade mínima (WCAG AA) | `<label htmlFor>` e erro com `role="alert"` em `src/components/Input/index.tsx`; foco visível em `src/styles/global.css`; cores em `src/styles/tokens.css` |
+| 12. Carregando, sucesso e erro no DOM | `src/hooks/useRequisicao.ts` e as telas que o usam, como `src/pages/Dashboard/index.tsx` |
+| 13. Publicação com link no README | Vercel, link no topo deste arquivo |
+| 14. Conventional Commits em pelo menos 4 semanas | `git log`: mais de 340 commits, de agosto a outubro de 2026 |
+
+### Extras
+
+| Extra | Onde ver |
+|---|---|
+| 1. Context API com Provider e hook de consumo | `src/contexts/autenticacao.tsx` com `src/hooks/useAutenticacao.ts`; `src/contexts/chat.tsx` com `src/hooks/useChat.ts` |
+| 2. `useReducer` com estado e ação tipados | `src/contexts/chat.tsx`: a união `AcaoDoChat` e o reducer `reduzirChat` |
+| 3. Hook próprio com loading, erro e `AbortController` | `src/hooks/useRequisicao.ts`, usado por cinco hooks, como `src/hooks/usePainel.ts` |
+| 4. `React.lazy` e `Suspense` por página | `src/App.tsx` (`carregarPagina`): cada página baixa o próprio arquivo ao abrir |
+| 5. `localStorage` com `_versao` | `src/utils/armazenamento.ts`: salva com `_versao` e descarta o que vier de outra versão |
+| 6. `useMemo` e `useCallback` com motivo | `src/components/RevisaoIngrediente/index.tsx` e `src/components/DetalheCandidato/index.tsx`: a lista do catálogo, com cerca de 8 mil ingredientes, não é redesenhada a cada letra digitada |
+| 7. Proteção contra XSS | nenhum `dangerouslySetInnerHTML`; respostas da IA renderizadas como texto em `src/components/ChatMessage/index.tsx`; Markdown com HTML bruto desligado em `src/utils/markdown.ts` |
+| 8. Validação de formulários em `src/utils/` | `src/utils/validacao.ts`: uma função por campo e os tamanhos máximos |
+| 9. Rotas privadas com Context | `src/components/RotaPrivada/index.tsx` e `src/components/RotaAdmin/index.tsx` |
+| 10. Acessibilidade avançada | modais e menu como `<dialog>` com `showModal` em `src/components/Modal/index.tsx` e `src/components/NavigationDrawer/index.tsx`; `aria-expanded` em `src/components/TopBar/index.tsx`; anúncio da troca de página em `src/components/RouteAnnouncer/index.tsx`; regiões `nav`, `main` e `footer` em `src/components/MainLayout/index.tsx`, com `header` na barra do celular (`src/components/TopBar/index.tsx`) |
+
 ## Qualidade e publicação
 
 A cada pull request para `develop` ou `main`, a CI do GitHub Actions
