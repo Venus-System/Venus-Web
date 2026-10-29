@@ -6,6 +6,8 @@ import type {
   ResumoDasAnalises,
 } from "../../types/painel";
 import {
+  atualizadasPrimeiro,
+  chaveDoProduto,
   lerAnalise,
   lerNotaPessoal,
   lerPaginas,
@@ -118,12 +120,12 @@ export async function buscarPainelNaApi(
     const analises = lerTodos(paginasDeAnalises.itens, lerAnalise);
     const analisesPorDia = umaPorDia(
       analises,
-      (analise) => analise.productVersionId,
+      (analise) => chaveDoProduto(analise.productVersionId, produtoDaVersao),
       (analise) => analise.createdAt,
     );
     const ultimasAnalises = maisRecentePorProduto(analises, produtoDaVersao);
     const notas = maisRecentePorProduto(
-      lerTodos(paginasDeNotas.itens, lerNotaPessoal),
+      atualizadasPrimeiro(lerTodos(paginasDeNotas.itens, lerNotaPessoal)),
       produtoDaVersao,
     );
     const alertas = notas.filter(

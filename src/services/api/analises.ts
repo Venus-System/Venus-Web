@@ -40,6 +40,7 @@ export interface NotaPessoalLida {
   finalScore: number;
   recommendationLevel: NivelRecomendacao | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export async function lerPaginas(
@@ -116,7 +117,27 @@ export function lerNotaPessoal(valor: unknown): NotaPessoalLida | null {
     finalScore,
     recommendationLevel: lerNivel(dados.recommendationLevel),
     createdAt,
+    updatedAt: texto(dados.updatedAt) ?? createdAt,
   };
+}
+
+export function atualizadasPrimeiro(
+  notas: NotaPessoalLida[],
+): NotaPessoalLida[] {
+  return [...notas].sort(
+    (a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt),
+  );
+}
+
+export function chaveDoProduto(
+  productVersionId: number,
+  produtoDaVersao: Map<number, number>,
+): string {
+  const produtoId = produtoDaVersao.get(productVersionId);
+
+  return produtoId === undefined
+    ? `versao-${productVersionId}`
+    : `produto-${produtoId}`;
 }
 
 export function maisRecentePorVersao<T extends { productVersionId: number }>(
@@ -142,11 +163,7 @@ export function maisRecentePorProduto<T extends { productVersionId: number }>(
   const vistos = new Set<string>();
 
   return itens.filter((item) => {
-    const produtoId = produtoDaVersao.get(item.productVersionId);
-    const chave =
-      produtoId === undefined
-        ? `versao-${item.productVersionId}`
-        : `produto-${produtoId}`;
+    const chave = chaveDoProduto(item.productVersionId, produtoDaVersao);
 
     if (vistos.has(chave)) {
       return false;
