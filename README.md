@@ -74,8 +74,10 @@ Os endereços vão sem barra no fim. Se `VITE_USAR_MOCK=false` e o
 falta, em vez de mandar pedidos para um endereço errado.
 
 Das seis variáveis do Firebase, só `API_KEY`, `AUTH_DOMAIN` e `PROJECT_ID` são
-necessárias para autenticar. Sem elas, o login cai no modo falso e o botão de
-entrar com Google aparece desabilitado, com a explicação. A `apiKey` do
+necessárias para autenticar. Sem elas, o botão de entrar com Google aparece
+desabilitado, com a explicação. Com `VITE_USAR_MOCK=true`, o login por e-mail
+usa uma conta falsa; com a API real, ele avisa que falta configurar o Firebase,
+em vez de criar uma sessão que a API recusaria. A `apiKey` do
 Firebase não é segredo: ela identifica o projeto e vai no pacote publicado. O
 que protege o projeto é a validação do token no servidor.
 
