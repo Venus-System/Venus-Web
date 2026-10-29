@@ -68,6 +68,37 @@
   font-weight: var(--peso-forte);
 }
 
+.veredito {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  max-width: 66rem;
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  font-weight: var(--peso-forte);
+}
+
+.veredito svg {
+  flex-shrink: 0;
+}
+
+.vereditoMelhor {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}
+
+.vereditoNenhum {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.vereditoEmpate {
+  background-color: var(--card);
+  color: var(--texto);
+}
+
 .moldura {
   position: relative;
   max-width: 66rem;
