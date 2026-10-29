@@ -145,10 +145,115 @@ export const oleoCapilarReparador: Produto = {
   },
 };
 
+export const serumUniformizador: Produto = {
+  slug: "serum-uniformizador-niacinamida",
+  name: "Sérum Uniformizador de Niacinamida",
+  description:
+    "Sérum para manchas e oleosidade, com niacinamida e fragrância adicionada.",
+  category: "Sérum facial",
+  brand: lumine,
+  imageUrl: null,
+  level: "warning",
+  scores: {
+    overallScore: 66,
+    healthScore: 62,
+    environmentalScore: 70,
+    ethicalScore: 82,
+    performanceScore: 80,
+    transparencyScore: 68,
+    confidenceScore: 85,
+  },
+};
+
+export const cremeHidratantePerfumado: Produto = {
+  slug: "creme-hidratante-perfumado",
+  name: "Creme Hidratante Perfumado",
+  description:
+    "Creme de textura rica com álcool cetoestearílico e fragrância marcante.",
+  category: "Hidratante facial",
+  brand: purebase,
+  imageUrl: null,
+  level: "warning",
+  scores: {
+    overallScore: 55,
+    healthScore: 50,
+    environmentalScore: 52,
+    ethicalScore: 40,
+    performanceScore: 72,
+    transparencyScore: 58,
+    confidenceScore: 82,
+  },
+};
+
+export const gelLimpezaSuave: Produto = {
+  slug: "gel-de-limpeza-suave",
+  name: "Gel de Limpeza Suave",
+  description:
+    "Gel de limpeza sem sulfato e sem fragrância, com aveia e pró-vitamina B5.",
+  category: "Limpeza facial",
+  brand: floraNativa,
+  imageUrl: null,
+  level: "safe",
+  scores: {
+    overallScore: 84,
+    healthScore: 88,
+    environmentalScore: 80,
+    ethicalScore: 90,
+    performanceScore: 74,
+    transparencyScore: 85,
+    confidenceScore: 89,
+  },
+};
+
+export const mascaraCalmantePantenol: Produto = {
+  slug: "mascara-calmante-pantenol",
+  name: "Máscara Calmante de Pantenol",
+  description:
+    "Máscara de tratamento com pró-vitamina B5, aveia e niacinamida, sem fragrância.",
+  category: "Tratamento facial",
+  brand: dermalis,
+  imageUrl: null,
+  level: "safe",
+  scores: {
+    overallScore: 79,
+    healthScore: 85,
+    environmentalScore: 76,
+    ethicalScore: 70,
+    performanceScore: 72,
+    transparencyScore: 80,
+    confidenceScore: 87,
+  },
+};
+
+export const mascaraCapilarNutritiva: Produto = {
+  slug: "mascara-capilar-nutritiva",
+  name: "Máscara Capilar Nutritiva",
+  description:
+    "Máscara capilar com ceramidas e pró-vitamina B5, sem fragrância adicionada.",
+  category: "Tratamento capilar",
+  brand: lumine,
+  imageUrl: null,
+  level: "safe",
+  scores: {
+    overallScore: 72,
+    healthScore: 78,
+    environmentalScore: 70,
+    ethicalScore: 80,
+    performanceScore: 68,
+    transparencyScore: 74,
+    confidenceScore: 86,
+  },
+};
+
 export const produtosMock: Produto[] = [
   serumCalmanteAveia,
   hidratanteCeramidas,
   gelLimpezaPurificante,
   locaoClareadoraNoturna,
   oleoCapilarReparador,
+  serumUniformizador,
+  cremeHidratantePerfumado,
+  gelLimpezaSuave,
+  mascaraCalmantePantenol,
+  mascaraCapilarNutritiva,
 ];

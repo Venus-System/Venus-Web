@@ -4,11 +4,16 @@ import type {
   OrigemDoMotivo,
 } from "../../types/analise";
 import {
+  cremeHidratantePerfumado,
   gelLimpezaPurificante,
+  gelLimpezaSuave,
   hidratanteCeramidas,
   locaoClareadoraNoturna,
+  mascaraCalmantePantenol,
+  mascaraCapilarNutritiva,
   oleoCapilarReparador,
   serumCalmanteAveia,
+  serumUniformizador,
 } from "./produtos";
 
 const CALCULADA_EM = "2026-10-10T14:03:22Z";
@@ -252,6 +257,200 @@ export const analisesPessoaisMock: Record<string, AnalisePersonalizada> = {
     },
     ingredientCount: 3,
     unevaluatedIngredientCount: 1,
+    calculatedAt: CALCULADA_EM,
+    complete: true,
+  },
+
+  [serumUniformizador.slug]: {
+    finalScore: 54,
+    recommendationLevel: "acceptable",
+    riskLevel: "medium",
+    compatibilityPercentage: 55,
+    summary:
+      "Nota 54 de 100 - Aceitável. Atenção: Fragrância pode irritar pele sensível. Niacinamida ajuda a controlar a oleosidade.",
+    reasons: [
+      motivo({
+        source: "ingredient_rule",
+        text: "Fragrância pode irritar pele sensível.",
+        warning: true,
+        ingredientName: "Fragrância",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Niacinamida ajuda a controlar a oleosidade.",
+        ingredientName: "Niacinamida",
+        profileTagSlug: "controle-de-oleosidade",
+      }),
+      motivo({
+        source: "preference",
+        text: "A marca declara ser vegana, como você prefere.",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 66 de 100.",
+      }),
+    ],
+    breakdown: {
+      qualityScore: 66,
+      qualityPoints: 23.1,
+      profilePoints: 30.9,
+      healthScore: 62,
+      environmentalScore: 70,
+      ethicalScore: 82,
+      performanceScore: 80,
+    },
+    ingredientCount: 6,
+    unevaluatedIngredientCount: 0,
+    calculatedAt: CALCULADA_EM,
+    complete: true,
+  },
+
+  [cremeHidratantePerfumado.slug]: {
+    finalScore: 41,
+    recommendationLevel: "not_recommended",
+    riskLevel: "medium",
+    compatibilityPercentage: 40,
+    summary:
+      "Nota 41 de 100 - Não recomendado. Atenção: Fragrância pode irritar pele sensível.",
+    reasons: [
+      motivo({
+        source: "ingredient_rule",
+        text: "Fragrância pode irritar pele sensível.",
+        warning: true,
+        ingredientName: "Fragrância",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "preference",
+        text: "A marca não declara ser vegana, e você prefere produtos veganos.",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 55 de 100.",
+      }),
+    ],
+    breakdown: {
+      qualityScore: 55,
+      qualityPoints: 19.3,
+      profilePoints: 21.7,
+      healthScore: 50,
+      environmentalScore: 52,
+      ethicalScore: 40,
+      performanceScore: 72,
+    },
+    ingredientCount: 5,
+    unevaluatedIngredientCount: 0,
+    calculatedAt: CALCULADA_EM,
+    complete: true,
+  },
+
+  [gelLimpezaSuave.slug]: {
+    finalScore: 80,
+    recommendationLevel: "recommended",
+    riskLevel: "low",
+    compatibilityPercentage: 78,
+    summary:
+      "Nota 80 de 100 - Recomendado. Aveia coloidal acalma pele sensível. A marca declara ser vegana, como você prefere.",
+    reasons: [
+      motivo({
+        source: "ingredient_rule",
+        text: "Aveia coloidal acalma pele sensível.",
+        ingredientName: "Extrato de aveia",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "preference",
+        text: "A marca declara ser vegana, como você prefere.",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 84 de 100.",
+      }),
+    ],
+    breakdown: {
+      qualityScore: 84,
+      qualityPoints: 29.4,
+      profilePoints: 50.6,
+      healthScore: 88,
+      environmentalScore: 80,
+      ethicalScore: 90,
+      performanceScore: 74,
+    },
+    ingredientCount: 6,
+    unevaluatedIngredientCount: 0,
+    calculatedAt: CALCULADA_EM,
+    complete: true,
+  },
+
+  [mascaraCalmantePantenol.slug]: {
+    finalScore: 77,
+    recommendationLevel: "recommended",
+    riskLevel: "low",
+    compatibilityPercentage: 74,
+    summary:
+      "Nota 77 de 100 - Recomendado. Aveia coloidal acalma pele sensível. Niacinamida ajuda a controlar a oleosidade.",
+    reasons: [
+      motivo({
+        source: "ingredient_rule",
+        text: "Aveia coloidal acalma pele sensível.",
+        ingredientName: "Extrato de aveia",
+        profileTagSlug: "reativa",
+      }),
+      motivo({
+        source: "ingredient_rule",
+        text: "Niacinamida ajuda a controlar a oleosidade.",
+        ingredientName: "Niacinamida",
+        profileTagSlug: "controle-de-oleosidade",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 79 de 100.",
+      }),
+    ],
+    breakdown: {
+      qualityScore: 79,
+      qualityPoints: 27.7,
+      profilePoints: 49.3,
+      healthScore: 85,
+      environmentalScore: 76,
+      ethicalScore: 70,
+      performanceScore: 72,
+    },
+    ingredientCount: 6,
+    unevaluatedIngredientCount: 0,
+    calculatedAt: CALCULADA_EM,
+    complete: true,
+  },
+
+  [mascaraCapilarNutritiva.slug]: {
+    finalScore: 70,
+    recommendationLevel: "recommended",
+    riskLevel: "low",
+    compatibilityPercentage: 68,
+    summary:
+      "Nota 70 de 100 - Recomendado. A marca declara ser vegana, como você prefere.",
+    reasons: [
+      motivo({
+        source: "preference",
+        text: "A marca declara ser vegana, como você prefere.",
+      }),
+      motivo({
+        source: "base_score",
+        text: "Qualidade do produto: 72 de 100.",
+      }),
+    ],
+    breakdown: {
+      qualityScore: 72,
+      qualityPoints: 25.2,
+      profilePoints: 44.8,
+      healthScore: 78,
+      environmentalScore: 70,
+      ethicalScore: 80,
+      performanceScore: 68,
+    },
+    ingredientCount: 6,
+    unevaluatedIngredientCount: 0,
     calculatedAt: CALCULADA_EM,
     complete: true,
   },
