@@ -8,6 +8,16 @@ export const TAMANHO_MAXIMO_EM_MB = 20;
 
 const TAMANHO_MAXIMO_DA_FOTO = TAMANHO_MAXIMO_EM_MB * 1024 * 1024;
 
+export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
+export const MAXIMO_DO_TITULO_DA_AVALIACAO = 100;
+export const MAXIMO_DA_DENUNCIA = 500;
+export const MAXIMO_DO_NOME = 100;
+export const MAXIMO_DO_EMAIL = 254;
+export const MAXIMO_DA_SENHA = 128;
+export const MAXIMO_DA_BUSCA = 100;
+export const MAXIMO_DO_NOME_DO_PRODUTO = 200;
+export const MAXIMO_DO_NOME_INCI = 300;
+
 export function validarFoto(arquivo: File): string | null {
   if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
     return "Envie uma imagem PNG, JPEG ou WebP.";
@@ -21,8 +31,14 @@ export function validarFoto(arquivo: File): string | null {
 }
 
 export function validarNome(nome: string): string | null {
-  if (nome.trim() === "") {
+  const limpo = nome.trim();
+
+  if (limpo === "") {
     return "Informe como podemos te chamar.";
+  }
+
+  if (limpo.length > MAXIMO_DO_NOME) {
+    return `O nome pode ter até ${MAXIMO_DO_NOME} caracteres.`;
   }
 
   return null;
@@ -33,6 +49,10 @@ export function validarSenha(senha: string): string | null {
     return "A senha precisa de pelo menos 8 caracteres.";
   }
 
+  if (senha.length > MAXIMO_DA_SENHA) {
+    return `A senha pode ter até ${MAXIMO_DA_SENHA} caracteres.`;
+  }
+
   return null;
 }
 
@@ -41,6 +61,14 @@ export function validarEmail(email: string): string | null {
 
   if (valor === "") {
     return "Informe o seu e-mail.";
+  }
+
+  if (valor.length > MAXIMO_DO_EMAIL) {
+    return `O e-mail pode ter até ${MAXIMO_DO_EMAIL} caracteres.`;
+  }
+
+  if (/\s/.test(valor)) {
+    return "O e-mail não pode ter espaços.";
   }
 
   const partes = valor.split("@");
@@ -153,7 +181,17 @@ export function validarComentarioDaRecusa(comentario: string): string | null {
 }
 
 export function validarNomeDoProduto(nome: string): string | null {
-  return nome.trim() === "" ? "Informe o nome do produto." : null;
+  const limpo = nome.trim();
+
+  if (limpo === "") {
+    return "Informe o nome do produto.";
+  }
+
+  if (limpo.length > MAXIMO_DO_NOME_DO_PRODUTO) {
+    return `O nome do produto pode ter até ${MAXIMO_DO_NOME_DO_PRODUTO} caracteres.`;
+  }
+
+  return null;
 }
 
 export function validarMarca(marcaId: string): string | null {
@@ -169,33 +207,39 @@ export function validarDecisaoDoIngrediente(opcao: string): string | null {
 }
 
 export function validarNomeInci(nome: string): string | null {
-  return nome.trim() === ""
-    ? "Informe o nome INCI do ingrediente novo."
-    : null;
+  const limpo = nome.trim();
+
+  if (limpo === "") {
+    return "Informe o nome INCI do ingrediente novo.";
+  }
+
+  if (limpo.length > MAXIMO_DO_NOME_INCI) {
+    return `O nome INCI pode ter até ${MAXIMO_DO_NOME_INCI} caracteres.`;
+  }
+
+  return null;
 }
 
 export function validarIngredienteCadastrado(id: string): string | null {
   return id === "" ? "Escolha o ingrediente cadastrado." : null;
 }
 
-export const MAXIMO_DO_COMENTARIO_DA_AVALIACAO = 500;
-export const MAXIMO_DO_TITULO_DA_AVALIACAO = 100;
-export const MAXIMO_DA_DENUNCIA = 500;
-export const MAXIMO_DO_NOME = 100;
-export const MAXIMO_DO_EMAIL = 254;
-export const MAXIMO_DA_SENHA = 128;
-export const MAXIMO_DA_BUSCA = 100;
-export const MAXIMO_DO_NOME_DO_PRODUTO = 200;
-export const MAXIMO_DO_NOME_INCI = 300;
-
 export function validarNotaDaAvaliacao(nota: Estrelas | null): string | null {
   return nota === null ? "Escolha uma nota de 1 a 5 estrelas." : null;
 }
 
 export function validarTituloDaAvaliacao(titulo: string): string | null {
-  return titulo.trim() === ""
-    ? "Escreva um título para a sua avaliação."
-    : null;
+  const limpo = titulo.trim();
+
+  if (limpo === "") {
+    return "Escreva um título para a sua avaliação.";
+  }
+
+  if (limpo.length > MAXIMO_DO_TITULO_DA_AVALIACAO) {
+    return `O título pode ter até ${MAXIMO_DO_TITULO_DA_AVALIACAO} caracteres.`;
+  }
+
+  return null;
 }
 
 export function validarMotivoDaDenuncia(
