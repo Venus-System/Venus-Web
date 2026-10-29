@@ -47,9 +47,11 @@ type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
 
+type SituacaoDasTodas = "fechado" | "abrindo" | "aberto" | "erro";
+
 interface ModaisDoProduto {
   ingredientes: boolean;
-  todas: boolean;
+  todas: SituacaoDasTodas;
   acao: AcaoDeAvaliacao | null;
 }
 
@@ -77,7 +79,7 @@ function Produto() {
   );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
-    todas: false,
+    todas: "fechado",
     acao: null,
   });
   const {
@@ -127,7 +129,7 @@ function Produto() {
 
     if (publicou) {
       fecharAcao();
-      atualizarAvaliacoes();
+      void atualizarAvaliacoes();
     }
   }
 
@@ -155,14 +157,21 @@ function Produto() {
     setModais((atual) => ({ ...atual, ingredientes: false }));
   }
 
-  function abrirTodas() {
-    setModais((atual) => ({ ...atual, todas: true }));
-    atualizarAvaliacoes();
+  async function abrirTodas() {
+    setModais((atual) => ({ ...atual, todas: "abrindo" }));
+
+    const atualizou = await atualizarAvaliacoes();
+
+    setModais((atual) =>
+      atual.todas !== "abrindo"
+        ? atual
+        : { ...atual, todas: atualizou ? "aberto" : "erro" },
+    );
   }
 
   function fecharTodas() {
-    setModais((atual) => ({ ...atual, todas: false }));
-    atualizarAvaliacoes();
+    setModais((atual) => ({ ...atual, todas: "fechado" }));
+    void atualizarAvaliacoes();
   }
 
   if (!slug) {
@@ -498,14 +507,23 @@ function Produto() {
                   variant="secondary"
                   className={styles.seeAll}
                   onClick={abrirTodas}
+                  busy={modais.todas === "abrindo"}
                 >
-                  Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
-                  avaliações
+                  {modais.todas === "abrindo"
+                    ? "Carregando as avaliações..."
+                    : `Ver todas as ${avaliacoes.avaliacoes.reviews.length} avaliações`}
                 </Button>
               ) : null}
 
+              {modais.todas === "erro" ? (
+                <p className={styles.erroDasTodas} role="alert">
+                  Não foi possível atualizar as avaliações. Tente abrir de
+                  novo.
+                </p>
+              ) : null}
+
               <ReviewsModal
-                open={modais.todas}
+                open={modais.todas === "aberto"}
                 onClose={fecharTodas}
                 data={avaliacoes.avaliacoes}
                 canInteract={logado}
