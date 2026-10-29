@@ -21,8 +21,10 @@
 }
 
 .aside {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 16rem;
   height: 100vh;
 }
 
@@ -52,6 +54,6 @@
 
 @media (min-width: 64rem) {
   .columns {
-    grid-template-columns: 16rem 1fr;
+    padding-left: 16rem;
   }
 }
