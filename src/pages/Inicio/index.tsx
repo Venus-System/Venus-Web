@@ -550,7 +550,12 @@ function Inicio() {
         </div>
 
         <div className={`${styles.container} ${styles.rodapeFinal}`}>
-          <p>© {new Date().getFullYear()} Venus · Trabalho interdisciplinar</p>
+          <p>
+            © {new Date().getFullYear()} Venus · Trabalho interdisciplinar ·{" "}
+            <Link className={styles.rodapeLink} to="/admin/login">
+              Acesso da equipe
+            </Link>
+          </p>
           <p>O Venus não substitui a orientação de um dermatologista.</p>
         </div>
       </footer>
