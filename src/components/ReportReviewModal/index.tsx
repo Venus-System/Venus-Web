@@ -11,6 +11,7 @@ import {
 } from "../../utils/motivosDenuncia";
 import {
   MAXIMO_DA_DENUNCIA,
+  validarComentarioDaDenuncia,
   validarMotivoDaDenuncia,
 } from "../../utils/validacao";
 import Button from "../Button";
@@ -34,6 +35,7 @@ interface CamposDenuncia {
   motivo: MotivoDenuncia | "";
   comentario: string;
   erroDoMotivo: string | null;
+  erroDoComentario: string | null;
 }
 
 const OPCOES_MOTIVO: RadioOption<MotivoDenuncia>[] = MOTIVOS_DE_DENUNCIA.map(
@@ -43,6 +45,7 @@ const OPCOES_MOTIVO: RadioOption<MotivoDenuncia>[] = MOTIVOS_DE_DENUNCIA.map(
 const ID_MOTIVO = "denuncia-motivo";
 const ID_COMENTARIO = "denuncia-comentario";
 const ID_AVISO = "denuncia-aviso";
+const ID_ERRO_COMENTARIO = "denuncia-erro-comentario";
 
 function FormularioDenuncia({
   review,
@@ -55,6 +58,7 @@ function FormularioDenuncia({
     motivo: "",
     comentario: "",
     erroDoMotivo: null,
+    erroDoComentario: null,
   });
 
   function handleSubmit(evento: FormEvent<HTMLFormElement>) {
@@ -65,11 +69,17 @@ function FormularioDenuncia({
     }
 
     const erroDoMotivo = validarMotivoDaDenuncia(campos.motivo);
+    const erroDoComentario = validarComentarioDaDenuncia(campos.comentario);
 
-    setCampos((atual) => ({ ...atual, erroDoMotivo }));
+    setCampos((atual) => ({ ...atual, erroDoMotivo, erroDoComentario }));
 
     if (erroDoMotivo !== null || campos.motivo === "") {
       document.getElementById(ID_MOTIVO)?.focus();
+      return;
+    }
+
+    if (erroDoComentario !== null) {
+      document.getElementById(ID_COMENTARIO)?.focus();
       return;
     }
 
@@ -103,7 +113,11 @@ function FormularioDenuncia({
 
         <textarea
           id={ID_COMENTARIO}
-          className={styles.campo}
+          className={
+            campos.erroDoComentario === null
+              ? styles.campo
+              : styles.campoInvalido
+          }
           rows={4}
           maxLength={MAXIMO_DA_DENUNCIA}
           placeholder="Descreva o problema com suas palavras."
@@ -112,15 +126,27 @@ function FormularioDenuncia({
             setCampos((atual) => ({
               ...atual,
               comentario: evento.target.value,
+              erroDoComentario: null,
             }))
           }
-          aria-describedby={ID_AVISO}
+          aria-invalid={campos.erroDoComentario === null ? undefined : true}
+          aria-describedby={
+            campos.erroDoComentario === null
+              ? ID_AVISO
+              : `${ID_AVISO} ${ID_ERRO_COMENTARIO}`
+          }
         />
 
         <p id={ID_AVISO} className={styles.aviso}>
           Até {MAXIMO_DA_DENUNCIA} caracteres. Um moderador analisa a denúncia.
           A avaliação continua visível até a análise terminar.
         </p>
+
+        {campos.erroDoComentario === null ? null : (
+          <p id={ID_ERRO_COMENTARIO} className={styles.erro} role="alert">
+            {campos.erroDoComentario}
+          </p>
+        )}
       </div>
 
       {errorMessage === null ? null : (

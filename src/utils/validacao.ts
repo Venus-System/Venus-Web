@@ -248,6 +248,16 @@ export function validarMotivoDaDenuncia(
   return motivo === "" ? "Escolha o motivo da denúncia." : null;
 }
 
+export function validarComentarioDaDenuncia(
+  comentario: string,
+): string | null {
+  if (comentario.trim().length > MAXIMO_DA_DENUNCIA) {
+    return `O comentário pode ter até ${MAXIMO_DA_DENUNCIA} caracteres.`;
+  }
+
+  return null;
+}
+
 export function validarComentarioDaAvaliacao(
   comentario: string,
 ): string | null {
