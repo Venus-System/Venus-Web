@@ -92,7 +92,7 @@ No console do Firebase, três configurações importam:
 
 | Rota | Tela | Acesso |
 |---|---|---|
-| `/` | página inicial, ainda em construção | público |
+| `/` | página inicial: como funciona, benefícios, sobre nós e perguntas frequentes | público |
 | `/pesquisa` | busca de produtos | público |
 | `/produto/:slug` | análise do produto | público (nota pessoal com conta) |
 | `/comparar` | comparação de dois produtos | público |
