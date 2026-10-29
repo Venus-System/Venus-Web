@@ -105,7 +105,7 @@ function Historico() {
       <div className={styles.page}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            Tudo que você <span className={styles.destaque}>já analisou.</span>
+            Tudo que você já <span className={styles.destaque}>analisou.</span>
           </h1>
           <p className={styles.subtitle}>
             Cada análise fica salva aqui. Volte quando quiser,{" "}

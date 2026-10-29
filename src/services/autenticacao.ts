@@ -14,10 +14,12 @@ import {
   updateProfile,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { USAR_MOCK } from "../config/ambiente";
 import { autenticacaoFirebase } from "../config/firebase";
 import { ErroLinkDeSenhaVencido, repassarErro } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import type { Usuario } from "../types/usuario";
+import { guardar, ler, limpar } from "../utils/armazenamento";
 import { validarEmail, validarNome, validarSenha } from "../utils/validacao";
 import {
   atualizarNomeNaApi,
@@ -160,6 +162,8 @@ async function aplicarPersistencia(continuarConectado: boolean): Promise<void> {
 }
 
 const CHAVE_SESSAO = "venus.sessao";
+const SEM_FIREBASE =
+  "O login não está disponível: falta configurar o Firebase neste ambiente.";
 
 function ehUsuario(valor: unknown): valor is Usuario {
   return (
@@ -233,6 +237,10 @@ async function entrarComMock(
   continuarConectado: boolean,
 ): Promise<Usuario> {
   try {
+    if (!USAR_MOCK) {
+      throw new Error(SEM_FIREBASE);
+    }
+
     await simularLatencia();
 
     if (validarEmail(email) !== null || senha.length < 8) {
@@ -267,12 +275,8 @@ export async function sair(): Promise<void> {
 }
 
 function sairDoMock(): void {
-  try {
-    localStorage.removeItem(CHAVE_SESSAO);
-    sessionStorage.removeItem(CHAVE_SESSAO);
-  } catch {
-    return;
-  }
+  limpar(CHAVE_SESSAO);
+  limpar(CHAVE_SESSAO, "sessao");
 }
 
 export function observarSessao(
@@ -302,18 +306,13 @@ export function observarSessao(
 }
 
 async function recuperarSessaoDoMock(): Promise<Usuario | null> {
-  const salvo = lerDoArmazenamento();
-
-  if (salvo === null) {
+  if (!USAR_MOCK) {
     return null;
   }
 
-  try {
-    const dados: unknown = JSON.parse(salvo);
-    return ehUsuario(dados) ? dados : null;
-  } catch {
-    return null;
-  }
+  return (
+    ler(CHAVE_SESSAO, ehUsuario) ?? ler(CHAVE_SESSAO, ehUsuario, "sessao")
+  );
 }
 
 function ehUsuarioInexistente(erro: unknown): boolean {
@@ -414,6 +413,10 @@ async function criarContaComMock(
   senha: string,
 ): Promise<Usuario> {
   try {
+    if (!USAR_MOCK) {
+      throw new Error(SEM_FIREBASE);
+    }
+
     await simularLatencia();
 
     if (
@@ -438,22 +441,6 @@ async function criarContaComMock(
   }
 }
 
-function lerDoArmazenamento(): string | null {
-  try {
-    return (
-      localStorage.getItem(CHAVE_SESSAO) ?? sessionStorage.getItem(CHAVE_SESSAO)
-    );
-  } catch {
-    return null;
-  }
-}
-
 function gravarSessao(usuario: Usuario, persistente: boolean): void {
-  try {
-    const destino = persistente ? localStorage : sessionStorage;
-
-    destino.setItem(CHAVE_SESSAO, JSON.stringify(usuario));
-  } catch {
-    return;
-  }
+  guardar(CHAVE_SESSAO, usuario, persistente ? "local" : "sessao");
 }

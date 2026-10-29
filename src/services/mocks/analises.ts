@@ -5,11 +5,16 @@ import type {
 } from "../../types/ingrediente";
 import { nivelDoIngrediente } from "../../utils/nivelDoIngrediente";
 import {
+  cremeHidratantePerfumado,
   gelLimpezaPurificante,
+  gelLimpezaSuave,
   hidratanteCeramidas,
   locaoClareadoraNoturna,
+  mascaraCalmantePantenol,
+  mascaraCapilarNutritiva,
   oleoCapilarReparador,
   serumCalmanteAveia,
+  serumUniformizador,
 } from "./produtos";
 
 const agua: Ingrediente = {
@@ -268,6 +273,70 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
       },
       item(7, 2, alcoolCetearilico),
       item(12, 3, fragrancia),
+    ],
+  },
+
+  [serumUniformizador.slug]: {
+    product: serumUniformizador,
+    versionId: 6,
+    ingredients: [
+      item(1, 1, agua),
+      item(3, 2, niacinamida),
+      item(9, 3, butilenoGlicol),
+      item(2, 4, glicerina),
+      item(6, 5, fenoxietanol),
+      item(12, 6, fragrancia),
+    ],
+  },
+
+  [cremeHidratantePerfumado.slug]: {
+    product: cremeHidratantePerfumado,
+    versionId: 7,
+    ingredients: [
+      item(1, 1, agua),
+      item(7, 2, alcoolCetearilico),
+      item(2, 3, glicerina),
+      item(12, 4, fragrancia),
+      item(6, 5, fenoxietanol),
+    ],
+  },
+
+  [gelLimpezaSuave.slug]: {
+    product: gelLimpezaSuave,
+    versionId: 8,
+    ingredients: [
+      item(1, 1, agua),
+      item(11, 2, cocamidopropilBetaina),
+      item(2, 3, glicerina),
+      item(4, 4, aveia),
+      item(5, 5, pantenol),
+      item(6, 6, fenoxietanol),
+    ],
+  },
+
+  [mascaraCalmantePantenol.slug]: {
+    product: mascaraCalmantePantenol,
+    versionId: 9,
+    ingredients: [
+      item(1, 1, agua),
+      item(5, 2, pantenol),
+      item(2, 3, glicerina),
+      item(4, 4, aveia),
+      item(3, 5, niacinamida),
+      item(9, 6, butilenoGlicol),
+    ],
+  },
+
+  [mascaraCapilarNutritiva.slug]: {
+    product: mascaraCapilarNutritiva,
+    versionId: 10,
+    ingredients: [
+      item(1, 1, agua),
+      item(7, 2, alcoolCetearilico),
+      item(2, 3, glicerina),
+      item(5, 4, pantenol),
+      item(8, 5, ceramida),
+      item(6, 6, fenoxietanol),
     ],
   },
 };

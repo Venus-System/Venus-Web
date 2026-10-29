@@ -195,7 +195,9 @@ function Sobre() {
 
           <p className={styles.text}>
             A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F e
-            é feita por onze estudantes. Cada nome leva ao perfil da pessoa no
+            é feita por onze estudantes. O projeto segue a ODS 12 da ONU,
+            Consumo e produção responsáveis: informação clara para cada pessoa
+            escolher melhor o que compra. Cada nome leva ao perfil da pessoa no
             GitHub.
           </p>
 

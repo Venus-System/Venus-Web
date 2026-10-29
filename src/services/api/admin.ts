@@ -1,8 +1,4 @@
-import {
-  URL_API,
-  URL_API_SCANS,
-  URL_CLASSIFICACAO,
-} from "../../config/ambiente";
+import { URL_API, URL_CLASSIFICACAO } from "../../config/ambiente";
 import type {
   AprovacaoCandidato,
   CatalogoDaRevisao,
@@ -122,7 +118,7 @@ async function pedirComoAdmin(
 
     cabecalhos.set("Authorization", `Bearer ${sessao.token}`);
 
-    const resposta = await pedir(`${URL_API_SCANS}${caminho}`, {
+    const resposta = await pedir(`${URL_API}${caminho}`, {
       ...init,
       headers: cabecalhos,
     });

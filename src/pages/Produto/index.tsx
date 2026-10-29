@@ -31,7 +31,7 @@ import ReviewCard from "../../components/ReviewCard";
 import ReportReviewModal from "../../components/ReportReviewModal";
 import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
-import ScoreBadge from "../../components/ScoreBadge";
+import BigScore from "../../components/BigScore";
 import ScoreBars from "../../components/ScoreBars";
 import ScoreExplanation from "../../components/ScoreExplanation";
 import Chip from "../../components/Chip";
@@ -47,9 +47,11 @@ type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
 
+type SituacaoDasTodas = "fechado" | "abrindo" | "aberto" | "erro";
+
 interface ModaisDoProduto {
   ingredientes: boolean;
-  todas: boolean;
+  todas: SituacaoDasTodas;
   acao: AcaoDeAvaliacao | null;
 }
 
@@ -77,7 +79,7 @@ function Produto() {
   );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
-    todas: false,
+    todas: "fechado",
     acao: null,
   });
   const {
@@ -127,7 +129,7 @@ function Produto() {
 
     if (publicou) {
       fecharAcao();
-      atualizarAvaliacoes();
+      void atualizarAvaliacoes();
     }
   }
 
@@ -155,14 +157,21 @@ function Produto() {
     setModais((atual) => ({ ...atual, ingredientes: false }));
   }
 
-  function abrirTodas() {
-    setModais((atual) => ({ ...atual, todas: true }));
-    atualizarAvaliacoes();
+  async function abrirTodas() {
+    setModais((atual) => ({ ...atual, todas: "abrindo" }));
+
+    const atualizou = await atualizarAvaliacoes();
+
+    setModais((atual) =>
+      atual.todas !== "abrindo"
+        ? atual
+        : { ...atual, todas: atualizou ? "aberto" : "erro" },
+    );
   }
 
   function fecharTodas() {
-    setModais((atual) => ({ ...atual, todas: false }));
-    atualizarAvaliacoes();
+    setModais((atual) => ({ ...atual, todas: "fechado" }));
+    void atualizarAvaliacoes();
   }
 
   if (!slug) {
@@ -264,10 +273,7 @@ function Produto() {
 
             {pessoal === null ? (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={product.scores.overallScore}
-                  level={product.level}
-                />
+                <BigScore score={product.scores.overallScore} />
                 <p className={styles.scoreCaption}>
                   Avaliação geral da Venus, de 0 a 100. É a mesma para todo
                   mundo.
@@ -275,10 +281,7 @@ function Produto() {
               </div>
             ) : (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={pessoal.finalScore}
-                  level={nivelDaRecomendacao(pessoal.recommendationLevel)}
-                />
+                <BigScore score={pessoal.finalScore} />
 
                 <div className={styles.veredito}>
                   <div className={styles.chips}>
@@ -504,14 +507,23 @@ function Produto() {
                   variant="secondary"
                   className={styles.seeAll}
                   onClick={abrirTodas}
+                  busy={modais.todas === "abrindo"}
                 >
-                  Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
-                  avaliações
+                  {modais.todas === "abrindo"
+                    ? "Carregando as avaliações..."
+                    : `Ver todas as ${avaliacoes.avaliacoes.reviews.length} avaliações`}
                 </Button>
               ) : null}
 
+              {modais.todas === "erro" ? (
+                <p className={styles.erroDasTodas} role="alert">
+                  Não foi possível atualizar as avaliações. Tente abrir de
+                  novo.
+                </p>
+              ) : null}
+
               <ReviewsModal
-                open={modais.todas}
+                open={modais.todas === "aberto"}
                 onClose={fecharTodas}
                 data={avaliacoes.avaliacoes}
                 canInteract={logado}

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { AlertTriangle, Check, X } from "lucide-react";
+import { AlertTriangle, Check, Equal, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button";
 import ListaSuspensa from "../../components/ListaSuspensa";
@@ -32,6 +33,24 @@ import styles from "./styles.module.css";
 
 type Lado = 0 | 1;
 type Parametro = "a" | "b";
+type TomDoVeredito = "melhor" | "nenhum" | "empate";
+
+interface Veredito {
+  tom: TomDoVeredito;
+  texto: string;
+}
+
+const CLASSE_DO_VEREDITO: Record<TomDoVeredito, string> = {
+  melhor: styles.vereditoMelhor,
+  nenhum: styles.vereditoNenhum,
+  empate: styles.vereditoEmpate,
+};
+
+const ICONE_DO_VEREDITO: Record<TomDoVeredito, LucideIcon> = {
+  melhor: Check,
+  nenhum: X,
+  empate: Equal,
+};
 
 interface Coluna {
   parametro: Parametro;
@@ -197,6 +216,62 @@ function textoDaEscolhaPessoal(
   return temAviso
     ? `Fica numa faixa mais alta para o seu perfil (${faixa}), mas confira os alertas.`
     : `Fica numa faixa mais alta para o seu perfil: ${faixa}.`;
+}
+
+function vereditoDaComparacao(
+  produtos: [ProdutoComparado, ProdutoComparado],
+  analises: [AnalisePersonalizada, AnalisePersonalizada] | null,
+  vencedor: Lado | null,
+  calculando: boolean,
+): Veredito | null {
+  if (vencedor !== null) {
+    const nome = produtos[vencedor].product.name;
+
+    return {
+      tom: "melhor",
+      texto:
+        analises === null
+          ? `${nome} é a melhor escolha pela nota geral.`
+          : `${nome} é a melhor escolha para o seu perfil.`,
+    };
+  }
+
+  if (analises !== null) {
+    return analises.every(evitarParaAPessoa)
+      ? {
+          tom: "nenhum",
+          texto:
+            "Nenhum dos dois é recomendado para o seu perfil. Confira os alertas de cada um.",
+        }
+      : {
+          tom: "empate",
+          texto: "Os dois ficam na mesma faixa para o seu perfil.",
+        };
+  }
+
+  const osDoisEvitar = produtos.every(
+    ({ product }) => product.level === "avoid",
+  );
+
+  if (!calculando && osDoisEvitar) {
+    return {
+      tom: "nenhum",
+      texto: "Nenhum dos dois é recomendado pela nota geral.",
+    };
+  }
+
+  return null;
+}
+
+function vereditoNaTela({ tom, texto }: Veredito) {
+  const Icone = ICONE_DO_VEREDITO[tom];
+
+  return (
+    <p className={`${styles.veredito} ${CLASSE_DO_VEREDITO[tom]}`}>
+      <Icone className={styles.icone} aria-hidden="true" />
+      {texto}
+    </p>
+  );
 }
 
 function celulaPessoal(
@@ -403,6 +478,11 @@ function Comparar() {
     vencedor = vencedorGeral(produtos[0].product, produtos[1].product);
   }
 
+  const veredito =
+    produtos === null
+      ? null
+      : vereditoDaComparacao(produtos, analises, vencedor, calculando);
+
   return (
     <MainLayout>
       <div className={styles.page}>
@@ -471,6 +551,12 @@ function Comparar() {
                 ajuda menos.
               </p>
             ) : null}
+          </div>
+        ) : null}
+
+        {opcoes.status === "pronto" ? (
+          <div aria-live="polite">
+            {veredito === null ? null : vereditoNaTela(veredito)}
           </div>
         ) : null}
 
@@ -606,10 +692,12 @@ function Comparar() {
                                   : `Nota ${product.scores.overallScore} de 100`}
                               </span>
                             </span>
-                            <RiskBadge
-                              level={product.level}
-                              label={rotuloDaNotaGeral(product)}
-                            />
+                            {analises === null ? (
+                              <RiskBadge
+                                level={product.level}
+                                label={rotuloDaNotaGeral(product)}
+                              />
+                            ) : null}
                           </span>
                         </td>
                       ))}

@@ -183,6 +183,11 @@
   justify-content: center;
 }
 
+.erroDasTodas {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
 @media (min-width: 48rem) {
   .hero {
     grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);

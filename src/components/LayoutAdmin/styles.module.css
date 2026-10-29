@@ -75,6 +75,10 @@
   cursor: pointer;
 }
 
+.cabecalho .contraste {
+  margin-left: 0;
+}
+
 .sair:hover {
   color: var(--crimson);
   text-decoration: underline;

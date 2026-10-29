@@ -59,20 +59,24 @@ export function useAvaliacoes(slug: string | null, versaoId: number | null) {
     setTentativa((atual) => atual + 1);
   }, []);
 
-  const atualizar = useCallback(() => {
+  const atualizar = useCallback(async (): Promise<boolean> => {
     if (slug === null) {
-      return;
+      return false;
     }
 
-    buscarAvaliacoes(slug, versaoId)
-      .then((avaliacoes) => {
-        setEstado((atual) =>
-          atual.status !== "pronto" || atual.slug !== slug
-            ? atual
-            : { ...atual, avaliacoes, rodada: atual.rodada + 1 },
-        );
-      })
-      .catch(() => undefined);
+    try {
+      const avaliacoes = await buscarAvaliacoes(slug, versaoId);
+
+      setEstado((atual) =>
+        atual.status !== "pronto" || atual.slug !== slug
+          ? atual
+          : { ...atual, avaliacoes, rodada: atual.rodada + 1 },
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
   }, [slug, versaoId]);
 
   return { estado, recarregar, atualizar };

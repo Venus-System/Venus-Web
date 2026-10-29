@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import type { ComponentType } from "react";
 import { Route, Routes } from "react-router-dom";
+import PageLoading from "./components/PageLoading";
 import RotaAdmin from "./components/RotaAdmin";
 import RotaPrivada from "./components/RotaPrivada";
 import RouteAnnouncer from "./components/RouteAnnouncer";
@@ -45,7 +46,7 @@ const IntegracaoGoogleAgenda = carregarPagina(
 
 function App() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PageLoading />}>
       <RouteAnnouncer />
       <Routes>
         <Route path="/" element={<Inicio />} />

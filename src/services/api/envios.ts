@@ -1,4 +1,3 @@
-import { URL_API_SCANS } from "../../config/ambiente";
 import type { Envio, SituacaoEnvio } from "../../types/envio";
 import { repassarErro } from "../erros";
 import { lerPaginas } from "./analises";
@@ -71,7 +70,6 @@ export async function buscarEnviosNaApi(
     const paginas = await lerPaginas(
       `/api/scan-sessions/user/${usuarioId}`,
       sinal,
-      URL_API_SCANS,
     );
     const lidos = lerTodos(paginas.itens, lerEnvio);
 
