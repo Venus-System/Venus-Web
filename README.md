@@ -64,7 +64,6 @@ Os valores de exemplo, com a explicação de cada um, estão no `.env.example`. 
 |---|---|---|
 | `VITE_USAR_MOCK` | `true` usa os dados falsos de `src/services/mocks/`; `false` chama as APIs reais | não (sem ela, vale `true`) |
 | `VITE_API_URL` | endereço da API principal (Venus-CRUD) | sim, quando `VITE_USAR_MOCK=false` |
-| `VITE_API_SCANS_URL` | endereço da API usado só nas rotas de scan (fila do admin e Enviados) | não (sem ela, usa o `VITE_API_URL`) |
 | `VITE_CLASSIFICACAO_URL` | API de Classificação, que calcula a nota pessoal | não (sem ela, só aparece a avaliação geral) |
 | `VITE_IA_API_URL` | API da IA, que responde o chat da Veninha | não (sem ela, o chat avisa que está indisponível) |
 | `VITE_GOOGLE_CLIENT_ID` | cliente OAuth da Google Agenda | não (sem ela, o chat não oferece conectar a agenda) |
