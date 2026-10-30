@@ -6,6 +6,10 @@
   scroll-margin-top: var(--espaco-4);
 }
 
+.pagina .sobreTitulo {
+  scroll-margin-top: calc(var(--espaco-4) + 3.5rem);
+}
+
 .skipLink {
   position: fixed;
   z-index: 10;
@@ -716,6 +720,10 @@
     scroll-margin-top: 6rem;
   }
 
+  .pagina .sobreTitulo {
+    scroll-margin-top: 9.5rem;
+  }
+
   .cabecalho {
     top: 2.6875rem;
     left: 3.1875rem;
@@ -966,7 +974,8 @@
     position: absolute;
   }
 
-  .pagina * {
+  .pagina *,
+  .pagina .sobreTitulo {
     scroll-margin-top: 0;
   }
 }
