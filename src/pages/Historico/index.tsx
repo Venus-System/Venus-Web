@@ -108,7 +108,8 @@ function Historico() {
             Tudo que você já <span className={styles.destaque}>analisou.</span>
           </h1>
           <p className={styles.subtitle}>
-            Cada análise fica salva aqui. Volte quando quiser,{" "}
+            Cada análise fica salva aqui, com a nota que o produto teve para o
+            seu perfil naquele dia. Volte quando quiser,{" "}
             <strong>a memória é sua.</strong>
           </p>
         </header>

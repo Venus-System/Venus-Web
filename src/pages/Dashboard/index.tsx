@@ -186,7 +186,8 @@ function Dashboard() {
                   Saúde das suas análises
                 </h2>
                 <p className={styles.cartaoSub}>
-                  Média das quatro notas nos produtos que você analisou.
+                  O círculo é a média das suas notas para você. As barras
+                  mostram a média de cada uma das quatro notas dos produtos.
                 </p>
 
                 <ScoreExplanation />

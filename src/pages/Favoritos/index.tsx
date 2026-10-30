@@ -35,7 +35,8 @@ function Favoritos() {
             <span className={styles.destaque}>favoritos.</span>
           </h1>
           <p className={styles.subtitle}>
-            Os produtos que você marcou para não perder de vista.
+            Os produtos que você marcou para não perder de vista. A nota ao
+            lado de cada um é a nota geral do produto.
           </p>
         </header>
 
