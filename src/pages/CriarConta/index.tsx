@@ -46,6 +46,13 @@ const SEM_ERROS: ErrosConta = {
 
 const FORCA_INICIAL: ForcaSenha = { pontos: 0, faixa: "fraca" };
 
+const ORDEM_DOS_CAMPOS: (keyof ErrosConta)[] = [
+  "nome",
+  "email",
+  "senha",
+  "termos",
+];
+
 const DESTINO_PADRAO = "/dashboard";
 
 const SEGMENTOS = [1, 2, 3, 4];
@@ -155,6 +162,15 @@ function CriarConta() {
         envio: { situacao: "parado" },
         erros,
       }));
+
+      const primeiro = ORDEM_DOS_CAMPOS.find(
+        (campo) => erros[campo] !== null,
+      );
+
+      if (primeiro !== undefined) {
+        document.getElementById(primeiro)?.focus();
+      }
+
       return;
     }
 
