@@ -1,0 +1,125 @@
+.card {
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-cartao);
+  overflow: hidden;
+}
+
+.faixa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-3) var(--espaco-4);
+  background-image: var(--gradiente-marca);
+  color: var(--texto-invertido);
+}
+
+.titulo {
+  color: var(--texto-invertido);
+  font-size: var(--tamanho-medio);
+}
+
+.subtitulo {
+  font-size: var(--tamanho-pequeno);
+}
+
+.corpo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+}
+
+.resumo {
+  font-weight: var(--peso-forte);
+}
+
+.pontos {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.motivos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.motivo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+}
+
+.texto {
+  color: var(--texto-suave);
+}
+
+.motivoTexto {
+  flex: 1 1 16rem;
+  color: var(--texto-suave);
+}
+
+.ingrediente {
+  color: var(--texto);
+}
+
+.aviso {
+  padding: var(--espaco-3);
+  background-color: var(--no-data-fundo);
+  border-radius: var(--raio-medio);
+  color: var(--no-data);
+  font-size: var(--tamanho-pequeno);
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-4);
+  width: 100%;
+  padding-top: var(--espaco-3);
+  border-top: var(--borda-largura) solid var(--borda);
+  font-size: var(--tamanho-pequeno);
+}
+
+.data {
+  color: var(--texto-suave);
+}
+
+.acao {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alvo-toque);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--violeta);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.acao:hover {
+  color: var(--crimson);
+}
+
+.acao[aria-disabled="true"] {
+  color: var(--texto-suave);
+  text-decoration: none;
+  cursor: default;
+}
+
+.erro {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}

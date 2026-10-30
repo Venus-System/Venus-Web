@@ -1,5 +1,6 @@
 import { URL_API, USAR_MOCK } from "../../config/ambiente";
 import type { Usuario } from "../../types/usuario";
+import { repassarErro } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
 function lerId(valor: unknown): number | null {
@@ -15,23 +16,27 @@ export async function buscarIdPorUid(uid: string): Promise<number | null> {
     return null;
   }
 
-  const caminho = `/api/users/search?firebaseUid=${encodeURIComponent(uid)}`;
-  const resposta = await pedir(`${URL_API}${caminho}`);
+  try {
+    const caminho = `/api/users/search?firebaseUid=${encodeURIComponent(uid)}`;
+    const resposta = await pedir(`${URL_API}${caminho}`);
 
-  verificarResposta(resposta, caminho);
+    verificarResposta(resposta, caminho);
 
-  const dados: unknown = await resposta.json();
+    const dados: unknown = await resposta.json();
 
-  if (
-    typeof dados !== "object" ||
-    dados === null ||
-    !("content" in dados) ||
-    !Array.isArray(dados.content)
-  ) {
-    return null;
+    if (
+      typeof dados !== "object" ||
+      dados === null ||
+      !("content" in dados) ||
+      !Array.isArray(dados.content)
+    ) {
+      return null;
+    }
+
+    return dados.content.length === 0 ? null : lerId(dados.content[0]);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
   }
-
-  return dados.content.length === 0 ? null : lerId(dados.content[0]);
 }
 
 export async function atualizarNomeNaApi(
@@ -42,14 +47,18 @@ export async function atualizarNomeNaApi(
     return;
   }
 
-  const caminho = `/api/users/${usuarioId}`;
-  const resposta = await pedir(`${URL_API}${caminho}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: nome }),
-  });
+  try {
+    const caminho = `/api/users/${usuarioId}`;
+    const resposta = await pedir(`${URL_API}${caminho}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: nome }),
+    });
 
-  verificarResposta(resposta, caminho);
+    verificarResposta(resposta, caminho);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível salvar o nome.");
+  }
 }
 
 export async function criarUsuarioNaApi(
@@ -59,22 +68,26 @@ export async function criarUsuarioNaApi(
     return null;
   }
 
-  const resposta = await pedir(`${URL_API}/api/users`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      firebaseUid: usuario.id,
-      name: usuario.name,
-      email: usuario.email,
-      status: "ACTIVE",
-    }),
-  });
+  try {
+    const resposta = await pedir(`${URL_API}/api/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firebaseUid: usuario.id,
+        name: usuario.name,
+        email: usuario.email,
+        status: "ACTIVE",
+      }),
+    });
 
-  verificarResposta(resposta, "/api/users");
+    verificarResposta(resposta, "/api/users");
 
-  const dados: unknown = await resposta.json();
+    const dados: unknown = await resposta.json();
 
-  return lerId(dados);
+    return lerId(dados);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível criar a sua conta.");
+  }
 }
 
 export async function registrarAcessoNaApi(): Promise<void> {
@@ -82,8 +95,12 @@ export async function registrarAcessoNaApi(): Promise<void> {
     return;
   }
 
-  const caminho = "/api/users/me/access";
-  const resposta = await pedir(`${URL_API}${caminho}`, { method: "POST" });
+  try {
+    const caminho = "/api/users/me/access";
+    const resposta = await pedir(`${URL_API}${caminho}`, { method: "POST" });
 
-  verificarResposta(resposta, caminho);
+    verificarResposta(resposta, caminho);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível registrar o acesso.");
+  }
 }

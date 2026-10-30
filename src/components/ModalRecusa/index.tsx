@@ -185,11 +185,11 @@ function FormularioRecusa({
       )}
 
       <div className={styles.acoes}>
-        <Button type="submit" disabled={enviando}>
+        <Button type="submit" busy={enviando}>
           {enviando ? "Recusando..." : "Recusar"}
         </Button>
 
-        <Button variant="soft" onClick={onClose} disabled={enviando}>
+        <Button variant="soft" onClick={onClose} busy={enviando}>
           Cancelar
         </Button>
       </div>

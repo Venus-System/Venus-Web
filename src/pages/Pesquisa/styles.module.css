@@ -13,6 +13,7 @@
 }
 
 .title span {
+  display: block;
   color: var(--violeta);
 }
 
@@ -21,20 +22,62 @@
   max-width: 38rem;
 }
 
-.form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--espaco-3);
-  align-items: flex-end;
-  max-width: 44rem;
+.reacao {
+  align-self: flex-start;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-medio);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
 }
 
-.field {
-  min-width: 16rem;
+.form {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  max-width: 44rem;
+  padding: var(--espaco-1) var(--espaco-1) var(--espaco-1) var(--espaco-2);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda-forte);
+  border-radius: var(--raio-pilula);
+}
+
+.form:has(.field:focus-visible) {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
 }
 
 .form > :first-child {
-  flex: 1 1 20rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.form .field {
+  min-width: 0;
+  padding-inline: var(--espaco-1);
+  background-color: transparent;
+  border: none;
+}
+
+.form button {
+  flex-shrink: 0;
+  padding-inline: var(--espaco-3);
+}
+
+.form .field:focus-visible {
+  outline: none;
+}
+
+.submitIcone {
+  width: 1em;
+  height: 1em;
+}
+
+@media (max-width: 24rem) {
+  .submitIcone {
+    display: none;
+  }
 }
 
 .filters {
@@ -79,16 +122,27 @@
   display: flex;
   flex-direction: column;
   gap: var(--espaco-3);
+  margin-inline: calc(-1 * var(--espaco-4));
+  padding: var(--espaco-5) var(--espaco-4);
+  background-color: var(--faixa-lilas);
 }
 
 .resultsTitle {
-  font-size: var(--tamanho-medio);
-  font-weight: var(--peso-forte);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-grande);
+  font-weight: var(--peso-titulo);
 }
 
 .status {
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
+}
+
+.erroDaBusca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
 }
 
 .error {
@@ -116,9 +170,19 @@
 }
 
 .emptyText {
-  max-width: 42ch;
+  max-width: 60ch;
   color: var(--texto-suave);
-  margin-bottom: var(--espaco-2);
+}
+
+.emptyText strong {
+  color: var(--texto);
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-2);
 }
 
 .grid,

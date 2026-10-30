@@ -5,6 +5,7 @@ import {
   favoritar,
 } from "../services/favoritos";
 import type { Produto } from "../types/produto";
+import { useAutenticacao } from "./useAutenticacao";
 
 export interface ProdutoFavoritavel {
   slug: string;
@@ -33,6 +34,8 @@ function mensagemDoErro(erro: unknown, padrao: string): string {
 }
 
 export function useFavoritos() {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoFavoritos>({
     status: "carregando",
   });
@@ -73,7 +76,7 @@ export function useFavoritos() {
       ativo = false;
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);
@@ -111,11 +114,6 @@ export function useFavoritos() {
                   slugs: eraFavorito
                     ? atual.slugs.filter((slug) => slug !== produto.slug)
                     : [...atual.slugs, produto.slug],
-                  produtos: eraFavorito
-                    ? atual.produtos.filter(
-                        (item) => item.slug !== produto.slug,
-                      )
-                    : atual.produtos,
                   pendentes: atual.pendentes.filter(
                     (slug) => slug !== produto.slug,
                   ),

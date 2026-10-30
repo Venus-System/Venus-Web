@@ -4,8 +4,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
-import { validarEmail, validarSenhaPreenchida } from "../../utils/validacao";
+import {
+  MAXIMO_DA_SENHA,
+  MAXIMO_DO_EMAIL,
+  validarEmail,
+  validarSenhaPreenchida,
+} from "../../utils/validacao";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { FIREBASE_ATIVO } from "../../config/firebase";
 
@@ -46,11 +52,13 @@ function destinoDoLogin(state: unknown): string {
 }
 
 function Login() {
+  useTituloDaPagina("Login");
   const { usuario, entrar, entrarComGoogle } = useAutenticacao();
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
     erros: SEM_ERROS,
   });
+  const [lembrar, setLembrar] = useState(false);
 
   const navegar = useNavigate();
   const localizacao = useLocation();
@@ -77,7 +85,6 @@ function Login() {
     const dados = new FormData(event.currentTarget);
     const email = String(dados.get("email") ?? "");
     const senha = String(dados.get("senha") ?? "");
-    const continuar = dados.get("continuar") === "on";
 
     const erros = {
       email: validarEmail(email),
@@ -92,7 +99,7 @@ function Login() {
     setFormulario({ envio: { situacao: "enviando" }, erros: SEM_ERROS });
 
     try {
-      await entrar(email, senha, continuar);
+      await entrar(email, senha, lembrar);
       navegar(destino, { replace: true });
     } catch {
       setFormulario({
@@ -106,7 +113,7 @@ function Login() {
     setFormulario({ envio: { situacao: "enviando" }, erros: SEM_ERROS });
 
     try {
-      await entrarComGoogle(false);
+      await entrarComGoogle(lembrar);
       navegar(destino, { replace: true });
     } catch {
       setFormulario({
@@ -133,7 +140,7 @@ function Login() {
         <Button
           variant="secondary"
           onClick={handleGoogle}
-          disabled={desabilitado}
+          busy={desabilitado}
         >
           Continuar com Google
         </Button>
@@ -157,10 +164,11 @@ function Login() {
 
       <p className={styles.divisor}>ou com e-mail</p>
 
-      <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
         <Input
           id="email"
           name="email"
+          maxLength={MAXIMO_DO_EMAIL}
           type="email"
           label="E-mail"
           placeholder="voce@email.com"
@@ -173,6 +181,7 @@ function Login() {
         <Input
           id="senha"
           name="senha"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Senha"
           placeholder="Mínimo 8 caracteres"
@@ -189,8 +198,10 @@ function Login() {
               name="continuar"
               type="checkbox"
               className={styles.caixa}
+              checked={lembrar}
+              onChange={(event) => setLembrar(event.target.checked)}
             />
-            Continuar conectado
+            Lembrar de mim
           </label>
 
           <Link className={styles.link} to="/esqueci-senha">
@@ -204,7 +215,7 @@ function Login() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Entrando..." : "Entrar"}
         </Button>
       </form>

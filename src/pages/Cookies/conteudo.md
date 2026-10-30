@@ -1,5 +1,5 @@
 ---
-atualizado: 17 de setembro de 2026
+atualizado: 27 de outubro de 2026
 ---
 
 ## O resumo
@@ -7,21 +7,30 @@ atualizado: 17 de setembro de 2026
 **O Venus não usa cookies de publicidade, de rastreamento ou de terceiros para
 fins comerciais.**
 
-O que usamos é armazenamento local no seu navegador, para duas coisas: manter
-você conectado e lembrar do seu progresso no questionário de perfil.
+O que usamos é armazenamento local no seu navegador, para manter você
+conectado, lembrar do seu progresso no questionário de perfil e guardar a
+conversa e as suas escolhas no chat com a Veninha.
 
 ## O que guardamos no seu navegador
 
 | O quê | Onde | Para quê | Quando some |
 |---|---|---|---|
-| Sessão do Firebase Authentication | `localStorage` ou `IndexedDB` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "continuar conectado" |
+| Sessão do Firebase Authentication | `IndexedDB`, `localStorage` ou `sessionStorage` | Manter você conectado entre uma página e outra | Ao sair da conta, ou ao fechar o navegador se você não marcou "Lembrar de mim" |
 | Nome e e-mail da conta ativa | `localStorage` ou `sessionStorage` | Mostrar seu nome sem consultar o servidor a cada página | Ao sair da conta |
 | Progresso do questionário | `localStorage` | Permitir retomar o questionário depois | Ao concluir o questionário ou limpar os dados do navegador |
+| Avatar escolhido no perfil | `localStorage` | Mostrar o avatar que você escolheu | Ao limpar os dados do navegador |
+| Identificador da sua conta no nosso banco | `localStorage` | Ligar o seu login ao seu cadastro sem consultar o servidor a cada página | Ao limpar os dados do navegador |
+| Sessão da área administrativa | `sessionStorage` | Manter a equipe conectada na fila de aprovação de produtos | Ao sair da área administrativa ou fechar a aba |
+| Conversa com a Veninha | `sessionStorage` | Mostrar a conversa de novo ao trocar de página | Ao fechar a aba ou sair da conta |
+| Som da Veninha ligado ou desligado | `localStorage` | Lembrar a sua escolha no botão de som | Ao limpar os dados do navegador |
+| Alto contraste ligado ou desligado | `localStorage` | Lembrar a sua escolha no botão de alto contraste | Ao limpar os dados do navegador |
+| Convite da Google Agenda fechado | `localStorage` | Não mostrar de novo o convite que você fechou | Ao limpar os dados do navegador |
+| Pedido de conexão com a Google Agenda | `sessionStorage` | Conferir que a volta da Google é a do pedido que você fez | Ao terminar a conexão, ao pedir outra ou ao fechar a aba |
 
 **Nenhum desses itens guarda senha.**
 
-A escolha entre `localStorage` e `sessionStorage` é a caixa "continuar
-conectado" da tela de entrada: marcada, a sessão sobrevive ao fechamento do
+A escolha entre `localStorage` e `sessionStorage` é a caixa "Lembrar de mim"
+da tela de entrada: marcada, a sessão sobrevive ao fechamento do
 navegador; desmarcada, ela termina junto com a aba.
 
 Tecnicamente, `localStorage` e `sessionStorage` **não são cookies** — são
@@ -55,7 +64,9 @@ para o navegador.
 
 Você pode limpar o armazenamento local a qualquer momento pelas configurações
 do seu navegador. Se fizer isso, será desconectado e perderá o progresso não
-concluído do questionário — nada além disso.
+concluído do questionário, a conversa aberta com a Veninha e as escolhas
+guardadas, como o avatar, o som e o alto contraste. Nada do que está salvo na sua conta é
+apagado.
 
 No aplicativo, a coleta de uso pode ser interrompida desinstalando o
 aplicativo.

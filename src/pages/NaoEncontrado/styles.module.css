@@ -1,0 +1,37 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding-block: var(--espaco-5);
+  text-align: center;
+}
+
+.veninha {
+  width: min(100%, 16rem);
+}
+
+.title {
+  margin: 0;
+  color: var(--texto);
+  font-size: var(--tamanho-enorme);
+  line-height: 1.1;
+}
+
+.destaque {
+  color: var(--violeta);
+}
+
+.texto {
+  max-width: 50ch;
+  margin: 0;
+  color: var(--texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-2);
+}

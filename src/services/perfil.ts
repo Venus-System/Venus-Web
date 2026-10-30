@@ -4,10 +4,12 @@ import {
   garantirIdDoUsuarioNaApi,
   renovarIdDoUsuarioNaApi,
 } from "./autenticacao";
+import { esquecerAnalisesPessoais } from "./classificacao";
 import {
   ErroDeOrientacao,
   ErroServicoIndisponivel,
   ErroUsuarioInexistente,
+  repassarErro,
 } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarPerfilFalso, lerPerfilFalso } from "./mocks/perfil";
@@ -137,16 +139,6 @@ function lerSituacao(
   return "none";
 }
 
-function lerSensibilidade(
-  nivel: PerfilParaSalvar["skinSensitivity"],
-): RespostasQuestionario["skinSensitivity"] {
-  if (nivel === null || nivel === "very_high") {
-    return "";
-  }
-
-  return nivel;
-}
-
 export function paraRespostas(
   perfil: PerfilParaSalvar,
 ): RespostasQuestionario {
@@ -156,7 +148,7 @@ export function paraRespostas(
     skinType: perfil.skinType ?? "",
     ageRange: perfil.ageRange ?? "",
     skinPhototype: perfil.skinPhototype ?? "",
-    skinSensitivity: lerSensibilidade(perfil.skinSensitivity),
+    skinSensitivity: perfil.skinSensitivity ?? "",
     scalpType: perfil.scalpType ?? "",
     currentSituation: lerSituacao(perfil.isPregnant, perfil.isBreastfeeding),
     skinConditions: lerCondicoes(perfil),
@@ -202,6 +194,8 @@ export async function salvarPerfil(
       }
 
       await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
+    } finally {
+      esquecerAnalisesPessoais();
     }
 
     return perfil;
@@ -219,27 +213,35 @@ export async function salvarPerfil(
 
 
 async function buscarIdNumerico(): Promise<number> {
-  const id = await garantirIdDoUsuarioNaApi();
+  try {
+    const id = await garantirIdDoUsuarioNaApi();
 
-  if (id === null) {
-    throw new ErroDeOrientacao(
-      "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
-    );
+    if (id === null) {
+      throw new ErroDeOrientacao(
+        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+      );
+    }
+
+    return id;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
   }
-
-  return id;
 }
 
 async function renovarIdNumerico(): Promise<number> {
-  const id = await renovarIdDoUsuarioNaApi();
+  try {
+    const id = await renovarIdDoUsuarioNaApi();
 
-  if (id === null) {
-    throw new ErroDeOrientacao(
-      "Não conseguimos recriar o seu cadastro na API. Entre de novo e tente outra vez.",
-    );
+    if (id === null) {
+      throw new ErroDeOrientacao(
+        "Não conseguimos recriar o seu cadastro na API. Entre de novo e tente outra vez.",
+      );
+    }
+
+    return id;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível recriar a sua conta.");
   }
-
-  return id;
 }
 
 export async function buscarPerfil(): Promise<PerfilCarregado | null> {

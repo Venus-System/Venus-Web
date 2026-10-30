@@ -1,14 +1,34 @@
-import { Link } from "react-router-dom";
+import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
+import Veninha from "../../components/Veninha";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import styles from "./styles.module.css";
 
 function NaoEncontrado() {
+  useTituloDaPagina("Página não encontrada");
   return (
     <MainLayout>
-      <h1>Página não encontrada</h1>
+      <div className={styles.page}>
+        <div className={styles.veninha}>
+          <Veninha mood="chorando" speaking={false} mouthOpen={false} />
+        </div>
 
-      <p>O endereço que você abriu não existe na Venus.</p>
+        <h1 className={styles.title}>
+          Página não <span className={styles.destaque}>encontrada.</span>
+        </h1>
 
-      <Link to="/">Ir para a página inicial</Link>
+        <p className={styles.texto}>
+          O endereço que você abriu não existe na Venus. Ele pode ter mudado ou
+          ter sido digitado errado.
+        </p>
+
+        <div className={styles.acoes}>
+          <Button to="/pesquisa">Buscar produto</Button>
+          <Button variant="secondary" to="/dashboard">
+            Ir para o dashboard
+          </Button>
+        </div>
+      </div>
     </MainLayout>
   );
 }

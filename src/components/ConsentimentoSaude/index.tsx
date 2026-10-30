@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 
+export function idDoBlocoDeConsentimento(id: string): string {
+  return `${id}-bloco`;
+}
+
 interface ConsentimentoSaudeProps {
   id: string;
   checked: boolean;
@@ -16,7 +20,11 @@ function ConsentimentoSaude({
   const avisoId = `${id}-aviso`;
 
   return (
-    <section className={styles.card} aria-labelledby={tituloId}>
+    <section
+      id={idDoBlocoDeConsentimento(id)}
+      className={styles.card}
+      aria-labelledby={tituloId}
+    >
       <h2 id={tituloId} className={styles.title}>
         Perguntas sobre pele e saúde
       </h2>

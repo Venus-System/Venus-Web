@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
 import Button from "../../components/Button";
 import FavoriteButton from "../../components/FavoriteButton";
+import Input from "../../components/Input";
 import MainLayout from "../../components/MainLayout";
 import MySpaceNav from "../../components/MySpaceNav";
 import ProductRow from "../../components/ProductRow";
@@ -10,8 +12,28 @@ import type { EstadoFavoritos } from "../../hooks/useFavoritos";
 import { useHistorico } from "../../hooks/useHistorico";
 import type { EstadoHistorico } from "../../hooks/useHistorico";
 import { agruparPorData } from "../../utils/agruparPorData";
+import { filtrarAnalises } from "../../utils/filtrarAnalises";
 import { nivelDaRecomendacao } from "../../utils/niveis";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
+
+const AVISO_DE_BUSCA_PARCIAL =
+  "A busca olha só as análises já carregadas. Use Carregar mais para buscar nas anteriores.";
+
+function resultadoDaBusca(encontradas: number, temMais: boolean): string {
+  let resultado = `${encontradas} análises encontradas.`;
+
+  if (encontradas === 0) {
+    resultado = "Nenhuma análise com esse nome ou essa marca.";
+  }
+
+  if (encontradas === 1) {
+    resultado = "1 análise encontrada.";
+  }
+
+  return temMais ? `${resultado} ${AVISO_DE_BUSCA_PARCIAL}` : resultado;
+}
 
 function anuncio(estado: EstadoHistorico): string {
   if (estado.status === "carregando") {
@@ -28,6 +50,10 @@ function anuncio(estado: EstadoHistorico): string {
 
   if (estado.recemCarregadas === null) {
     return "";
+  }
+
+  if (estado.recemCarregadas === 0) {
+    return "Nenhuma análise nova nesta parte do histórico.";
   }
 
   return estado.recemCarregadas === 1
@@ -48,6 +74,7 @@ function anuncioDoFavorito(favoritos: EstadoFavoritos): string {
 }
 
 function Historico() {
+  useTituloDaPagina("Histórico");
   const { estado, recarregar, carregarMais } = useHistorico();
   const {
     estado: favoritos,
@@ -55,6 +82,12 @@ function Historico() {
     alternar,
   } = useFavoritos();
   const fimRef = useRef<HTMLParagraphElement>(null);
+  const [termo, setTermo] = useState("");
+
+  const carregadas = estado.status === "pronto" ? estado.analises : [];
+  const temMais = estado.status === "pronto" && estado.temMais;
+  const encontradas = filtrarAnalises(carregadas, termo);
+  const buscando = termo.trim() !== "";
 
   const chegouAoFimCarregando =
     estado.status === "pronto" &&
@@ -72,7 +105,7 @@ function Historico() {
       <div className={styles.page}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            Tudo que você <span className={styles.destaque}>já analisou.</span>
+            Tudo que você já <span className={styles.destaque}>analisou.</span>
           </h1>
           <p className={styles.subtitle}>
             Cada análise fica salva aqui. Volte quando quiser,{" "}
@@ -132,9 +165,29 @@ function Historico() {
           </p>
         ) : null}
 
+        {carregadas.length > 0 ? (
+          <div className={styles.busca} role="search">
+            <Input
+              id="busca-historico"
+              maxLength={MAXIMO_DA_BUSCA}
+              type="search"
+              label="Buscar no histórico"
+              hideLabel
+              placeholder="Buscar por produto ou marca"
+              icon={<Search />}
+              value={termo}
+              onChange={(event) => setTermo(event.target.value)}
+            />
+
+            <p className={styles.buscaResultado} aria-live="polite">
+              {buscando ? resultadoDaBusca(encontradas.length, temMais) : ""}
+            </p>
+          </div>
+        ) : null}
+
         {estado.status === "pronto"
           ? agruparPorData(
-              estado.analises,
+              encontradas,
               (analise) => analise.analyzedAt,
             ).map((grupo) => (
               <section
@@ -200,7 +253,9 @@ function Historico() {
         !estado.temMais &&
         estado.analises.length > 0 ? (
           <p ref={fimRef} tabIndex={-1} className={styles.fim}>
-            Essas são todas as suas análises.
+            {buscando
+              ? "Todas as suas análises já foram carregadas."
+              : "Essas são todas as suas análises."}
           </p>
         ) : null}
       </div>

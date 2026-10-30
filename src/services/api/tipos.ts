@@ -3,6 +3,7 @@ export interface ProdutoBaseApi {
   name: string;
   description: string | null;
   slug: string;
+  imageUrl?: string | null;
 }
 
 export interface MarcaApi {
@@ -10,9 +11,9 @@ export interface MarcaApi {
   name: string;
   country: string | null;
   website: string | null;
-  hasCrueltyFreeClaim: boolean;
-  hasVeganClaim: boolean;
-  isBrazilian: boolean;
+  hasCrueltyFreeClaim: boolean | null;
+  hasVeganClaim: boolean | null;
+  isBrazilian: boolean | null;
 }
 
 export interface AlergiaApi {
@@ -52,6 +53,7 @@ export interface ProductFullResponse {
   brand: MarcaApi;
   category: CategoriaApi;
   currentVersion: VersaoApi | null;
+  photos: unknown;
   ingredients: unknown;
   claims: ClaimApi[];
   score: NotasApi | null;

@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
@@ -21,11 +22,15 @@ function RotaPrivada({ children }: RotaPrivadaProps) {
 
   if (!usuario) {
     return (
-      <Navigate to="/login" state={{ de: localizacao.pathname }} replace />
+      <Navigate
+        to="/login"
+        state={{ de: localizacao.pathname + localizacao.search }}
+        replace
+      />
     );
   }
 
-  return <>{children}</>;
+  return <Fragment key={usuario.id}>{children}</Fragment>;
 }
 
 export default RotaPrivada;

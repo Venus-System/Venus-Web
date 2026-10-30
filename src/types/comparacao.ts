@@ -3,5 +3,6 @@ import type { Produto } from "./produto";
 
 export interface ProdutoComparado {
   product: Produto;
+  versionId: number | null;
   ingredients: IngredienteAvaliado[];
 }

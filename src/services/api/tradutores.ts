@@ -1,5 +1,6 @@
-import type { NotasProduto, Produto } from "../../types/produto";
-import type { RiskLevel } from "../../types/ingrediente";
+import type { Marca, NotasProduto, Produto } from "../../types/produto";
+import { nivelDaNota } from "../../utils/niveis";
+import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import type {
   CategoriaApi,
   MarcaApi,
@@ -34,16 +35,45 @@ function paraNotas(score: NotasApi | null): NotasProduto {
   };
 }
 
-function paraNivel(overallScore: number | null): RiskLevel {
-  if (overallScore === null) {
-    return "no-data";
+function paraMarca(marca: MarcaApi): Marca {
+  return {
+    name: marca.name,
+    country: marca.country ?? null,
+    website: marca.website ?? null,
+    hasCrueltyFreeClaim: marca.hasCrueltyFreeClaim === true,
+    hasVeganClaim: marca.hasVeganClaim === true,
+    isBrazilian: marca.isBrazilian === true,
+  };
+}
+
+interface FotoLida {
+  url: string;
+  ordem: number;
+}
+
+function lerFoto(valor: unknown): FotoLida | null {
+  const dados = comoObjeto(valor);
+  const url = texto(dados.url);
+
+  if (
+    dados.purpose !== "PRODUCT_PHOTO" ||
+    (dados.status !== "ACTIVE" && dados.status !== "PENDING") ||
+    url === null
+  ) {
+    return null;
   }
 
-  if (overallScore >= 70) {
-    return "safe";
+  return { url, ordem: numero(dados.sortOrder) ?? Number.MAX_SAFE_INTEGER };
+}
+
+function fotoDoProduto(fotos: unknown): string | null {
+  if (!Array.isArray(fotos)) {
+    return null;
   }
 
-  return overallScore >= 40 ? "warning" : "avoid";
+  const validas = lerTodos(fotos, lerFoto).sort((a, b) => a.ordem - b.ordem);
+
+  return validas.length === 0 ? null : validas[0].url;
 }
 
 export function paraProduto(resposta: ProductFullResponse): Produto {
@@ -54,9 +84,10 @@ export function paraProduto(resposta: ProductFullResponse): Produto {
     name: resposta.product.name,
     description: resposta.product.description ?? "",
     category: resposta.category.name,
-    brand: resposta.brand,
-    imageUrl: null,
-    level: paraNivel(notas.overallScore),
+    brand: paraMarca(resposta.brand),
+    imageUrl:
+      texto(resposta.product.imageUrl) ?? fotoDoProduto(resposta.photos),
+    level: nivelDaNota(notas.overallScore),
     scores: notas,
   };
 }
@@ -65,15 +96,18 @@ export function paraProdutoDaListagem(
   item: ProdutoApi,
   marca: MarcaApi,
   categoria: CategoriaApi,
+  score: NotasApi | null,
 ): Produto {
+  const notas = paraNotas(score);
+
   return {
     slug: item.slug,
     name: item.name,
     description: item.description ?? "",
     category: categoria.name,
-    brand: marca,
-    imageUrl: null,
-    level: "no-data",
-    scores: NOTAS_VAZIAS,
+    brand: paraMarca(marca),
+    imageUrl: texto(item.imageUrl),
+    level: nivelDaNota(notas.overallScore),
+    scores: notas,
   };
 }

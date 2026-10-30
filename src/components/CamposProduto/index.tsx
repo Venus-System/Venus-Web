@@ -4,6 +4,7 @@ import ListaSuspensa from "../ListaSuspensa";
 import type { SelectOption } from "../ListaSuspensa";
 import type { EstadoCatalogo } from "../../hooks/useCatalogoDaRevisao";
 import type { OpcaoDoCatalogo } from "../../types/admin";
+import { MAXIMO_DO_NOME_DO_PRODUTO } from "../../utils/validacao";
 import styles from "./styles.module.css";
 
 export interface ValoresDoProduto {
@@ -51,6 +52,7 @@ function CamposProduto({
 
       <Input
         id={ID_NOME_DO_PRODUTO}
+        maxLength={MAXIMO_DO_NOME_DO_PRODUTO}
         label="Nome do produto"
         value={valores.nome}
         onChange={(evento) => onMudar({ ...valores, nome: evento.target.value })}
@@ -83,7 +85,7 @@ function CamposProduto({
             id={ID_MARCA}
             label="Marca"
             placeholder="Escolha a marca"
-            options={paraOpcoes(catalogo.catalogo.brands)}
+            options={paraOpcoes(catalogo.dados.brands)}
             value={valores.marcaId}
             onChange={(marcaId) => onMudar({ ...valores, marcaId })}
             error={erros.marca ?? undefined}
@@ -93,7 +95,7 @@ function CamposProduto({
             id={ID_CATEGORIA}
             label="Categoria"
             placeholder="Escolha a categoria"
-            options={paraOpcoes(catalogo.catalogo.categories)}
+            options={paraOpcoes(catalogo.dados.categories)}
             value={valores.categoriaId}
             onChange={(categoriaId) => onMudar({ ...valores, categoriaId })}
             error={erros.categoria ?? undefined}

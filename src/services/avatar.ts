@@ -5,28 +5,16 @@ import {
   enviarAvatarNaApi,
 } from "./api/avatar";
 import { garantirIdDoUsuarioNaApi } from "./autenticacao";
-import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
+import {
+  ErroDeOrientacao,
+  ErroServicoIndisponivel,
+  repassarErro,
+} from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { guardarFotoFalsa, lerFotoFalsa, limparFotoFalsa } from "./mocks/avatar";
 import { recortarEmQuadrado } from "../utils/imagem";
 
-export const TIPOS_DE_IMAGEM = ["image/png", "image/jpeg", "image/webp"];
-export const TAMANHO_MAXIMO_EM_MB = 20;
-
-const TAMANHO_MAXIMO = TAMANHO_MAXIMO_EM_MB * 1024 * 1024;
 const LADO_DO_AVATAR = 1024;
-
-export function validarFoto(arquivo: File): string | null {
-  if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
-    return "Envie uma imagem PNG, JPEG ou WebP.";
-  }
-
-  if (arquivo.size > TAMANHO_MAXIMO) {
-    return `A imagem precisa ter no máximo ${TAMANHO_MAXIMO_EM_MB} MB.`;
-  }
-
-  return null;
-}
 
 async function prepararFoto(arquivo: File): Promise<File> {
   try {
@@ -49,15 +37,19 @@ function comoTexto(arquivo: File): Promise<string> {
 }
 
 async function idNumerico(): Promise<number> {
-  const id = await garantirIdDoUsuarioNaApi();
+  try {
+    const id = await garantirIdDoUsuarioNaApi();
 
-  if (id === null) {
-    throw new ErroDeOrientacao(
-      "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
-    );
+    if (id === null) {
+      throw new ErroDeOrientacao(
+        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+      );
+    }
+
+    return id;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
   }
-
-  return id;
 }
 
 export async function enviarFotoDePerfil(arquivo: File): Promise<string | null> {

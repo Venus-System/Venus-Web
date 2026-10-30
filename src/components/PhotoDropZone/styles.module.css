@@ -1,0 +1,86 @@
+.area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-6) var(--espaco-4);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-grande);
+  text-align: center;
+}
+
+.arrastando {
+  background-color: var(--lavanda-clara);
+  border-color: var(--violeta);
+  border-style: dashed;
+}
+
+.area:has(input:focus-visible) {
+  outline: var(--foco-largura) solid var(--foco-cor);
+  outline-offset: var(--foco-offset);
+}
+
+.rotulo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  cursor: pointer;
+}
+
+.icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  background-image: var(--gradiente-primario);
+  border-radius: var(--raio-medio);
+  color: var(--texto-invertido);
+}
+
+.icone svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.titulo {
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-titulo);
+}
+
+.descricao {
+  max-width: 30rem;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.descricao kbd {
+  padding: 0 var(--espaco-1);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-pequeno);
+  font-family: var(--fonte-mono);
+  font-size: var(--tamanho-pequeno);
+}
+
+.ou {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+}
+
+.exemplo {
+  border-color: var(--lavanda);
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+}
+
+.seta {
+  width: 1rem;
+  height: 1rem;
+}

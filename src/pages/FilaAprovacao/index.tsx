@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { ArrowLeft } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -10,32 +11,18 @@ import Button from "../../components/Button";
 import DetalheCandidato from "../../components/DetalheCandidato";
 import LayoutAdmin from "../../components/LayoutAdmin";
 import ModalAprovacao from "../../components/ModalAprovacao";
-import type { IngredienteACriar } from "../../components/ModalAprovacao";
 import ModalRecusa from "../../components/ModalRecusa";
 import Selo from "../../components/Selo";
 import { useAutenticacaoAdmin } from "../../hooks/useAutenticacaoAdmin";
 import { useCandidato } from "../../hooks/useCandidato";
 import { useCatalogoDaRevisao } from "../../hooks/useCatalogoDaRevisao";
+import {
+  novosDaAprovacao,
+  useDecisaoNaFila,
+} from "../../hooks/useDecisaoNaFila";
 import { useFilaAprovacao } from "../../hooks/useFilaAprovacao";
 import type { EstadoFila } from "../../hooks/useFilaAprovacao";
-import {
-  aprovarPendente,
-  calcularNotaBase,
-  recusarPendente,
-  sincronizarPendente,
-} from "../../services/admin";
-import {
-  ErroCandidatoNaoEncontrado,
-  ErroRevisaoEmConflito,
-  ErroRevisaoInvalida,
-  ErroSessaoAdminExpirada,
-} from "../../services/erros";
-import type {
-  AprovacaoCandidato,
-  Candidato,
-  OrigemCandidato,
-  RecusaCandidato,
-} from "../../types/admin";
+import type { OrigemCandidato } from "../../types/admin";
 import { tempoRelativo } from "../../utils/tempoRelativo";
 import {
   ORIGENS,
@@ -45,6 +32,7 @@ import {
   rotuloDePendencias,
 } from "./rotulos";
 import { nomeCurto } from "../../utils/nomeCurto";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Filtro {
@@ -61,46 +49,6 @@ const FILTROS: Filtro[] = [
     rotulo: ROTULO_ORIGEM[origem],
   })),
 ];
-
-type ModalAberto = "nenhum" | "aprovar" | "recusar";
-
-type PedidoDeDecisao =
-  | { tipo: "aprovar"; aprovacao: AprovacaoCandidato }
-  | { tipo: "recusar"; recusa: RecusaCandidato };
-
-interface EstadoDecisao {
-  modal: ModalAberto;
-  aprovacao: AprovacaoCandidato | null;
-  enviando: boolean;
-  mensagem: string;
-  detalhes: string[];
-  anuncio: string;
-  semSincronizar: string | null;
-}
-
-const SEM_DECISAO: EstadoDecisao = {
-  modal: "nenhum",
-  aprovacao: null,
-  enviando: false,
-  mensagem: "",
-  detalhes: [],
-  anuncio: "",
-  semSincronizar: null,
-};
-
-function novosDaAprovacao(
-  aprovacao: AprovacaoCandidato | null,
-): IngredienteACriar[] {
-  if (aprovacao === null) {
-    return [];
-  }
-
-  return aprovacao.ingredients.flatMap((decisao) =>
-    decisao.action === "create"
-      ? [{ position: decisao.position, inciName: decisao.inciName }]
-      : [],
-  );
-}
 
 function anunciar(estado: EstadoFila): string {
   if (estado.status === "carregando") {
@@ -127,32 +75,41 @@ function FilaAprovacao() {
   const idSelecionado = id === undefined ? null : id;
   const { estado, recarregar } = useFilaAprovacao(origem);
   const estadoCandidato = useCandidato(idSelecionado);
+  useTituloDaPagina(
+    estadoCandidato.status === "pronto"
+      ? `${estadoCandidato.candidato.name} – Fila de aprovação`
+      : "Fila de aprovação",
+  );
   const { estado: catalogo, recarregar: recarregarCatalogo } =
     useCatalogoDaRevisao();
-  const [decisao, setDecisao] = useState<EstadoDecisao>(SEM_DECISAO);
   const tituloFilaRef = useRef<HTMLHeadingElement>(null);
+  const tinhaProdutoAbertoRef = useRef(false);
+  const {
+    decisao,
+    abrirRecusa,
+    fecharModal,
+    pedirAprovacao,
+    executar,
+    sincronizar,
+  } = useDecisaoNaFila({
+    idAberto: idSelecionado,
+    recarregar,
+    aoAvancar: irParaOProximo,
+    aoExpirar: () => void sair(),
+  });
+
+  useEffect(() => {
+    if (idSelecionado === null && tinhaProdutoAbertoRef.current) {
+      tituloFilaRef.current?.focus();
+    }
+
+    tinhaProdutoAbertoRef.current = idSelecionado !== null;
+  }, [idSelecionado]);
 
   const podeDecidir =
     administrador !== null && administrador.role !== "analyst";
-
-  function abrirRecusa() {
-    setDecisao((atual) => ({
-      ...atual,
-      modal: "recusar",
-      mensagem: "",
-      detalhes: [],
-    }));
-  }
-
-  function fecharModal() {
-    setDecisao((atual) => ({
-      ...atual,
-      modal: "nenhum",
-      aprovacao: null,
-      mensagem: "",
-      detalhes: [],
-    }));
-  }
+  const decisaoDoAberto =
+    idSelecionado !== null && decisao.idDoCandidato === idSelecionado;
 
   function proximoDaFila(atual: string): string | null {
     if (estado.status !== "pronto") {
@@ -165,160 +122,26 @@ function FilaAprovacao() {
     return vizinho === undefined ? null : vizinho.id;
   }
 
-  function pedirAprovacao(
-    candidato: Candidato,
-    aprovacao: AprovacaoCandidato,
-  ) {
-    if (novosDaAprovacao(aprovacao).length > 0) {
-      setDecisao((atual) => ({
-        ...atual,
-        modal: "aprovar",
-        aprovacao,
-        mensagem: "",
-        detalhes: [],
-      }));
-      return;
-    }
-
-    void executar(candidato, { tipo: "aprovar", aprovacao });
-  }
-
-  function avancar(atual: string, anuncio: string) {
+  function irParaOProximo(atual: string) {
     const proximo = proximoDaFila(atual);
 
-    setDecisao({ ...SEM_DECISAO, anuncio });
-    recarregar();
     navegar({
       pathname: proximo === null ? "/admin/fila" : `/admin/fila/${proximo}`,
       search: localizacao.search,
     });
-
-    if (proximo === null) {
-      tituloFilaRef.current?.focus();
-    }
-  }
-
-  function tratarErro(erro: unknown) {
-    if (erro instanceof ErroSessaoAdminExpirada) {
-      void sair();
-      return;
-    }
-
-    setDecisao((atual) => ({
-      ...atual,
-      modal: erro instanceof ErroRevisaoInvalida ? "nenhum" : atual.modal,
-      enviando: false,
-      mensagem:
-        erro instanceof Error ? erro.message : "Não foi possível concluir.",
-      detalhes: erro instanceof ErroRevisaoInvalida ? erro.detalhes : [],
-    }));
-
-    if (
-      erro instanceof ErroCandidatoNaoEncontrado ||
-      erro instanceof ErroRevisaoEmConflito
-    ) {
-      recarregar();
-    }
-  }
-
-  async function executar(candidato: Candidato, pedido: PedidoDeDecisao) {
-    setDecisao((atual) => ({
-      ...atual,
-      enviando: true,
-      mensagem: "",
-      detalhes: [],
-    }));
-
-    try {
-      if (pedido.tipo === "recusar") {
-        await recusarPendente(candidato.id, pedido.recusa);
-        avancar(candidato.id, `${candidato.name} recusado.`);
-        return;
-      }
-
-      const resultado = await aprovarPendente(candidato.id, pedido.aprovacao);
-
-      if (resultado.status === "sincronizacaoFalhou") {
-        setDecisao({
-          ...SEM_DECISAO,
-          semSincronizar: candidato.id,
-          anuncio: `${candidato.name} aprovado, mas ainda não entrou no catálogo.`,
-        });
-        recarregar();
-        return;
-      }
-
-      await concluirPublicacao(
-        candidato,
-        resultado.productVersionId,
-        `${candidato.name} aprovado e publicado no catálogo.`,
-      );
-    } catch (erro) {
-      tratarErro(erro);
-    }
-  }
-
-  async function concluirPublicacao(
-    candidato: Candidato,
-    versaoId: number | null,
-    publicado: string,
-  ) {
-    const semNota = `${publicado} A nota base não foi calculada.`;
-
-    if (versaoId === null) {
-      avancar(candidato.id, semNota);
-      return;
-    }
-
-    setDecisao((atual) => ({
-      ...atual,
-      anuncio: `${publicado} Calculando a nota base...`,
-    }));
-
-    try {
-      const nota = await calcularNotaBase(versaoId);
-
-      avancar(candidato.id, `${publicado} Nota base: ${nota}.`);
-    } catch {
-      avancar(candidato.id, semNota);
-    }
-  }
-
-  async function sincronizar(candidato: Candidato) {
-    setDecisao((atual) => ({
-      ...atual,
-      enviando: true,
-      mensagem: "",
-      detalhes: [],
-    }));
-
-    try {
-      const resultado = await sincronizarPendente(candidato.id);
-
-      if (resultado.status === "publicado") {
-        await concluirPublicacao(
-          candidato,
-          resultado.productVersionId,
-          `${candidato.name} publicado no catálogo.`,
-        );
-        return;
-      }
-
-      setDecisao((atual) => ({
-        ...atual,
-        enviando: false,
-        mensagem:
-          "A API ainda não conseguiu publicar. Tente de novo em instantes.",
-      }));
-    } catch (erro) {
-      tratarErro(erro);
-    }
   }
 
   return (
     <LayoutAdmin onSair={() => void sair()}>
       <div className={styles.pagina}>
-        <section className={styles.fila} aria-labelledby="titulo-fila">
+        <section
+          className={
+            idSelecionado === null
+              ? styles.fila
+              : `${styles.fila} ${styles.filaRecolhida}`
+          }
+          aria-labelledby="titulo-fila"
+        >
           <div className={styles.topo}>
             <h1
               id="titulo-fila"
@@ -370,11 +193,18 @@ function FilaAprovacao() {
             </div>
           ) : null}
 
+          {estado.status === "pronto" && estado.truncated ? (
+            <p className={styles.estado}>
+              A fila tem mais envios do que mostramos. Decida os primeiros para
+              ver os próximos.
+            </p>
+          ) : null}
+
           {estado.status === "pronto" && estado.itens.length === 0 ? (
             <p className={styles.estado}>
               {origem === null
                 ? "Nenhum produto aguardando aprovação. A fila está em dia."
-                : `Nenhum produto de ${ROTULO_ORIGEM[origem]} aguardando aprovação.`}
+                : `Nenhum produto de ${ROTULO_ORIGEM[origem]} entre os envios mostrados.`}
             </p>
           ) : null}
 
@@ -421,6 +251,12 @@ function FilaAprovacao() {
                     </div>
 
                     <div className={styles.selos}>
+                      {item.status === "semPublicar" ? (
+                        <Selo
+                          label="Aprovado, falta publicar"
+                          variant="destaque"
+                        />
+                      ) : null}
                       <Selo label={ROTULO_ORIGEM[item.origin]} />
                       <Selo
                         label={rotuloDePendencias(
@@ -443,7 +279,24 @@ function FilaAprovacao() {
           ) : null}
         </section>
 
-        <section className={styles.detalhe} aria-label="Produto selecionado">
+        <section
+          className={
+            idSelecionado === null
+              ? `${styles.detalhe} ${styles.escondidaNoCelular}`
+              : styles.detalhe
+          }
+          aria-label="Produto selecionado"
+        >
+          {idSelecionado !== null && estadoCandidato.status !== "erro" ? (
+            <Link
+              className={styles.voltarDoCelular}
+              to={{ pathname: "/admin/fila", search: localizacao.search }}
+            >
+              <ArrowLeft className={styles.iconeVoltar} aria-hidden="true" />
+              Voltar para a fila
+            </Link>
+          ) : null}
+
           {estadoCandidato.status === "nenhum" ? (
             <p className={styles.estado}>
               Selecione um produto da fila para revisar.
@@ -484,17 +337,24 @@ function FilaAprovacao() {
               podeDecidir={podeDecidir}
               enviando={decisao.enviando}
               semSincronizar={
+                estadoCandidato.candidato.status === "semPublicar" ||
                 decisao.semSincronizar === estadoCandidato.candidato.id
               }
               mensagemDeErro={
-                decisao.modal === "nenhum" ? decisao.mensagem : ""
+                decisaoDoAberto && decisao.modal === "nenhum"
+                  ? decisao.mensagem
+                  : ""
               }
-              detalhesDoErro={decisao.modal === "nenhum" ? decisao.detalhes : []}
+              detalhesDoErro={
+                decisaoDoAberto && decisao.modal === "nenhum"
+                  ? decisao.detalhes
+                  : []
+              }
               onTentarCatalogo={recarregarCatalogo}
               onAprovar={(aprovacao) =>
                 pedirAprovacao(estadoCandidato.candidato, aprovacao)
               }
-              onRecusar={abrirRecusa}
+              onRecusar={() => abrirRecusa(estadoCandidato.candidato)}
               onSincronizar={() => void sincronizar(estadoCandidato.candidato)}
             />
           ) : null}
@@ -508,13 +368,16 @@ function FilaAprovacao() {
       {estadoCandidato.status === "pronto" ? (
         <>
           <ModalAprovacao
-            open={decisao.modal === "aprovar"}
+            open={decisaoDoAberto && decisao.modal === "aprovar"}
             nomeDoProduto={estadoCandidato.candidato.name}
             novos={novosDaAprovacao(decisao.aprovacao)}
             enviando={decisao.enviando}
             mensagemDeErro={decisao.mensagem}
             onConfirmar={() => {
-              if (decisao.aprovacao !== null) {
+              if (
+                decisao.aprovacao !== null &&
+                decisao.idDoCandidato === estadoCandidato.candidato.id
+              ) {
                 void executar(estadoCandidato.candidato, {
                   tipo: "aprovar",
                   aprovacao: decisao.aprovacao,
@@ -525,19 +388,21 @@ function FilaAprovacao() {
           />
 
           <ModalRecusa
-            open={decisao.modal === "recusar"}
+            open={decisaoDoAberto && decisao.modal === "recusar"}
             candidato={estadoCandidato.candidato}
             rotuloDaOrigem={
               ROTULO_ORIGEM_DETALHE[estadoCandidato.candidato.origin]
             }
             enviando={decisao.enviando}
             mensagemDeErro={decisao.mensagem}
-            onConfirmar={(recusa) =>
-              void executar(estadoCandidato.candidato, {
-                tipo: "recusar",
-                recusa,
-              })
-            }
+            onConfirmar={(recusa) => {
+              if (decisao.idDoCandidato === estadoCandidato.candidato.id) {
+                void executar(estadoCandidato.candidato, {
+                  tipo: "recusar",
+                  recusa,
+                });
+              }
+            }}
             onClose={fecharModal}
           />
         </>

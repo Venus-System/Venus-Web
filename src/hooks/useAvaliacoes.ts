@@ -1,32 +1,40 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarAvaliacoes } from "../services/avaliacoes";
 import type { AvaliacoesDoProduto } from "../types/avaliacao";
+import { useAutenticacao } from "./useAutenticacao";
 
 export type EstadoAvaliacoes =
   | { status: "carregando" }
-  | { status: "pronto"; avaliacoes: AvaliacoesDoProduto; rodada: number }
+  | {
+      status: "pronto";
+      slug: string;
+      avaliacoes: AvaliacoesDoProduto;
+      rodada: number;
+    }
   | { status: "erro"; mensagem: string };
 
-export function useAvaliacoes(slug: string | null) {
+export function useAvaliacoes(slug: string | null, versaoId: number | null) {
+  const { usuario, carregando: carregandoConta } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoAvaliacoes>({
     status: "carregando",
   });
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    if (slug === null) {
+    setEstado({ status: "carregando" });
+
+    if (slug === null || carregandoConta) {
       return;
     }
 
     const controle = new AbortController();
     let ativo = true;
 
-    setEstado({ status: "carregando" });
-
-    buscarAvaliacoes(slug, controle.signal)
+    buscarAvaliacoes(slug, versaoId, controle.signal)
       .then((avaliacoes) => {
         if (ativo) {
-          setEstado({ status: "pronto", avaliacoes, rodada: 0 });
+          setEstado({ status: "pronto", slug, avaliacoes, rodada: 0 });
         }
       })
       .catch((erro: unknown) => {
@@ -45,27 +53,31 @@ export function useAvaliacoes(slug: string | null) {
       ativo = false;
       controle.abort();
     };
-  }, [slug, tentativa]);
+  }, [slug, versaoId, tentativa, dono, carregandoConta]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);
   }, []);
 
-  const atualizar = useCallback(() => {
+  const atualizar = useCallback(async (): Promise<boolean> => {
     if (slug === null) {
-      return;
+      return false;
     }
 
-    buscarAvaliacoes(slug)
-      .then((avaliacoes) => {
-        setEstado((atual) =>
-          atual.status !== "pronto"
-            ? atual
-            : { status: "pronto", avaliacoes, rodada: atual.rodada + 1 },
-        );
-      })
-      .catch(() => undefined);
-  }, [slug]);
+    try {
+      const avaliacoes = await buscarAvaliacoes(slug, versaoId);
+
+      setEstado((atual) =>
+        atual.status !== "pronto" || atual.slug !== slug
+          ? atual
+          : { ...atual, avaliacoes, rodada: atual.rodada + 1 },
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
+  }, [slug, versaoId]);
 
   return { estado, recarregar, atualizar };
 }

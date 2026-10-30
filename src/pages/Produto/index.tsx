@@ -1,46 +1,57 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { ErroProdutoNaoEncontrado } from "../../services/erros";
-import { buscarAnalisePublica } from "../../services/analises";
+import { ArrowLeftRight } from "lucide-react";
 import { temFragrancia } from "../../utils/selos";
-import { ordenarPorRisco } from "../../utils/alertas";
-import type { AnaliseExibicao } from "../../types/analise";
+import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
+import {
+  ROTULO_DA_FAIXA,
+  ROTULO_DO_RISCO,
+  nivelDaRecomendacao,
+  nivelDoRisco,
+} from "../../utils/niveis";
 import type {
   Avaliacao,
   Denuncia,
   NovaAvaliacao,
 } from "../../types/avaliacao";
+import { useAnaliseDoProduto } from "../../hooks/useAnaliseDoProduto";
+import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
 import { useDenunciarAvaliacao } from "../../hooks/useDenunciarAvaliacao";
 import { usePublicarAvaliacao } from "../../hooks/usePublicarAvaliacao";
+import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
+import FavoriteButton from "../../components/FavoriteButton";
 import MainLayout from "../../components/MainLayout";
+import ProductFavorite from "../../components/ProductFavorite";
 import RatingSummary from "../../components/RatingSummary";
 import ReviewCard from "../../components/ReviewCard";
 import ReportReviewModal from "../../components/ReportReviewModal";
 import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
-import ScoreBadge from "../../components/ScoreBadge";
+import BigScore from "../../components/BigScore";
 import ScoreBars from "../../components/ScoreBars";
+import ScoreExplanation from "../../components/ScoreExplanation";
 import Chip from "../../components/Chip";
 import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
+import PersonalAnalysis from "../../components/PersonalAnalysis";
+import RiskBadge from "../../components/RiskBadge";
+import RiskLegend from "../../components/RiskLegend";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
-
-type EstadoProduto =
-  | { situacao: "carregando" }
-  | { situacao: "sucesso"; analise: AnaliseExibicao }
-  | { situacao: "nao-encontrado" }
-  | { situacao: "erro"; mensagem: string };
 
 type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
 
+type SituacaoDasTodas = "fechado" | "abrindo" | "aberto" | "erro";
+
 interface ModaisDoProduto {
   ingredientes: boolean;
-  todas: boolean;
+  todas: SituacaoDasTodas;
   acao: AcaoDeAvaliacao | null;
 }
 
@@ -49,20 +60,26 @@ const INGREDIENTES_NA_PAGINA = 3;
 
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
-  const [estado, setEstado] = useState<EstadoProduto>({
-    situacao: "carregando",
-  });
-  const { usuario } = useAutenticacao();
+  const estado = useAnaliseDoProduto(slug);
+  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
+  const titulo =
+    carregado?.product.name ??
+    (estado.situacao === "nao-encontrado" ? "Produto não encontrado" : "Produto");
+  const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
+  useTituloDaPagina(titulo);
   const {
     estado: avaliacoes,
     recarregar: recarregarAvaliacoes,
     atualizar: atualizarAvaliacoes,
-  } = useAvaliacoes(slug ?? null);
+  } = useAvaliacoes(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
-    todas: false,
+    todas: "fechado",
     acao: null,
   });
   const {
@@ -76,6 +93,14 @@ function Produto() {
     limpar: limparDenuncia,
   } = useDenunciarAvaliacao();
   const logado = usuario !== null;
+  const {
+    estado: analisePessoal,
+    tentarDeNovo: tentarAnaliseDeNovo,
+    recalcular,
+  } = useAnalisePessoal(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
 
   function exigirLogin() {
     navegar("/login", { state: { de: localizacao.pathname } });
@@ -104,7 +129,7 @@ function Produto() {
 
     if (publicou) {
       fecharAcao();
-      atualizarAvaliacoes();
+      void atualizarAvaliacoes();
     }
   }
 
@@ -132,63 +157,22 @@ function Produto() {
     setModais((atual) => ({ ...atual, ingredientes: false }));
   }
 
-  function abrirTodas() {
-    setModais((atual) => ({ ...atual, todas: true }));
+  async function abrirTodas() {
+    setModais((atual) => ({ ...atual, todas: "abrindo" }));
+
+    const atualizou = await atualizarAvaliacoes();
+
+    setModais((atual) =>
+      atual.todas !== "abrindo"
+        ? atual
+        : { ...atual, todas: atualizou ? "aberto" : "erro" },
+    );
   }
 
   function fecharTodas() {
-    setModais((atual) => ({ ...atual, todas: false }));
-    atualizarAvaliacoes();
+    setModais((atual) => ({ ...atual, todas: "fechado" }));
+    void atualizarAvaliacoes();
   }
-
-  useEffect(() => {
-    if (!slug) {
-      return;
-    }
-
-    const controle = new AbortController();
-    let expirou = false;
-    const limite = setTimeout(() => {
-      expirou = true;
-      controle.abort();
-    }, 8000);
-
-    async function carregar(slugAtual: string) {
-      setEstado({ situacao: "carregando" });
-
-      try {
-        const analise = await buscarAnalisePublica(slugAtual, controle.signal);
-        setEstado({ situacao: "sucesso", analise });
-      } catch (erro) {
-        if (erro instanceof ErroProdutoNaoEncontrado) {
-          setEstado({ situacao: "nao-encontrado" });
-          return;
-        }
-
-        if (erro instanceof DOMException && erro.name === "AbortError") {
-          if (expirou) {
-            setEstado({
-              situacao: "erro",
-              mensagem: "A busca demorou demais. Tente novamente",
-            });
-          }
-
-          return;
-        }
-
-        setEstado({
-          situacao: "erro",
-          mensagem: "Não foi possível carregar este produto.",
-        });
-      }
-    }
-
-    carregar(slug);
-    return () => {
-      clearTimeout(limite);
-      controle.abort();
-    };
-  }, [slug]);
 
   if (!slug) {
     return (
@@ -232,13 +216,39 @@ function Produto() {
     );
   }
 
-  const { product, ingredients, personalized } = estado.analise;
+  const { product, ingredients } = estado.analise;
   const avaliacaoDenunciada =
     modais.acao?.tipo === "denunciar" ? modais.acao.avaliacao : null;
+  const pessoal =
+    analisePessoal.status === "pronta" ? analisePessoal.analise : null;
+  const alertas =
+    pessoal === null
+      ? []
+      : pessoal.reasons.filter((motivo) => motivo.warning);
+  const nomesEmAlerta = alertas.flatMap((motivo) => motivo.ingredientNames);
+
+  let favorito: ReactNode = null;
+
+  if (logado) {
+    favorito = <ProductFavorite slug={product.slug} name={product.name} />;
+  } else if (!carregandoConta) {
+    favorito = (
+      <FavoriteButton
+        productName={product.name}
+        isFavorite={false}
+        isPending={false}
+        onToggle={exigirLogin}
+      />
+    );
+  }
 
   return (
-    <MainLayout>
+    <MainLayout chatProductName={product.name}>
       <div className={styles.page}>
+        <div className={styles.voltar}>
+          <BackButton fallback="/pesquisa" />
+        </div>
+
         <header className={styles.hero}>
           <div className={styles.frame}>
             {product.imageUrl ? (
@@ -261,17 +271,84 @@ function Produto() {
 
             <h1 className={styles.title}>{product.name}</h1>
 
-            <div className={styles.scoreRow}>
-              <ScoreBadge
-                score={product.scores.overallScore}
-                level={product.level}
-              />
-              <p className={styles.scoreCaption}>
-                Avaliação geral da Venus, de 0 a 100.
-              </p>
-            </div>
+            {pessoal === null ? (
+              <div className={styles.scoreRow}>
+                <BigScore score={product.scores.overallScore} />
+                <p className={styles.scoreCaption}>
+                  Avaliação geral da Venus, de 0 a 100. É a mesma para todo
+                  mundo.
+                </p>
+              </div>
+            ) : (
+              <div className={styles.scoreRow}>
+                <BigScore score={pessoal.finalScore} />
 
-            <ScoreBars notas={product.scores} />
+                <div className={styles.veredito}>
+                  <div className={styles.chips}>
+                    <RiskBadge
+                      level={nivelDaRecomendacao(pessoal.recommendationLevel)}
+                      label={ROTULO_DA_FAIXA[pessoal.recommendationLevel]}
+                    />
+                    <RiskBadge
+                      level={nivelDoRisco(pessoal.riskLevel)}
+                      label={ROTULO_DO_RISCO[pessoal.riskLevel]}
+                    />
+                  </div>
+
+                  <p className={styles.scoreCaption}>
+                    Nota cruzada com o seu perfil, de 0 a 100
+                    {alertas.length === 0
+                      ? "."
+                      : alertas.length === 1
+                        ? ", com 1 alerta."
+                        : `, com ${alertas.length} alertas.`}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {analisePessoal.status === "sem-conta" ? (
+              <div className={styles.convite}>
+                <p className={styles.conviteTexto}>
+                  <strong>Quer a nota para a sua pele?</strong> Com um perfil, a
+                  Venus cruza esta fórmula com a sua pele, as suas alergias e as
+                  suas preferências. É opcional: a avaliação geral continua
+                  aqui.
+                </p>
+
+                <div className={styles.conviteAcoes}>
+                  <Button to="/criar-conta">Criar perfil</Button>
+                  <Button
+                    variant="text"
+                    to="/login"
+                    state={{ de: localizacao.pathname }}
+                  >
+                    Já tenho conta
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            {analisePessoal.status === "sem-perfil" ? (
+              <div className={styles.convite}>
+                <p className={styles.conviteTexto}>
+                  <strong>Quer a nota para a sua pele?</strong> Responda o
+                  questionário e a Venus cruza esta fórmula com a sua pele, as
+                  suas alergias e as suas preferências. É opcional: a avaliação
+                  geral continua aqui.
+                </p>
+
+                <div className={styles.conviteAcoes}>
+                  <Button to="/perguntas">Responder o questionário</Button>
+                </div>
+              </div>
+            ) : null}
+
+            <ScoreBars
+              notas={pessoal === null ? product.scores : pessoal.breakdown}
+            />
+
+            <ScoreExplanation breakdown={pessoal?.breakdown} />
 
             <div className={styles.chips}>
               {product.brand.hasCrueltyFreeClaim ? (
@@ -282,27 +359,27 @@ function Produto() {
                 <Chip label="Contém fragrância" level="warning" />
               ) : null}
             </div>
+
+            <div className={styles.acoes}>
+              <Button variant="secondary" to={`/comparar?a=${product.slug}`}>
+                <ArrowLeftRight
+                  className={styles.acaoIcone}
+                  aria-hidden="true"
+                />
+                Comparar com outro produto
+              </Button>
+
+              {favorito}
+            </div>
           </div>
         </header>
 
-        {personalized === null ? (
-          <section className={styles.card} aria-labelledby="titulo-perfil">
-            <h2 id="titulo-perfil" className={styles.cardTitle}>
-              Esta é a avaliação geral
-            </h2>
-            <p className={styles.cardText}>
-              Com um perfil, esta seção mostra como o produto se comporta na sua
-              pele. A criação de perfil entra em uma próxima etapa do projeto.
-            </p>
-          </section>
-        ) : (
-          <section className={styles.card} aria-labelledby="titulo-perfil">
-            <h2 id="titulo-perfil" className={styles.cardTitle}>
-              Para você
-            </h2>
-            <p className={styles.cardText}>{personalized.summary}</p>
-          </section>
-        )}
+        <PersonalAnalysis
+          state={analisePessoal}
+          firstName={usuario?.name.split(" ")[0] ?? ""}
+          onRetry={tentarAnaliseDeNovo}
+          onRecalculate={recalcular}
+        />
 
         <section
           className={styles.section}
@@ -315,22 +392,31 @@ function Produto() {
           </h2>
 
           <p className={styles.sectionText}>
-            Cada ingrediente classificado pelo semáforo Venus: verde é aprovado,
-            âmbar pede atenção e vermelho é melhor evitar.
+            Cada ingrediente classificado pelo semáforo Venus. A fragrância e o
+            que é alerta para o seu perfil aparecem primeiro.
           </p>
+
+          <RiskLegend label="Legenda do semáforo" />
 
           {ingredients.length === 0 ? (
             <p className={styles.sectionText}>
-              Ainda não temos a lista de ingredientes deste produto.
+              Não temos a lista de ingredientes deste produto.
             </p>
           ) : (
             <>
               <ul className={styles.ingredients}>
-                {ordenarPorRisco(ingredients)
+                {ordenarPorDestaque(ingredients, nomesEmAlerta)
                   .slice(0, INGREDIENTES_NA_PAGINA)
                   .map((item) => (
                     <li key={item.id}>
-                      <IngredientCard item={item} />
+                      <IngredientCard
+                        item={item}
+                        note={
+                          ehAlertaPessoal(item, nomesEmAlerta)
+                            ? "Alerta para o seu perfil"
+                            : undefined
+                        }
+                      />
                     </li>
                   ))}
               </ul>
@@ -349,15 +435,23 @@ function Produto() {
                 open={modais.ingredientes}
                 onClose={fecharIngredientes}
                 ingredients={ingredients}
+                alertNames={nomesEmAlerta}
               />
             </>
           )}
         </section>
 
         <section className={styles.section} aria-labelledby="titulo-avaliacoes">
+          <p className={styles.eyebrow}>Quem usou</p>
+
           <h2 id="titulo-avaliacoes" className={styles.sectionTitle}>
             Avaliações de usuários
           </h2>
+
+          <p className={styles.sectionText}>
+            A experiência de outras pessoas com o produto. Elas não entram na
+            nota da Venus, que vem só da fórmula.
+          </p>
 
           <p className="texto-oculto" aria-live="polite">
             {avaliacoes.status === "carregando"
@@ -413,14 +507,23 @@ function Produto() {
                   variant="secondary"
                   className={styles.seeAll}
                   onClick={abrirTodas}
+                  busy={modais.todas === "abrindo"}
                 >
-                  Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
-                  avaliações
+                  {modais.todas === "abrindo"
+                    ? "Carregando as avaliações..."
+                    : `Ver todas as ${avaliacoes.avaliacoes.reviews.length} avaliações`}
                 </Button>
               ) : null}
 
+              {modais.todas === "erro" ? (
+                <p className={styles.erroDasTodas} role="alert">
+                  Não foi possível atualizar as avaliações. Tente abrir de
+                  novo.
+                </p>
+              ) : null}
+
               <ReviewsModal
-                open={modais.todas}
+                open={modais.todas === "aberto"}
                 onClose={fecharTodas}
                 data={avaliacoes.avaliacoes}
                 canInteract={logado}

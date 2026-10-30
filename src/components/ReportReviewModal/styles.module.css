@@ -45,7 +45,8 @@
   font-weight: var(--peso-forte);
 }
 
-.campo {
+.campo,
+.campoInvalido {
   width: 100%;
   padding: var(--espaco-2) var(--espaco-3);
   background-color: var(--card);
@@ -55,6 +56,10 @@
   font-family: var(--fonte-corpo);
   font-size: var(--tamanho-base);
   resize: vertical;
+}
+
+.campoInvalido {
+  border-color: var(--avoid);
 }
 
 .aviso {

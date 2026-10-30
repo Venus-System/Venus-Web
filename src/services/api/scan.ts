@@ -110,6 +110,7 @@ export function lerScan(valor: unknown): Candidato | null {
 
   return {
     id,
+    status: dados.status === "SYNC_FAILED" ? "semPublicar" : "pendente",
     name: texto(extraido.productName) ?? "Produto sem nome lido",
     brand: texto(extraido.brand) ?? "Marca não lida",
     category: texto(extraido.category) ?? "Categoria não lida",
@@ -141,6 +142,7 @@ export function lerScan(valor: unknown): Candidato | null {
 export function paraResumo(candidato: Candidato): CandidatoResumo {
   return {
     id: candidato.id,
+    status: candidato.status,
     name: candidato.name,
     brand: candidato.brand,
     category: candidato.category,
@@ -153,14 +155,8 @@ export function paraResumo(candidato: Candidato): CandidatoResumo {
   };
 }
 
-export function lerListaDeScans(valor: unknown): Candidato[] {
-  const conteudo = comoObjeto(valor).content;
-
-  if (!Array.isArray(conteudo)) {
-    throw new Error("A fila de aprovação não veio no formato esperado.");
-  }
-
-  return conteudo
+export function lerListaDeScans(itens: unknown[]): Candidato[] {
+  return itens
     .flatMap((item) => {
       const candidato = lerScan(item);
 

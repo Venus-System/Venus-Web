@@ -11,9 +11,18 @@
 }
 
 .label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--espaco-2);
   color: var(--texto);
   font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
+}
+
+.hint {
+  color: var(--texto-suave);
+  font-weight: var(--peso-titulo);
 }
 
 .value {
@@ -31,35 +40,18 @@
   overflow: hidden;
 }
 
-.empty {
-  border: var(--borda-largura) dashed var(--borda-forte);
-}
-
 .fill {
   height: 100%;
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
 }
 
-.health {
-  background-color: var(--saude);
-}
+@media (forced-colors: active) {
+  .track {
+    outline: var(--borda-largura) solid CanvasText;
+  }
 
-.environment {
-  background-color: var(--ambiental);
-}
-
-.ethics {
-  background-color: var(--etica);
-}
-
-.toneHealth {
-  color: var(--saude);
-}
-
-.toneEnvironment {
-  color: var(--ambiental);
-}
-
-.toneEthics {
-  color: var(--etica);
+  .fill {
+    background-color: CanvasText;
+  }
 }

@@ -1,44 +1,105 @@
 import type { RespostasQuestionario } from "../types/questionario";
 
-export const CAMPOS_BASICOS = 3;
-const CAMPOS_DE_SAUDE = 6;
+export interface CampoDoPerfil {
+  id: string;
+  rotulo: string;
+}
 
-export function contarPreenchidas(respostas: RespostasQuestionario): number {
-  const basicos = [
-    respostas.gender,
-    respostas.hairCurvature,
-    respostas.ageRange,
-  ];
+interface CampoContado extends CampoDoPerfil {
+  deSaude: boolean;
+  preenchido: (respostas: RespostasQuestionario) => boolean;
+}
 
-  const preenchidos = basicos.filter((valor) => valor !== "").length;
+const CAMPOS: CampoContado[] = [
+  {
+    id: "faixa-etaria",
+    rotulo: "Faixa etária",
+    deSaude: false,
+    preenchido: (respostas) => respostas.ageRange !== "",
+  },
+  {
+    id: "genero",
+    rotulo: "Gênero",
+    deSaude: false,
+    preenchido: (respostas) => respostas.gender !== "",
+  },
+  {
+    id: "tipo-pele",
+    rotulo: "Tipo de pele",
+    deSaude: true,
+    preenchido: (respostas) => respostas.skinType !== "",
+  },
+  {
+    id: "fototipo",
+    rotulo: "Fototipo de pele",
+    deSaude: true,
+    preenchido: (respostas) => respostas.skinPhototype !== "",
+  },
+  {
+    id: "sensibilidade",
+    rotulo: "Sensibilidade da pele",
+    deSaude: true,
+    preenchido: (respostas) => respostas.skinSensitivity !== "",
+  },
+  {
+    id: "curvatura-cabelo",
+    rotulo: "Tipo de cabelo",
+    deSaude: false,
+    preenchido: (respostas) => respostas.hairCurvature !== "",
+  },
+  {
+    id: "couro-cabeludo",
+    rotulo: "Couro cabeludo",
+    deSaude: true,
+    preenchido: (respostas) => respostas.scalpType !== "",
+  },
+  {
+    id: "situacao-atual",
+    rotulo: "Situação atual",
+    deSaude: true,
+    preenchido: (respostas) => respostas.currentSituation !== "",
+  },
+  {
+    id: "condicoes-pele",
+    rotulo: "Condições de pele",
+    deSaude: true,
+    preenchido: (respostas) => respostas.skinConditions.length > 0,
+  },
+];
 
-  if (!respostas.healthDataConsent) {
-    return preenchidos;
-  }
+export const TOTAL_DE_CAMPOS = CAMPOS.length;
 
-  const saude = [
-    respostas.skinType,
-    respostas.skinPhototype,
-    respostas.skinSensitivity,
-    respostas.scalpType,
-    respostas.currentSituation,
-  ];
+const ROTULO_DA_AUTORIZACAO = "Perguntas de pele e saúde (precisa autorizar)";
 
-  const condicoes = respostas.skinConditions.length > 0 ? 1 : 0;
-
+function respondido(
+  campo: CampoContado,
+  respostas: RespostasQuestionario,
+): boolean {
   return (
-    preenchidos + saude.filter((valor) => valor !== "").length + condicoes
+    (!campo.deSaude || respostas.healthDataConsent) &&
+    campo.preenchido(respostas)
   );
 }
 
-export function totalDeRespostas(respostas: RespostasQuestionario): number {
+export function contarPreenchidas(respostas: RespostasQuestionario): number {
+  return CAMPOS.filter((campo) => respondido(campo, respostas)).length;
+}
+
+export function camposSemResposta(
+  respostas: RespostasQuestionario,
+  idDaAutorizacao: string,
+): CampoDoPerfil[] {
+  const vazios = CAMPOS.filter(
+    (campo) =>
+      (!campo.deSaude || respostas.healthDataConsent) &&
+      !campo.preenchido(respostas),
+  ).map(({ id, rotulo }) => ({ id, rotulo }));
+
   return respostas.healthDataConsent
-    ? CAMPOS_BASICOS + CAMPOS_DE_SAUDE
-    : CAMPOS_BASICOS;
+    ? vazios
+    : [...vazios, { id: idDaAutorizacao, rotulo: ROTULO_DA_AUTORIZACAO }];
 }
 
 export function porcentagemDoPerfil(respostas: RespostasQuestionario): number {
-  return Math.round(
-    (contarPreenchidas(respostas) / totalDeRespostas(respostas)) * 100,
-  );
+  return Math.round((contarPreenchidas(respostas) / TOTAL_DE_CAMPOS) * 100);
 }

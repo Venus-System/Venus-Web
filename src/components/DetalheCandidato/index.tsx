@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Button from "../Button";
 import CamposProduto, {
@@ -13,7 +13,9 @@ import type { VisaoDaFonte } from "../PainelFonte";
 import RevisaoIngrediente, {
   OPCAO_CRIAR,
   OPCAO_DESCARTAR,
+  OPCAO_LIGAR,
   idDaDecisao,
+  idDoIngredienteCadastrado,
   idDoNomeInci,
 } from "../RevisaoIngrediente";
 import type { EscolhaDoIngrediente } from "../RevisaoIngrediente";
@@ -32,6 +34,7 @@ import { tempoRelativo } from "../../utils/tempoRelativo";
 import {
   validarCategoria,
   validarDecisaoDoIngrediente,
+  validarIngredienteCadastrado,
   validarMarca,
   validarNomeDoProduto,
   validarNomeInci,
@@ -113,8 +116,10 @@ function escolhaInicial(
     position: ingrediente.position,
     opcao: "",
     inciName: ingrediente.rawName,
+    ingredientId: "",
     erro: null,
     erroDoNome: null,
+    erroDoIngrediente: null,
   };
 }
 
@@ -124,6 +129,10 @@ function validarEscolha(escolha: EscolhaDoIngrediente): EscolhaDoIngrediente {
     erro: validarDecisaoDoIngrediente(escolha.opcao),
     erroDoNome:
       escolha.opcao === OPCAO_CRIAR ? validarNomeInci(escolha.inciName) : null,
+    erroDoIngrediente:
+      escolha.opcao === OPCAO_LIGAR
+        ? validarIngredienteCadastrado(escolha.ingredientId)
+        : null,
   };
 }
 
@@ -143,7 +152,9 @@ function paraDecisao(escolha: EscolhaDoIngrediente): DecisaoIngrediente {
   return {
     position: escolha.position,
     action: "link",
-    ingredientId: Number(escolha.opcao),
+    ingredientId: Number(
+      escolha.opcao === OPCAO_LIGAR ? escolha.ingredientId : escolha.opcao,
+    ),
   };
 }
 
@@ -175,6 +186,10 @@ function primeiroInvalido(
 
     if (escolha?.erroDoNome) {
       return idDoNomeInci(ingrediente);
+    }
+
+    if (escolha?.erroDoIngrediente) {
+      return idDoIngredienteCadastrado(ingrediente);
     }
   }
 
@@ -244,12 +259,12 @@ function DetalheCandidato({
     marcaId:
       campos.marcaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.brands, candidato.brand)
+        ? sugerirDoCatalogo(catalogo.dados.brands, candidato.brand)
         : ""),
     categoriaId:
       campos.categoriaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.categories, candidato.category)
+        ? sugerirDoCatalogo(catalogo.dados.categories, candidato.category)
         : ""),
   };
 
@@ -302,14 +317,14 @@ function DetalheCandidato({
     }));
   }
 
-  function mudarEscolha(nova: EscolhaDoIngrediente) {
+  const mudarEscolha = useCallback((nova: EscolhaDoIngrediente) => {
     setCampos((atual) => ({
       ...atual,
       escolhas: atual.escolhas.map((escolha) =>
         escolha.position === nova.position ? nova : escolha,
       ),
     }));
-  }
+  }, []);
 
   function aprovar() {
     if (!podeDecidir || enviando) {
@@ -362,6 +377,12 @@ function DetalheCandidato({
   function recusar() {
     if (podeDecidir && !enviando) {
       onRecusar();
+    }
+  }
+
+  function sincronizar() {
+    if (podeDecidir && !enviando) {
+      onSincronizar();
     }
   }
 
@@ -467,6 +488,11 @@ function DetalheCandidato({
                 key={ingrediente.id}
                 ingrediente={ingrediente}
                 escolha={escolha}
+                ingredientesDoCatalogo={
+                  catalogo.status === "pronto"
+                    ? catalogo.dados.ingredients
+                    : null
+                }
                 onMudar={mudarEscolha}
               />
             );
@@ -485,7 +511,7 @@ function DetalheCandidato({
           {podeDecidir ? null : (
             <p id={ID_AVISO_DO_PAPEL}>
               Como analista, você pode revisar a fila, mas só moderação e
-              administração aprovam ou recusam.
+              administração aprovam, recusam ou publicam.
             </p>
           )}
 
@@ -516,7 +542,12 @@ function DetalheCandidato({
 
         <div className={styles.acoes}>
           {semSincronizar ? (
-            <Button onClick={onSincronizar} disabled={enviando}>
+            <Button
+              onClick={sincronizar}
+              busy={enviando}
+              aria-disabled={podeDecidir ? undefined : true}
+              aria-describedby={descricaoDosBotoes}
+            >
               {enviando ? "Publicando..." : "Tentar de novo"}
             </Button>
           ) : (
@@ -524,7 +555,7 @@ function DetalheCandidato({
               <Button
                 variant="danger"
                 onClick={recusar}
-                disabled={enviando}
+                busy={enviando}
                 aria-disabled={podeDecidir ? undefined : true}
                 aria-describedby={descricaoDosBotoes}
               >
@@ -533,7 +564,7 @@ function DetalheCandidato({
 
               <Button
                 onClick={aprovar}
-                disabled={enviando}
+                busy={enviando}
                 aria-disabled={
                   !podeDecidir || bloqueadoPelasFotos ? true : undefined
                 }

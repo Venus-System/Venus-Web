@@ -1,16 +1,23 @@
 import { useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { confirmarRedefinicao } from "../../services/autenticacao";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import Button from "../../components/Button";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import Input from "../../components/Input";
 import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import {
+  MAXIMO_DA_SENHA,
   forcaDaSenha,
   validarConfirmacaoSenha,
   validarSenha,
 } from "../../utils/validacao";
 import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const SEGMENTOS = [1, 2, 3, 4];
@@ -27,7 +34,8 @@ const TEXTO_FORCA: Record<FaixaSenha, string> = {
 type EstadoEnvio =
   | { situacao: "parado" }
   | { situacao: "enviando" }
-  | { situacao: "erro"; mensagem: string };
+  | { situacao: "erro"; mensagem: string }
+  | { situacao: "linkVencido" };
 
 interface ErrosSenha {
   senha: string | null;
@@ -43,6 +51,8 @@ interface EstadoFormulario {
 const SEM_ERROS: ErrosSenha = { senha: null, confirmacao: null };
 
 function NovaSenha() {
+  useTituloDaPagina("Nova senha");
+  const { confirmarRedefinicao } = useAutenticacao();
   const navegar = useNavigate();
   const [parametros] = useSearchParams();
   const codigo = parametros.get("oobCode");
@@ -102,7 +112,17 @@ function NovaSenha() {
     }));
 
     try {
-      await confirmarRedefinicao(codigoConfirmado, senha);
+      const resultado = await confirmarRedefinicao(codigoConfirmado, senha);
+
+      if (resultado === "linkVencido") {
+        setFormulario((atual) => ({
+          ...atual,
+          envio: { situacao: "linkVencido" },
+          erros: SEM_ERROS,
+        }));
+        return;
+      }
+
       navegar("/esqueci-senha/pronto", { replace: true });
     } catch {
       setFormulario((atual) => ({
@@ -124,11 +144,12 @@ function NovaSenha() {
         Crie uma <span className={styles.destaque}>senha nova</span>
       </h1>
 
-      <form className={styles.formulario} onSubmit={handleSubmit}>
+      <form className={styles.formulario} noValidate onSubmit={handleSubmit}>
         <div className={styles.blocoSenha}>
           <Input
             id="senha"
             name="senha"
+            maxLength={MAXIMO_DA_SENHA}
             type="password"
             label="Nova senha"
             placeholder="Mínimo 8 caracteres"
@@ -161,6 +182,7 @@ function NovaSenha() {
         <Input
           id="confirmacao"
           name="confirmacao"
+          maxLength={MAXIMO_DA_SENHA}
           type="password"
           label="Confirme a senha"
           placeholder="Repita a senha"
@@ -176,7 +198,14 @@ function NovaSenha() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={desabilitado}>
+        {formulario.envio.situacao === "linkVencido" ? (
+          <div className={styles.erro} role="alert">
+            <p>Este link venceu ou já foi usado.</p>
+            <Link to="/esqueci-senha">Pedir um novo link</Link>
+          </div>
+        ) : null}
+
+        <Button type="submit" busy={desabilitado}>
           {desabilitado ? "Salvando..." : "Salvar nova senha"}
         </Button>
       </form>

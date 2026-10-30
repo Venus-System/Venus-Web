@@ -15,6 +15,10 @@
   line-height: 1.2;
 }
 
+.help {
+  margin-bottom: var(--espaco-3);
+}
+
 .options {
   display: flex;
   flex-wrap: wrap;

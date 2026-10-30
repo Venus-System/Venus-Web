@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarMeuVoto, votar } from "../services/avaliacoes";
 import type { Avaliacao, VotoDeAvaliacao } from "../types/avaliacao";
+import { useAutenticacao } from "./useAutenticacao";
 
 export interface EstadoDoVoto {
   meuVoto: VotoDeAvaliacao | null;
   contagem: number;
   carregando: boolean;
+  falhouLeitura: boolean;
   enviando: boolean;
   erro: string | null;
 }
@@ -15,24 +17,37 @@ function pontoUtil(voto: VotoDeAvaliacao | null): number {
 }
 
 export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoDoVoto>({
     meuVoto: null,
     contagem: avaliacao.usefulCount,
     carregando: podeVotar,
+    falhouLeitura: false,
     enviando: false,
     erro: null,
   });
+  const [tentativa, setTentativa] = useState(0);
+
+  useEffect(() => {
+    setEstado((atual) => ({ ...atual, contagem: avaliacao.usefulCount }));
+  }, [avaliacao.usefulCount]);
 
   useEffect(() => {
     if (!podeVotar) {
-      setEstado((atual) => ({ ...atual, meuVoto: null, carregando: false }));
+      setEstado((atual) => ({
+        ...atual,
+        meuVoto: null,
+        carregando: false,
+        falhouLeitura: false,
+      }));
       return;
     }
 
     const controle = new AbortController();
     let ativo = true;
 
-    setEstado((atual) => ({ ...atual, carregando: true }));
+    setEstado((atual) => ({ ...atual, carregando: true, falhouLeitura: false }));
 
     buscarMeuVoto(avaliacao.id, controle.signal)
       .then((meuVoto) => {
@@ -42,7 +57,11 @@ export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
       })
       .catch(() => {
         if (ativo) {
-          setEstado((atual) => ({ ...atual, carregando: false }));
+          setEstado((atual) => ({
+            ...atual,
+            carregando: false,
+            falhouLeitura: true,
+          }));
         }
       });
 
@@ -50,11 +69,15 @@ export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
       ativo = false;
       controle.abort();
     };
-  }, [avaliacao.id, podeVotar]);
+  }, [avaliacao.id, podeVotar, tentativa, dono]);
+
+  const tentarLerDeNovo = useCallback(() => {
+    setTentativa((atual) => atual + 1);
+  }, []);
 
   const escolher = useCallback(
     (escolha: VotoDeAvaliacao) => {
-      if (estado.carregando || estado.enviando) {
+      if (estado.carregando || estado.enviando || estado.falhouLeitura) {
         return;
       }
 
@@ -83,8 +106,14 @@ export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
           }));
         });
     },
-    [avaliacao.id, estado.carregando, estado.enviando, estado.meuVoto],
+    [
+      avaliacao.id,
+      estado.carregando,
+      estado.enviando,
+      estado.falhouLeitura,
+      estado.meuVoto,
+    ],
   );
 
-  return { estado, escolher };
+  return { estado, escolher, tentarLerDeNovo };
 }

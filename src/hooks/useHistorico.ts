@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarHistorico } from "../services/historico";
+import { useAutenticacao } from "./useAutenticacao";
 import type { AnaliseRecente } from "../types/painel";
+import { umaPorDia } from "../utils/umaPorDia";
 
 export type EstadoHistorico =
   | { status: "carregando" }
@@ -15,6 +17,14 @@ export type EstadoHistorico =
       recemCarregadas: number | null;
     };
 
+function semRepeticaoNoDia(analises: AnaliseRecente[]): AnaliseRecente[] {
+  return umaPorDia(
+    analises,
+    (analise) => analise.product.slug,
+    (analise) => analise.analyzedAt,
+  );
+}
+
 function mensagemDoErro(erro: unknown): string {
   return erro instanceof Error
     ? erro.message
@@ -22,6 +32,8 @@ function mensagemDoErro(erro: unknown): string {
 }
 
 export function useHistorico() {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoHistorico>({
     status: "carregando",
   });
@@ -38,7 +50,7 @@ export function useHistorico() {
         if (ativo) {
           setEstado({
             status: "pronto",
-            analises: pagina.items,
+            analises: semRepeticaoNoDia(pagina.items),
             temMais: pagina.hasMore,
             proximaPagina: 1,
             carregandoMais: false,
@@ -57,7 +69,7 @@ export function useHistorico() {
       ativo = false;
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);
@@ -78,18 +90,25 @@ export function useHistorico() {
 
     buscarHistorico(pagina)
       .then((resultado) => {
-        setEstado((atual) =>
-          atual.status !== "pronto"
-            ? atual
-            : {
-                ...atual,
-                analises: [...atual.analises, ...resultado.items],
-                temMais: resultado.hasMore,
-                proximaPagina: pagina + 1,
-                carregandoMais: false,
-                recemCarregadas: resultado.items.length,
-              },
-        );
+        setEstado((atual) => {
+          if (atual.status !== "pronto") {
+            return atual;
+          }
+
+          const juntas = semRepeticaoNoDia([
+            ...atual.analises,
+            ...resultado.items,
+          ]);
+
+          return {
+            ...atual,
+            analises: juntas,
+            temMais: resultado.hasMore,
+            proximaPagina: pagina + 1,
+            carregandoMais: false,
+            recemCarregadas: juntas.length - atual.analises.length,
+          };
+        });
       })
       .catch((erro: unknown) => {
         setEstado((atual) =>

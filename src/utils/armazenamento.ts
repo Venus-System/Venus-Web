@@ -5,27 +5,40 @@ interface Guardado<T> {
   dados: T;
 }
 
-export function guardar<T>(chave: string, dados: T): void {
+export type LugarDoArmazenamento = "local" | "sessao";
+
+function armazenamentoDe(lugar: LugarDoArmazenamento): Storage {
+  return lugar === "sessao" ? sessionStorage : localStorage;
+}
+
+export function guardar<T>(
+  chave: string,
+  dados: T,
+  lugar: LugarDoArmazenamento = "local",
+): void {
   try {
     const conteudo: Guardado<T> = { _versao: VERSAO, dados };
 
-    localStorage.setItem(chave, JSON.stringify(conteudo));
+    armazenamentoDe(lugar).setItem(chave, JSON.stringify(conteudo));
   } catch {
     return;
   }
 }
 
-function lerTexto(chave: string): string | null {
+function lerTexto(chave: string, lugar: LugarDoArmazenamento): string | null {
   try {
-    return localStorage.getItem(chave);
+    return armazenamentoDe(lugar).getItem(chave);
   } catch {
     return null;
   }
 }
 
-export function limpar(chave: string): void {
+export function limpar(
+  chave: string,
+  lugar: LugarDoArmazenamento = "local",
+): void {
   try {
-    localStorage.removeItem(chave);
+    armazenamentoDe(lugar).removeItem(chave);
   } catch {
     return;
   }
@@ -34,8 +47,9 @@ export function limpar(chave: string): void {
 export function ler<T>(
   chave: string,
   ehValido: (valor: unknown) => valor is T,
+  lugar: LugarDoArmazenamento = "local",
 ): T | null {
-  const bruto = lerTexto(chave);
+  const bruto = lerTexto(chave, lugar);
 
   if (bruto === null) {
     return null;
@@ -55,10 +69,10 @@ export function ler<T>(
       return conteudo.dados;
     }
   } catch {
-    limpar(chave);
+    limpar(chave, lugar);
     return null;
   }
 
-  limpar(chave);
+  limpar(chave, lugar);
   return null;
 }

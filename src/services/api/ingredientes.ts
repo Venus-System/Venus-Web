@@ -1,8 +1,5 @@
-import type {
-  Ingrediente,
-  IngredienteAvaliado,
-  RiskLevel,
-} from "../../types/ingrediente";
+import type { Ingrediente, IngredienteAvaliado } from "../../types/ingrediente";
+import { nivelDoIngrediente } from "../../utils/nivelDoIngrediente";
 import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 
 function lerIngrediente(valor: unknown): Ingrediente | null {
@@ -16,9 +13,9 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
   return {
     inciName,
     commonName: texto(dados.commonName) ?? inciName,
-    functionSummary:
-      texto(dados.functionSummary) ??
-      "Ainda não temos a descrição deste ingrediente.",
+    description:
+      texto(dados.description) ??
+      "Não temos a descrição deste ingrediente.",
     safetySummary: texto(dados.safetySummary) ?? "",
     biodegradability: numero(dados.biodegradabilityLevel) ?? 0,
     irritationRiskLevel: numero(dados.irritationRiskLevel) ?? 0,
@@ -26,24 +23,6 @@ function lerIngrediente(valor: unknown): Ingrediente | null {
     environmentalRiskLevel: numero(dados.environmentalRiskLevel) ?? 0,
     scientificConfidence: numero(dados.scientificConfidence) ?? 0,
   };
-}
-
-function nivelDoIngrediente(ingrediente: Ingrediente): RiskLevel {
-  if (ingrediente.scientificConfidence === 0) {
-    return "no-data";
-  }
-
-  const maiorRisco = Math.max(
-    ingrediente.irritationRiskLevel,
-    ingrediente.comedogenicityScore,
-    ingrediente.environmentalRiskLevel,
-  );
-
-  if (maiorRisco >= 3) {
-    return "avoid";
-  }
-
-  return maiorRisco === 2 ? "warning" : "safe";
 }
 
 function lerItemDoProduto(valor: unknown): IngredienteAvaliado | null {

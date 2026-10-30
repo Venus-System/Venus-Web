@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { X } from "lucide-react";
+import { useTravaDeRolagem } from "../../hooks/useTravaDeRolagem";
 import styles from "./styles.module.css";
 
 interface ModalProps {
@@ -37,19 +38,7 @@ function Modal({
     }
   }, [open]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const anterior = document.body.style.overflow;
-
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = anterior;
-    };
-  }, [open]);
+  useTravaDeRolagem(open);
 
   function handleClick(event: MouseEvent<HTMLDialogElement>) {
     if (event.target === dialogRef.current) {

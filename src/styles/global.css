@@ -21,6 +21,16 @@ ol {
 
 html {
   scrollbar-gutter: stable;
+  scroll-padding-top: 4.5rem;
+  scroll-padding-bottom: calc(var(--botao-flutuante) + var(--espaco-4));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: var(--espaco-4);
+  }
 }
 
 body {
@@ -103,6 +113,18 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+main:focus-visible {
+  outline: none;
+}
+
+:root[data-contraste="alto"] {
+  color-scheme: dark;
+}
+
+:root[data-contraste="alto"] a {
+  text-decoration: underline;
 }
 
 :focus-visible {

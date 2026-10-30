@@ -157,6 +157,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  align-self: start;
   gap: var(--espaco-3);
   padding: var(--espaco-4);
   background-color: var(--roxo);
@@ -214,5 +215,15 @@
 @media (min-width: 64rem) {
   .linha {
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  .barra {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .barraPreenchida {
+    background-color: CanvasText;
   }
 }

@@ -48,7 +48,59 @@
   font-weight: var(--peso-forte);
 }
 
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: flex-end;
+  max-width: 66rem;
+}
+
+.avisoCategoria {
+  display: inline-flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--warning-fundo);
+  border-radius: var(--raio-medio);
+  color: var(--warning);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.veredito {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  max-width: 66rem;
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
+  font-weight: var(--peso-forte);
+}
+
+.veredito svg {
+  flex-shrink: 0;
+}
+
+.vereditoMelhor {
+  background-color: var(--safe-fundo);
+  color: var(--safe);
+}
+
+.vereditoNenhum {
+  background-color: var(--avoid-fundo);
+  color: var(--avoid);
+}
+
+.vereditoEmpate {
+  background-color: var(--card);
+  color: var(--texto);
+}
+
 .moldura {
+  position: relative;
   max-width: 66rem;
   overflow-x: auto;
   background-color: var(--card);
@@ -59,6 +111,7 @@
 .tabela {
   width: 100%;
   min-width: 44rem;
+  table-layout: fixed;
   border-collapse: collapse;
   color: var(--texto);
 }
@@ -76,13 +129,17 @@
 }
 
 .tabela th[scope="row"] {
-  width: 11rem;
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  width: 7.5rem;
+  padding-inline: var(--espaco-2);
   background-color: var(--superficie-suave);
+  box-shadow: inset calc(var(--borda-largura) * -1) 0 0 var(--borda);
   color: var(--texto-suave);
   font-family: var(--fonte-corpo);
-  font-size: var(--tamanho-base);
+  font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
-  letter-spacing: 0.06em;
 }
 
 .tabela td + td,
@@ -131,6 +188,15 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.nomeLink {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.nomeLink:hover {
+  color: var(--violeta);
 }
 
 .nome {
@@ -200,19 +266,8 @@
 .preenchida {
   display: block;
   height: 100%;
+  background-color: var(--violeta);
   border-radius: var(--raio-pilula);
-}
-
-.saude {
-  background-color: var(--saude);
-}
-
-.ambiental {
-  background-color: var(--ambiental);
-}
-
-.etica {
-  background-color: var(--etica);
 }
 
 .melhor,
@@ -234,6 +289,13 @@
 .selo {
   background-color: var(--safe-fundo);
   color: var(--safe);
+}
+
+.alerta,
+.alertaEvitar {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .alerta {
@@ -263,6 +325,15 @@
   gap: var(--espaco-2);
 }
 
+.convite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-2) var(--espaco-3);
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .situacao {
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
@@ -276,4 +347,23 @@
   display: block;
   color: var(--violeta);
   font-weight: var(--peso-forte);
+}
+
+@media (min-width: 48rem) {
+  .tabela th[scope="row"] {
+    width: 11rem;
+    padding-inline: var(--espaco-4);
+    font-size: var(--tamanho-base);
+    letter-spacing: 0.06em;
+  }
+}
+
+@media (forced-colors: active) {
+  .trilha {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .preenchida {
+    background-color: CanvasText;
+  }
 }

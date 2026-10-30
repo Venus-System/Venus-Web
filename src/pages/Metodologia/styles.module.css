@@ -74,26 +74,6 @@
   font-size: var(--tamanho-pequeno);
 }
 
-.ruleHealth,
-.ruleEnvironment,
-.ruleEthics {
-  width: var(--espaco-4);
-  height: var(--espaco-1);
-  border-radius: var(--raio-pilula);
-}
-
-.ruleHealth {
-  background-color: var(--saude);
-}
-
-.ruleEnvironment {
-  background-color: var(--ambiental);
-}
-
-.ruleEthics {
-  background-color: var(--etica);
-}
-
 .steps {
   display: grid;
   gap: var(--espaco-4);
@@ -113,7 +93,7 @@
 }
 
 .stepNumber {
-  color: var(--lavanda);
+  color: var(--violeta);
   font-family: var(--fonte-titulo);
   font-size: var(--tamanho-grande);
   font-weight: var(--peso-forte);
@@ -255,7 +235,7 @@
   gap: var(--espaco-2);
   align-items: center;
   padding: var(--espaco-5) var(--espaco-4);
-  background-color: var(--card);
+  background-color: var(--lavanda-clara);
   border: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-grande);
   text-align: center;

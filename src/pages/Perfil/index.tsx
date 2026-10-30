@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, RotateCcw } from "lucide-react";
 import AllergyPicker from "../../components/AllergyPicker";
 import BuscaComChips from "../../components/BuscaComChips";
@@ -17,6 +17,7 @@ import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { usePerfil } from "../../hooks/usePerfil";
 import { guardarAvatar, lerAvatar } from "../../utils/avatarPerfil";
 import type { Avatar } from "../../utils/avatarPerfil";
+import { camposSemResposta } from "../../utils/progressoPerfil";
 import type { StatusConta } from "../../types/usuario";
 import {
   OPCOES_CABELO,
@@ -30,7 +31,11 @@ import {
   OPCOES_SENSIBILIDADE,
   OPCOES_SITUACAO,
 } from "../Perguntas/opcoes";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DO_NOME } from "../../utils/validacao";
 import styles from "./styles.module.css";
+
+const ID_DA_AUTORIZACAO = "consentimento-saude";
 
 const SECOES = [
   { id: "titulo-conta", rotulo: "Conta" },
@@ -47,22 +52,19 @@ const ROTULO_STATUS: Record<StatusConta, string> = {
   blocked: "Perfil bloqueado",
 };
 
-const INDISPONIVEIS = [
-  { id: "usar-historico", label: "Usar meu histórico para recomendações" },
-  {
-    id: "mostrar-avaliacoes",
-    label: "Mostrar minhas avaliações na comunidade",
-  },
-  { id: "resumo-semanal", label: "Receber resumo semanal por e-mail" },
-];
-
 interface EstadoDaConta {
   nome: string;
   situacao: "ocioso" | "salvando" | "salvo" | "erro";
   mensagem: string;
 }
 
+type EstadoDaSaida =
+  | { situacao: "ocioso" }
+  | { situacao: "saindo" }
+  | { situacao: "erro"; mensagem: string };
+
 function Perfil() {
+  useTituloDaPagina("Meu perfil");
   const navegar = useNavigate();
   const { usuario, sair, atualizarNome } = useAutenticacao();
   const [conta, setConta] = useState<EstadoDaConta>({
@@ -70,6 +72,7 @@ function Perfil() {
     situacao: "ocioso",
     mensagem: "",
   });
+  const [saida, setSaida] = useState<EstadoDaSaida>({ situacao: "ocioso" });
   const [revogando, setRevogando] = useState(false);
   const [trocandoFoto, setTrocandoFoto] = useState(false);
   const [avatar, setAvatar] = useState<Avatar>(() => lerAvatar());
@@ -85,6 +88,7 @@ function Perfil() {
     totalDeRespostas,
     foto,
     enviarFoto,
+    removerFoto,
     resumoRef,
     trocarCondicoes,
     revogarConsentimento,
@@ -97,6 +101,22 @@ function Perfil() {
   useEffect(() => {
     setConta({ nome, situacao: "ocioso", mensagem: "" });
   }, [nome]);
+
+  const { hash } = useLocation();
+  const perfilCarregado = carregamento.status === "pronto";
+
+  useEffect(() => {
+    if (!perfilCarregado || hash === "") {
+      return;
+    }
+
+    const alvo = document.getElementById(hash.slice(1));
+
+    if (alvo !== null) {
+      alvo.scrollIntoView();
+      alvo.focus({ preventScroll: true });
+    }
+  }, [perfilCarregado, hash]);
 
   async function salvarNome() {
     if (conta.nome.trim() === nome) {
@@ -121,15 +141,30 @@ function Perfil() {
     }
   }
 
-  function handleSair() {
-    void sair().then(() => navegar("/login"));
+  async function handleSair() {
+    setSaida({ situacao: "saindo" });
+
+    try {
+      await sair();
+      navegar("/login");
+    } catch {
+      setSaida({
+        situacao: "erro",
+        mensagem: "Não foi possível sair agora. Tente de novo.",
+      });
+    }
   }
   const progresso = Math.round((respostasPreenchidas / totalDeRespostas) * 100);
+  const respostasFaltando = totalDeRespostas - respostasPreenchidas;
+  const faltando =
+    respostas === null
+      ? []
+      : camposSemResposta(respostas, ID_DA_AUTORIZACAO);
 
   return (
     <MainLayout>
       <div className={styles.page}>
-        <header className={styles.header}>
+        <header>
           <h1 className={styles.title}>
             Meu <span className={styles.titleAccent}>perfil.</span>
           </h1>
@@ -144,7 +179,11 @@ function Perfil() {
           <aside className={styles.aside}>
             <button
               type="button"
-              className={`${styles.avatar} ${styles[avatar]}`}
+              className={
+                foto.url === null
+                  ? `${styles.avatar} ${styles[avatar]}`
+                  : styles.avatar
+              }
               onClick={() => setTrocandoFoto(true)}
             >
               {foto.url === null ? (
@@ -185,6 +224,36 @@ function Perfil() {
                     style={{ width: `${progresso}%` }}
                   />
                 </div>
+
+                {faltando.length > 0 ? (
+                  <nav
+                    className={styles.faltando}
+                    aria-labelledby="titulo-faltando"
+                  >
+                    <p
+                      id="titulo-faltando"
+                      className={styles.faltandoTitulo}
+                      tabIndex={-1}
+                    >
+                      {respostasFaltando === 1
+                        ? "Falta 1 resposta"
+                        : `Faltam ${respostasFaltando} respostas`}
+                    </p>
+
+                    <ul className={styles.faltandoLista}>
+                      {faltando.map((campo) => (
+                        <li key={campo.id}>
+                          <a
+                            className={styles.faltandoLink}
+                            href={`#${campo.id}`}
+                          >
+                            {campo.rotulo}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                ) : null}
               </div>
             ) : null}
 
@@ -206,6 +275,11 @@ function Perfil() {
               <RotateCcw className={styles.refazerIcone} aria-hidden="true" />
               Refazer questionário
             </Button>
+
+            <p className={styles.refazerNota}>
+              As respostas que você já deu voltam preenchidas. Nada muda até
+              você concluir o questionário.
+            </p>
           </aside>
 
           <div className={styles.conteudo}>
@@ -264,6 +338,8 @@ function Perfil() {
                     <Input
                       id="perfil-nome"
                       label="Nome"
+                      autoComplete="name"
+                      maxLength={MAXIMO_DO_NOME}
                       value={conta.nome}
                       onChange={(evento) =>
                         setConta({
@@ -281,8 +357,9 @@ function Perfil() {
                       id="perfil-email"
                       label="E-mail"
                       type="email"
+                      autoComplete="email"
                       value={email}
-                      disabled
+                      readOnly
                       hint="Para trocar o e-mail, escreva para venussystem2026@gmail.com."
                     />
 
@@ -305,6 +382,11 @@ function Perfil() {
                       onChange={(gender) => responder("gender", gender)}
                     />
                   </div>
+
+                  <p className={styles.cardTexto} aria-live="polite">
+                    {conta.situacao === "salvando" ? "Salvando o nome..." : ""}
+                    {conta.situacao === "salvo" ? "Nome salvo." : ""}
+                  </p>
 
                 </section>
 
@@ -474,7 +556,7 @@ function Perfil() {
                   <p className={styles.cardTexto}>Seus dados, suas regras.</p>
 
                   <Interruptor
-                    id="consentimento-saude"
+                    id={ID_DA_AUTORIZACAO}
                     label="Usar minhas respostas de saúde na análise"
                     checked={respostas.healthDataConsent}
                     onChange={(autorizado) => {
@@ -487,18 +569,6 @@ function Perfil() {
                     }}
                     hint="Desligar apaga as suas respostas sobre pele e saúde."
                   />
-
-                  {INDISPONIVEIS.map((opcao) => (
-                    <Interruptor
-                      key={opcao.id}
-                      id={opcao.id}
-                      label={opcao.label}
-                      checked={false}
-                      onChange={() => undefined}
-                      indisponivel
-                      hint="Ainda não disponível."
-                    />
-                  ))}
                 </section>
 
                 <p className="texto-oculto" aria-live="polite">
@@ -522,7 +592,7 @@ function Perfil() {
                 <Button
                   type="submit"
                   className={styles.submit}
-                  disabled={envio.situacao === "enviando"}
+                  busy={envio.situacao === "enviando"}
                 >
                   {envio.situacao === "enviando"
                     ? "Salvando…"
@@ -541,28 +611,32 @@ function Perfil() {
                 salvos e você volta quando quiser.
               </p>
 
-              <button type="button" className={styles.sair} onClick={handleSair}>
-                <LogOut className={styles.sairIcone} aria-hidden="true" />
-                Sair da conta
-              </button>
-
-              <p className={styles.cardTexto}>
-                Apaga o seu perfil, as alergias, as preferências e o histórico.
-                A exclusão é imediata e não tem volta.
-              </p>
-
               <button
                 type="button"
-                className={styles.apagar}
-                aria-disabled="true"
-                aria-describedby="aviso-apagar"
+                className={styles.sair}
+                onClick={
+                  saida.situacao === "saindo" ? undefined : () => void handleSair()
+                }
+                aria-disabled={saida.situacao === "saindo"}
               >
-                Apagar minha conta
+                <LogOut className={styles.sairIcone} aria-hidden="true" />
+                {saida.situacao === "saindo" ? "Saindo…" : "Sair da conta"}
               </button>
 
-              <p id="aviso-apagar" className={styles.cardTexto}>
-                Ainda não dá para apagar a conta por aqui. Escreva para
-                venussystem2026@gmail.com e nós apagamos.
+              <p className="texto-oculto" aria-live="polite">
+                {saida.situacao === "saindo" ? "Saindo da conta." : ""}
+              </p>
+
+              {saida.situacao === "erro" ? (
+                <p className={styles.estadoErro} role="alert">
+                  {saida.mensagem}
+                </p>
+              ) : null}
+
+              <p className={styles.cardTexto}>
+                Para apagar a conta, escreva para venussystem2026@gmail.com.
+                A exclusão apaga o seu perfil, as alergias, as preferências e
+                o histórico, e não tem volta.
               </p>
             </section>
           </div>
@@ -614,9 +688,22 @@ function Perfil() {
             return;
           }
 
-          setAvatar(escolha.avatar);
-          guardarAvatar(escolha.avatar);
-          setTrocandoFoto(false);
+          const aplicarAvatar = () => {
+            setAvatar(escolha.avatar);
+            guardarAvatar(escolha.avatar);
+            setTrocandoFoto(false);
+          };
+
+          if (foto.url === null) {
+            aplicarAvatar();
+            return;
+          }
+
+          void removerFoto().then((removeu) => {
+            if (removeu) {
+              aplicarAvatar();
+            }
+          });
         }}
       />
     </MainLayout>

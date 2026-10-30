@@ -4,23 +4,21 @@ import {
   BookOpen,
   Heart,
   History,
+  ImageUp,
   LayoutGrid,
-  ScanLine,
   Search,
+  ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { FormEvent } from "react";
-import { Link, NavLink } from "react-router-dom";
+import type { FormEvent, ReactNode } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
+import ContrastToggle from "../ContrastToggle";
 import Input from "../Input";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
-
-interface SidebarProps {
-  onSearch?: (term: string) => void;
-  onScan?: () => void;
-}
 
 interface NavLinkItem {
   to: string;
@@ -42,11 +40,12 @@ const GROUPS: NavGroup[] = [
     links: [
       { to: "/pesquisa", label: "Buscar produto", Icon: Search },
       { to: "/comparar", label: "Comparar", Icon: ArrowLeftRight },
+      { to: "/reacao", label: "Tive uma reação", Icon: ShieldAlert },
     ],
   },
   {
     id: "my-space",
-    title: "Meu Espaço",
+    title: "Meu espaço",
     links: [
       { to: "/dashboard", label: "Dashboard", Icon: LayoutGrid },
       { to: "/historico", label: "Histórico", Icon: History },
@@ -55,35 +54,57 @@ const GROUPS: NavGroup[] = [
   },
   {
     id: "about",
-    title: "Sobre Venus",
-    links: [{ to: "/metodologia", label: "Como funciona", Icon: BookOpen }],
+    title: "Sobre a Venus",
+    links: [{ to: "/metodologia", label: "Metodologia", Icon: BookOpen }],
   },
 ];
 
-function Sidebar({ onSearch, onScan }: SidebarProps) {
+interface SidebarProps {
+  headerAction?: ReactNode;
+}
+
+function Sidebar({ headerAction }: SidebarProps) {
   const { usuario, fotoUrl } = useAutenticacao();
+  const navegar = useNavigate();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!onSearch) {
-      return;
-    }
+    const valor = new FormData(event.currentTarget).get("term");
+    const termo = typeof valor === "string" ? valor.trim() : "";
 
-    const term = new FormData(event.currentTarget).get("term");
-    onSearch(typeof term === "string" ? term : "");
+    navegar(
+      termo === "" ? "/pesquisa" : `/pesquisa?termo=${encodeURIComponent(termo)}`,
+    );
   }
 
   return (
-    <nav className={styles.sidebar} aria-label="Navegação principal">
-      <Link to="/" className={styles.brand}>
+    <nav
+      id="navegacao-principal"
+      tabIndex={-1}
+      className={
+        headerAction === undefined
+          ? styles.sidebar
+          : `${styles.sidebar} ${styles.comAcao}`
+      }
+      aria-label="Navegação principal"
+    >
+      <div className={styles.brand}>
+        {headerAction}
         <img src={logo} alt="" className={styles.logo} />
         <span className={styles.brandName}>Venus</span>
-      </Link>
+        <ContrastToggle />
+      </div>
 
-      <form role="search" onSubmit={handleSubmit} className={styles.search}>
+      <form
+        role="search"
+        aria-label="Busca rápida"
+        onSubmit={handleSubmit}
+        className={styles.search}
+      >
         <Input
           id="sidebar-search"
+          maxLength={MAXIMO_DA_BUSCA}
           name="term"
           type="search"
           label="Buscar produto"
@@ -93,9 +114,9 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
         />
       </form>
 
-      <Button onClick={onScan} className={styles.scan}>
-        <ScanLine className={styles.buttonIcon} aria-hidden="true" />
-        Escanear rótulo
+      <Button to="/escanear" className={styles.scan}>
+        <ImageUp className={styles.buttonIcon} aria-hidden="true" />
+        Buscar por foto
       </Button>
 
       {GROUPS.map((group) => (
@@ -132,7 +153,7 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
         </div>
       ))}
 
-      {usuario  ? (
+      {usuario ? (
         <Link to="/perfil" className={styles.user}>
           <span className={styles.avatar} aria-hidden="true">
             {fotoUrl === null ? (
@@ -143,7 +164,7 @@ function Sidebar({ onSearch, onScan }: SidebarProps) {
           </span>
 
           <span className={styles.userInfo}>
-            <span className={styles.userName}>{usuario .name}</span>
+            <span className={styles.userName}>{usuario.name}</span>
             <span className={styles.userAction}>
               Ver meu perfil
               <ArrowRight className={styles.userIcon} aria-hidden="true" />

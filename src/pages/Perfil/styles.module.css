@@ -41,7 +41,9 @@
   width: var(--tamanho-avatar);
   height: var(--tamanho-avatar);
   flex-shrink: 0;
+  padding: 0;
   overflow: hidden;
+  background: none;
   border: var(--borda-largura) solid transparent;
   border-radius: var(--raio-pilula);
   color: var(--texto-invertido);
@@ -129,6 +131,41 @@
   background-image: var(--gradiente-marca);
 }
 
+.faltando {
+  margin-top: var(--espaco-3);
+}
+
+.faltandoTitulo {
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.faltandoLista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+  margin: var(--espaco-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faltandoLink {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espaco-1) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border: var(--borda-largura) solid var(--lavanda);
+  border-radius: var(--raio-pilula);
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: none;
+}
+
+.faltandoLink:hover {
+  border-color: var(--violeta);
+}
+
 .conteudo {
   display: flex;
   flex-direction: column;
@@ -177,6 +214,25 @@
 .grade {
   display: grid;
   gap: var(--espaco-3);
+  align-items: start;
+}
+
+@media (min-width: 48rem) {
+  .grade {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grade label,
+.card legend {
+  margin-bottom: var(--espaco-1);
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  text-transform: uppercase;
 }
 
 .sair {
@@ -195,9 +251,16 @@
   cursor: pointer;
 }
 
-.sair:hover {
+.sair:hover:not([aria-disabled="true"]) {
   background-color: var(--avoid);
   color: var(--texto-invertido);
+}
+
+.sair[aria-disabled="true"] {
+  background-color: var(--prata);
+  border-color: var(--borda-forte);
+  color: var(--texto-suave);
+  cursor: not-allowed;
 }
 
 .sairIcone {
@@ -212,6 +275,11 @@
 
 .refazer {
   width: 100%;
+}
+
+.refazerNota {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
 }
 
 .avatarFoto {
@@ -302,19 +370,6 @@
   border-radius: var(--raio-grande);
 }
 
-.apagar {
-  min-height: var(--alvo-toque);
-  padding: var(--espaco-2) var(--espaco-4);
-  background-color: var(--card);
-  border: var(--borda-largura) solid var(--borda-forte);
-  border-radius: var(--raio-pilula);
-  color: var(--no-data);
-  font-family: var(--fonte-corpo);
-  font-size: var(--tamanho-base);
-  font-weight: var(--peso-forte);
-  cursor: not-allowed;
-}
-
 .modalAcoes {
   display: flex;
   flex-wrap: wrap;
@@ -350,5 +405,15 @@
 @media (min-width: 60rem) {
   .columns {
     grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  .barra {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .barraPreenchida {
+    background-color: CanvasText;
   }
 }

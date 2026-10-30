@@ -4,9 +4,10 @@ import styles from "./styles.module.css";
 
 interface IngredientCardProps {
   item: IngredienteAvaliado;
+  note?: string;
 }
 
-function IngredientCard({ item }: IngredientCardProps) {
+function IngredientCard({ item, note }: IngredientCardProps) {
   return (
     <div className={styles.card}>
       <h3 className={styles.name}>
@@ -17,10 +18,12 @@ function IngredientCard({ item }: IngredientCardProps) {
         <RiskBadge level={item.level} />
 
         <p className={styles.text}>
-          {item.ingredient?.functionSummary ??
-            "Ainda não temos informação verificada sobre este ingrediente."}
+          {item.ingredient?.description ??
+            "Não temos informação verificada sobre este ingrediente."}
         </p>
       </div>
+
+      {note ? <p className={styles.note}>{note}</p> : null}
     </div>
   );
 }

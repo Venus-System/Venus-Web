@@ -36,6 +36,11 @@
   color: var(--texto-suave);
 }
 
+.limite {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .erro {
   display: flex;
   flex-direction: column;
@@ -45,11 +50,31 @@
   font-weight: var(--peso-forte);
 }
 
-.grade {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: var(--espaco-3);
+.aviso {
+  max-width: 50rem;
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
+.aviso:empty {
+  display: none;
+}
+
+.erroAoAlternar {
+  color: var(--avoid);
+  font-weight: var(--peso-forte);
+}
+
+.lista {
+  max-width: 50rem;
   margin: 0;
-  padding: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--borda);
+  border-radius: var(--raio-grande);
   list-style: none;
+}
+
+.lista > li:last-child > * {
+  border-bottom: none;
 }

@@ -2,6 +2,9 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import logo from "../../assets/Logo.svg";
 import Button from "../../components/Button";
+import ChatComposer from "../../components/ChatComposer";
+import ChatMessage from "../../components/ChatMessage";
+import ChatSuggestions from "../../components/ChatSuggestions";
 import Chip from "../../components/Chip";
 import FavoriteButton from "../../components/FavoriteButton";
 import Input from "../../components/Input";
@@ -16,20 +19,56 @@ import ScoreBars from "../../components/ScoreBars";
 import SegmentedNav from "../../components/SegmentedNav";
 import StarRating from "../../components/StarRating";
 import SubmissionRow from "../../components/SubmissionRow";
+import Veninha from "../../components/Veninha";
 import { avaliacoesDoMock } from "../../services/mocks/avaliacoes";
 import { enviosDoMock } from "../../services/mocks/envios";
 import { produtosMock } from "../../services/mocks/produtos";
+import type { HumorDaVeninha, MensagemDoChat } from "../../types/chat";
 import type { RiskLevel } from "../../types/ingrediente";
+import { SUGESTOES_DO_PRODUTO, SUGESTOES_GERAIS } from "../../utils/chat";
 import { resumirAvaliacoes } from "../../utils/resumoDasAvaliacoes";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 const LEVELS: RiskLevel[] = ["safe", "warning", "avoid", "no-data"];
 
 const CHIPS_INICIAIS = ["Lanolina", "Óleo de amêndoas", "Vegano"];
 
+const HUMORES: HumorDaVeninha[] = ["feliz", "chorando", "confusa", "pensando"];
+
+const CONVERSA_DE_EXEMPLO: MensagemDoChat[] = [
+  {
+    id: "exemplo-1",
+    author: "veninha",
+    text: "Oi! Sou a Veninha. Posso explicar os ingredientes e a nota deste produto para você.",
+    sentAt: "2026-10-13T12:00:00Z",
+  },
+  {
+    id: "exemplo-2",
+    author: "pessoa",
+    text: "Serve para pele oleosa?",
+    sentAt: "2026-10-13T12:00:30Z",
+  },
+];
+
 function Componentes() {
+  useTituloDaPagina("Componentes");
   const [alergias, setAlergias] = useState<string[]>(CHIPS_INICIAIS);
   const [favorito, setFavorito] = useState(false);
+  const [conversa, setConversa] =
+    useState<MensagemDoChat[]>(CONVERSA_DE_EXEMPLO);
+
+  function enviarNaVitrine(texto: string) {
+    setConversa((atual) => [
+      ...atual,
+      {
+        id: `exemplo-${atual.length + 1}`,
+        author: "pessoa",
+        text: texto.trim(),
+        sentAt: new Date().toISOString(),
+      },
+    ]);
+  }
 
   const aprovado = produtosMock[0];
   const semDados = produtosMock[4];
@@ -52,7 +91,7 @@ function Componentes() {
         <h2>Button</h2>
 
         <div className={styles.row}>
-          <Button variant="primary">Escanear rótulo</Button>
+          <Button variant="primary">Buscar por foto</Button>
           <Button variant="secondary">Continuar com e-mail</Button>
           <Button variant="text">Fazer depois</Button>
           <Button variant="primary" disabled>
@@ -174,7 +213,14 @@ function Componentes() {
               }}
               nota={produto.scores.overallScore}
               nivel={produto.level}
-              realizadaEm="2026-08-26T14:32:00Z"
+              category={
+                produto.slug === semDados.slug ? produto.category : undefined
+              }
+              realizadaEm={
+                produto.slug === semDados.slug
+                  ? undefined
+                  : "2026-08-26T14:32:00Z"
+              }
               action={
                 produto.slug === comImagem.slug ? (
                   <FavoriteButton
@@ -275,6 +321,53 @@ function Componentes() {
                 onReport={() => undefined}
               />
             ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>ChatMessage, ChatSuggestions e ChatComposer</h2>
+
+        <div className={styles.chat}>
+          {conversa.map((mensagem) => (
+            <ChatMessage key={mensagem.id} message={mensagem} />
+          ))}
+
+          <ChatSuggestions
+            suggestions={SUGESTOES_DO_PRODUTO}
+            blocked={false}
+            onPick={enviarNaVitrine}
+          />
+
+          <ChatSuggestions
+            suggestions={SUGESTOES_GERAIS}
+            blocked
+            onPick={() => undefined}
+          />
+
+          <ChatComposer
+            id="demo-chat"
+            blocked={false}
+            onSend={enviarNaVitrine}
+          />
+
+          <ChatComposer id="demo-chat-bloqueado" blocked onSend={() => undefined} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Veninha</h2>
+
+        <div className={styles.row}>
+          {HUMORES.map((humor) => (
+            <figure key={humor} className={styles.veninha}>
+              <div className={styles.row}>
+                <Veninha mood={humor} speaking mouthOpen={false} />
+                <Veninha mood={humor} speaking mouthOpen />
+              </div>
+
+              <figcaption>{humor}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
     </MainLayout>

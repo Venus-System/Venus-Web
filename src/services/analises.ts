@@ -18,18 +18,16 @@ export async function buscarAnalisePublica(
         throw new ErroProdutoNaoEncontrado(slug);
       }
 
-      return { ...encontrada, personalized: null };
+      return encontrada;
     }
 
-    const { produto, ingredientes } = await buscarProdutoComVersaoDaApi(
-      slug,
-      sinal,
-    );
+    const { produto, versaoId, ingredientes } =
+      await buscarProdutoComVersaoDaApi(slug, sinal);
 
     return {
       product: produto,
+      versionId: versaoId,
       ingredients: ingredientes,
-      personalized: null,
     };
   } catch (erro) {
     if (erro instanceof ErroProdutoNaoEncontrado) {

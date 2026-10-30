@@ -1,5 +1,5 @@
 ---
-atualizado: 17 de setembro de 2026
+atualizado: 28 de outubro de 2026
 ---
 
 ## Quem somos
@@ -25,7 +25,8 @@ Tipo de pele, fototipo, sensibilidade, tendência a acne, tipo de cabelo, tipo
 de couro cabeludo, faixa etária e gênero.
 
 **Dados sobre condições de saúde**
-Gestação, hiperpigmentação, melasma, rosácea, eczema e alergias declaradas,
+Gestação, amamentação, hiperpigmentação, melasma, rosácea, eczema e alergias
+declaradas,
 com o grau de severidade de cada uma.
 
 > Estes são **dados pessoais sensíveis** na definição do artigo 5º, inciso II,
@@ -34,18 +35,40 @@ com o grau de severidade de cada uma.
 > momento em que você preenche o questionário de perfil.
 
 **Preferências**
-Se você prefere produtos livres de crueldade, veganos, sustentáveis, sem
-fragrância, sem parabenos, sem sulfatos ou sem silicones.
+Se você prefere produtos veganos, livres de crueldade, sem parabenos, sem
+sulfatos, sem silicones, sem álcool, livres de óleo, naturais, orgânicos,
+hipoalergênicos, não comedogênicos, testados por dermatologistas ou com
+embalagem reciclável.
 
 **Dados de uso**
-Produtos que você analisou, favoritou ou comparou, e a data de cada ação.
-Avaliações que você escrever, quando essa funcionalidade existir.
+Produtos que você analisou ou favoritou, e a data de cada ação. Avaliações que
+você publicar, com nota, título e comentário, e os votos de "útil" que você
+der. Produtos que você enviar pela foto da embalagem: as fotos e o texto lido
+delas.
+
+**Conversa com a Veninha**
+As mensagens que você manda para a Veninha e as respostas dela. Além do
+histórico de cada conversa, ela guarda um resumo do que você contou, como o seu
+tipo de pele, para levar isso em conta nas conversas seguintes. Começar uma
+conversa nova tira a anterior da tela, mas não apaga o resumo nem o histórico
+guardado no servidor.
+
+**Google Agenda, se você conectar**
+Um código de acesso fornecido pela Google, guardado cifrado no nosso banco de
+dados. Ele permite ver os horários em que você está livre ou ocupado e criar
+eventos na sua agenda.
 
 **Dados de uso do aplicativo**
 O aplicativo móvel usa o Google Analytics para Firebase, que coleta
 identificadores de instalação e eventos de uso, como telas abertas e tempo de
 sessão. Esses dados são processados pela Google e usados apenas para entender
 como o aplicativo é utilizado. **O site não usa o Google Analytics.**
+
+**Localização aproximada, só no aplicativo e só se você permitir**
+Cidade, estado e coordenadas arredondadas para cerca de 1 km. O aplicativo
+pergunta antes de pedir a permissão ao celular e funciona normalmente se você
+negar. Com a permissão, a localização é atualizada no máximo uma vez por
+semana. **O site não coleta sua localização.**
 
 ## Para que usamos
 
@@ -57,6 +80,15 @@ Os dados de conta servem para você entrar e recuperar o que salvou. Os de uso
 servem para mostrar seu histórico e seus favoritos. Os técnicos servem para
 sabermos quantas pessoas usam o sistema.
 
+A conversa com a Veninha serve para responder às suas perguntas sobre produtos,
+ingredientes e rotina de cuidados. O acesso à Google Agenda serve só para ela
+achar um horário livre e criar os eventos da sua rotina, e **ela só cria um
+evento depois que você confirma na conversa**.
+
+A localização aproximada serve para entendermos, em conjunto, de quais regiões
+vêm as pessoas que usam o Venus. **Ela não muda a nota de nenhum produto** nem
+a análise feita para você.
+
 **Não usamos seus dados para publicidade, não fazemos perfilamento comercial e
 não vendemos nada a ninguém.**
 
@@ -66,9 +98,14 @@ O tratamento acontece com o **seu consentimento**, nos termos do artigo 7º,
 inciso I, da LGPD. Para os dados de saúde, o consentimento é específico e
 destacado, como exige o artigo 11, inciso I.
 
-Você pode retirar o consentimento a qualquer momento, apagando seu perfil ou
-sua conta. Retirar o consentimento não apaga o histórico de análises já
-realizadas, mas elas deixam de ser cruzadas com o seu perfil.
+Você pode retirar o consentimento a qualquer momento: desligando a autorização
+de saúde no seu perfil, desconectando a Google Agenda na conversa com a
+Veninha, tirando a permissão de localização do aplicativo nas configurações do
+celular ou pedindo a exclusão da sua conta. Tirar a permissão de localização
+impede novos envios; para apagar a última localização enviada, escreva para o
+e-mail abaixo. Retirar o consentimento não apaga o
+histórico de análises já realizadas, mas elas deixam de ser cruzadas com o seu
+perfil.
 
 ## Com quem compartilhamos
 
@@ -81,8 +118,41 @@ eles processam dados em nosso nome:
 | Google Firebase Authentication | Criar conta, entrar e redefinir senha, tanto no site quanto no aplicativo | Servidores da Google, fora do Brasil |
 | Google Firebase | Persistência de dados e análise de uso do aplicativo | Servidores da Google, fora do Brasil |
 | Cloudinary | Armazenamento de imagens de produtos e de perfil | Fora do Brasil |
-| Render | Hospedagem da API e do banco de dados | Oregon, Estados Unidos |
+| Render | Hospedagem das APIs e do banco de dados | Oregon, Estados Unidos |
+| MongoDB | Histórico das conversas com a Veninha e envios de produtos por foto | Fora do Brasil |
+| Groq, Mistral AI e Google Gemini | Gerar as respostas da Veninha a partir das suas mensagens | Fora do Brasil |
+| Langfuse | Acompanhar o funcionamento da IA, quando ativado | Fora do Brasil |
+| Google Agenda | Ver horários livres e criar eventos, só se você conectar | Servidores da Google, fora do Brasil |
 | Vercel | Hospedagem da aplicação web | Fora do Brasil |
+| Google Fonts | Baixar as fontes do site a cada visita. A Google recebe o endereço de IP e o navegador, como em qualquer download | Servidores da Google, fora do Brasil |
+| GitHub | Mostrar as fotos dos integrantes na página Sobre, baixadas do GitHub ao abrir a página | Servidores do GitHub, fora do Brasil |
+| Reconhecimento de voz do navegador (Google no Chrome, Microsoft no Edge) | Transformar em texto o que você ditar no chat, só se você apertar o microfone | Servidores da Google ou da Microsoft, fora do Brasil |
+| VLibras, do Governo Federal | Traduzir para Libras o texto em que você clicar, só se você ativar o tradutor. O programa do tradutor é baixado dos servidores do governo a cada visita | Servidores do governo brasileiro |
+
+### Conversa com a Veninha
+
+As suas mensagens vão para a API de inteligência artificial do Venus, que usa
+modelos de linguagem de terceiros (Groq, Mistral AI e Google Gemini) para
+gerar as respostas. Esses serviços recebem o texto das mensagens para
+responder. **Não escreva na conversa dados que você não quer compartilhar**,
+como documentos, endereço ou informações de outras pessoas.
+
+### Ditado por voz no chat
+
+Se você apertar o microfone no campo da conversa, quem transforma a sua fala
+em texto é o próprio navegador. No Chrome, o áudio vai para os servidores da
+Google; no Edge, para os da Microsoft. O Venus não recebe nem guarda o áudio:
+recebe só o texto, depois que você revisa e envia, como se tivesse digitado. Na
+primeira vez, o navegador pede permissão para usar o microfone, e você pode
+tirar essa permissão a qualquer momento nas configurações do site.
+
+### Google Agenda
+
+A conexão é opcional e começa pelo botão Conectar, na conversa com a Veninha.
+A Google pede a sua autorização para duas coisas: ver os horários livres e
+ocupados e criar eventos. Desconectar, também na conversa, apaga o código de
+acesso do nosso banco e pede à Google que cancele a autorização. Você também
+pode cancelar pela página de segurança da sua conta Google.
 
 ### Autenticação e entrada com Google
 
@@ -113,13 +183,17 @@ citados oferecem cláusulas contratuais de proteção de dados.
 
 Enquanto sua conta existir.
 
-**Ao apagar sua conta, a exclusão é imediata.** Não há período de espera nem
-possibilidade de recuperação. Removemos:
+**Para apagar sua conta, escreva para venussystem2026@gmail.com** a partir do
+e-mail da conta. Atendemos o pedido em até quinze dias, e depois disso não há
+como recuperar nada. Removemos:
 
 - nome, e-mail e a conta de acesso, tanto no nosso banco quanto no Firebase
 - o perfil de pele e cabelo por completo
 - as informações de saúde e as alergias declaradas
 - as preferências, os favoritos e o histórico de análises
+- as conversas com a Veninha e o resumo que ela guarda
+- o acesso à Google Agenda, se você tiver conectado
+- a localização aproximada, se você tiver permitido no aplicativo
 
 **O que permanece, sem qualquer ligação com você:** avaliações que você tenha
 publicado continuam visíveis, mas deixam de ser associadas à sua pessoa de

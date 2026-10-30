@@ -5,29 +5,9 @@ import Button from "../../components/Button";
 import Chip from "../../components/Chip";
 import ScoreBadge from "../../components/ScoreBadge";
 import RiskBadge from "../../components/RiskBadge";
+import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
-
-const NOTAS = [
-  {
-    id: "saude",
-    titulo: "Saúde",
-    texto:
-      "A fórmula combina com a sua pele, com as suas condições e com o que você evita?",
-    tom: styles.ruleHealth,
-  },
-  {
-    id: "ambiental",
-    titulo: "Impacto ambiental",
-    texto: "Biodegradabilidade, microplásticos e o material da embalagem.",
-    tom: styles.ruleEnvironment,
-  },
-  {
-    id: "etica",
-    titulo: "Ética",
-    texto: "Origem dos ingredientes, testes em animais e transparência da marca.",
-    tom: styles.ruleEthics,
-  },
-];
 
 const ETAPAS = [
   {
@@ -72,16 +52,16 @@ const EFEITOS = [
     tom: styles.effectPenalty,
   },
   {
-    id: "alertar",
-    titulo: "Alertar",
-    texto: "Merece atenção e gera um aviso visível, além de descontar.",
+    id: "informar",
+    titulo: "Informar",
+    texto: "Não muda a nota, mas aparece na lista de motivos para você saber.",
     Icone: AlertCircle,
     tom: styles.effectWarning,
   },
   {
     id: "bloquear",
     titulo: "Bloquear",
-    texto: "Há contraindicação real. O produto é marcado para evitar.",
+    texto: "Há contraindicação real. A nota vai a zero e o produto fica contraindicado.",
     Icone: X,
     tom: styles.effectBlock,
   },
@@ -108,7 +88,7 @@ const LIMITES = [
     id: "concentracao",
     titulo: "A concentração exata não é pública.",
     texto:
-      "Os rótulos não informam quanto de cada ingrediente existe, então trabalhamos com estimativa pela ordem da lista.",
+      "Os rótulos não informam quanto de cada ingrediente existe, e a nota ainda não estima isso pela ordem da lista.",
   },
   {
     id: "dermatologista",
@@ -128,9 +108,22 @@ const LIMITES = [
     texto:
       "Embalagem, certificações e características sensoriais vêm de outras fontes, e nem todo produto tem todas elas.",
   },
+  {
+    id: "preco",
+    titulo: "A Venus não mostra preço.",
+    texto:
+      "A Venus não é loja. O preço muda de loja para loja e não entra na nota.",
+  },
+  {
+    id: "resultado",
+    titulo: "A nota não promete resultado.",
+    texto:
+      "Ela diz o que a fórmula tem e como isso combina com o seu perfil, não como a sua pele ou o seu cabelo vão ficar depois do uso.",
+  },
 ];
 
 function Metodologia() {
+  useTituloDaPagina("Metodologia");
   return (
     <MainLayout>
       <div className={styles.page}>
@@ -151,20 +144,20 @@ function Metodologia() {
           <p className={styles.eyebrow}>Ponto de partida</p>
 
           <h2 id="titulo-partida" className={styles.sectionTitle}>
-            Três notas, e não uma só
+            Quatro notas, e não uma só
           </h2>
 
           <p className={styles.text}>
-            Cada produto recebe três notas independentes, porque são perguntas
-            diferentes.
+            Cada produto recebe quatro notas independentes, porque são perguntas
+            diferentes. Juntas, elas formam a qualidade do produto, que é igual
+            para todo mundo. O seu perfil entra depois, no cálculo.
           </p>
 
           <ul className={styles.cards}>
-            {NOTAS.map((nota) => (
-              <li className={styles.card} key={nota.id}>
-                <span className={nota.tom} aria-hidden="true" />
-                <h3 className={styles.cardTitle}>{nota.titulo}</h3>
-                <p className={styles.cardText}>{nota.texto}</p>
+            {NOTAS_DE_QUALIDADE.map((nota) => (
+              <li className={styles.card} key={nota.campo}>
+                <h3 className={styles.cardTitle}>{nota.rotulo}</h3>
+                <p className={styles.cardText}>{nota.descricao}</p>
               </li>
             ))}
           </ul>
@@ -218,16 +211,19 @@ function Metodologia() {
             </h3>
 
             <p className={styles.highlightText}>
-              Quando existe contraindicação real, nenhuma qualidade do produto
-              compensa. A nota é travada num valor baixo e o produto aparece
-              como algo a evitar, mesmo que seja excelente em todo o resto.
+              Quando um ingrediente é contraindicado para você, ou você tem
+              alergia crítica a ele, nenhuma qualidade do produto compensa. A
+              nota vai a zero e o produto aparece como contraindicado, mesmo
+              que seja excelente em todo o resto. Com alergia alta, a nota fica
+              em no máximo 15 e o produto também aparece como contraindicado.
+              Alergias médias e leves baixam a nota, sem zerar.
             </p>
           </div>
 
           <div className={styles.example}>
             <div className={styles.exampleBadges}>
-              <ScoreBadge score={20} level="avoid" />
-              <RiskBadge level="avoid" />
+              <ScoreBadge score={0} level="avoid" />
+              <RiskBadge level="avoid" label="Contraindicado" />
             </div>
 
             <p className={styles.cardText}>
@@ -242,13 +238,15 @@ function Metodologia() {
           <p className={styles.eyebrow}>Detalhe importante</p>
 
           <h2 id="titulo-quantidade" className={styles.sectionTitle}>
-            A quantidade também conta
+            A ordem da lista também informa
           </h2>
 
           <p className={styles.text}>
-            A ordem da lista indica concentração: o que aparece no começo está
-            em maior quantidade. Um ingrediente problemático no fim da lista
-            pesa menos do que o mesmo ingrediente logo no início.
+            Pela regra dos rótulos, o que aparece no começo está em maior
+            quantidade. A nota da Venus ainda não usa essa ordem: hoje cada
+            ingrediente avaliado pesa o mesmo. Use a ordem para ler o rótulo: um
+            ingrediente que preocupa no começo merece mais atenção do que no
+            fim.
           </p>
 
           <div className={styles.order}>
@@ -261,9 +259,8 @@ function Metodologia() {
             </ol>
 
             <p className={styles.cardText}>
-              Quanto mais no início, maior o peso na nota. Os primeiros
-              ingredientes definem o produto, os últimos aparecem em quantidade
-              pequena.
+              Os primeiros ingredientes definem o produto. Os últimos aparecem
+              em quantidade pequena.
             </p>
           </div>
         </section>
@@ -303,8 +300,9 @@ function Metodologia() {
           </h2>
 
           <p className={styles.ctaText}>
-            Toda página de produto tem a opção de reportar. Regras clínicas são
-            revisadas por um profissional antes de valer.
+            Escreva para venussystem2026@gmail.com dizendo qual é o produto e o
+            que está errado. Regras clínicas são revisadas por um profissional
+            antes de valer.
           </p>
 
           <Button to="/fontes">Ver as nossas fontes</Button>

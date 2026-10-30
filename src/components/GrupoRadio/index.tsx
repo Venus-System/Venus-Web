@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import styles from "./styles.module.css";
 
 export type RadioVariant = "circulo" | "pilula" | "segmentado";
@@ -16,6 +17,7 @@ interface GrupoRadioProps<T extends string> {
   variant?: RadioVariant;
   vertical?: boolean;
   legendHidden?: boolean;
+  help?: ReactNode;
   error?: string;
 }
 
@@ -34,6 +36,7 @@ function GrupoRadio<T extends string>({
   variant = "circulo",
   vertical = false,
   legendHidden = false,
+  help,
   error,
 }: GrupoRadioProps<T>) {
   const errorId = `${id}-error`;
@@ -53,6 +56,8 @@ function GrupoRadio<T extends string>({
       <legend className={legendHidden ? "texto-oculto" : styles.legend}>
         {legend}
       </legend>
+
+      {help ? <div className={styles.help}>{help}</div> : null}
 
       <div className={classeDasOpcoes}>
         {options.map((option, posicao) => {

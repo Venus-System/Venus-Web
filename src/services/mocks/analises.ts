@@ -1,17 +1,26 @@
 import type { AnaliseExibicao } from "../../types/analise";
-import type { Ingrediente } from "../../types/ingrediente";
+import type {
+  Ingrediente,
+  IngredienteAvaliado,
+} from "../../types/ingrediente";
+import { nivelDoIngrediente } from "../../utils/nivelDoIngrediente";
 import {
+  cremeHidratantePerfumado,
   gelLimpezaPurificante,
+  gelLimpezaSuave,
   hidratanteCeramidas,
   locaoClareadoraNoturna,
+  mascaraCalmantePantenol,
+  mascaraCapilarNutritiva,
   oleoCapilarReparador,
   serumCalmanteAveia,
+  serumUniformizador,
 } from "./produtos";
 
 const agua: Ingrediente = {
   inciName: "Aqua",
   commonName: "Água",
-  functionSummary: "Solvente que forma a base da fórmula.",
+  description: "Solvente que forma a base da fórmula.",
   safetySummary: "Sem risco conhecido para a pele ou para o ambiente.",
   biodegradability: 5,
   irritationRiskLevel: 0,
@@ -23,7 +32,7 @@ const agua: Ingrediente = {
 const glicerina: Ingrediente = {
   inciName: "Glycerin",
   commonName: "Glicerina",
-  functionSummary: "Umectante que puxa água para a camada superficial da pele.",
+  description: "Umectante que puxa água para a camada superficial da pele.",
   safetySummary:
     "Bem tolerada por todos os tipos de pele, inclusive sensível.",
   biodegradability: 5,
@@ -36,7 +45,7 @@ const glicerina: Ingrediente = {
 const niacinamida: Ingrediente = {
   inciName: "Niacinamide",
   commonName: "Niacinamida",
-  functionSummary:
+  description:
     "Forma da vitamina B3 que ajuda a uniformizar o tom e a reforçar a barreira.",
   safetySummary:
     "Ampla literatura de segurança; irritação rara e ligada a peles muito reativas.",
@@ -50,7 +59,7 @@ const niacinamida: Ingrediente = {
 const aveia: Ingrediente = {
   inciName: "Avena Sativa Kernel Extract",
   commonName: "Extrato de aveia",
-  functionSummary: "Calmante de origem vegetal usado em peles reativas.",
+  description: "Calmante de origem vegetal usado em peles reativas.",
   safetySummary:
     "Boa tolerância dermatológica, com relatos raros de alergia.",
   biodegradability: 5,
@@ -63,7 +72,7 @@ const aveia: Ingrediente = {
 const pantenol: Ingrediente = {
   inciName: "Panthenol",
   commonName: "Pró-vitamina B5",
-  functionSummary: "Hidratante que auxilia na reparação da barreira cutânea.",
+  description: "Hidratante que auxilia na reparação da barreira cutânea.",
   safetySummary: "Considerado seguro nas concentrações usuais de cosméticos.",
   biodegradability: 4,
   irritationRiskLevel: 0,
@@ -75,11 +84,11 @@ const pantenol: Ingrediente = {
 const fenoxietanol: Ingrediente = {
   inciName: "Phenoxyethanol",
   commonName: "Fenoxietanol",
-  functionSummary: "Conservante que impede a proliferação de microrganismos.",
+  description: "Conservante que impede a proliferação de microrganismos.",
   safetySummary:
     "Seguro dentro do limite regulatório, mas pode irritar pele sensível.",
   biodegradability: 3,
-  irritationRiskLevel: 2,
+  irritationRiskLevel: 4,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 92,
@@ -88,7 +97,7 @@ const fenoxietanol: Ingrediente = {
 const alcoolCetearilico: Ingrediente = {
   inciName: "Cetearyl Alcohol",
   commonName: "Álcool cetoestearílico",
-  functionSummary: "Emoliente e espessante; não resseca como o álcool volátil.",
+  description: "Emoliente e espessante; não resseca como o álcool volátil.",
   safetySummary: "Boa tolerância; pode pesar em pele com tendência a acne.",
   biodegradability: 4,
   irritationRiskLevel: 1,
@@ -100,7 +109,7 @@ const alcoolCetearilico: Ingrediente = {
 const ceramida: Ingrediente = {
   inciName: "Ceramide NP",
   commonName: "Ceramida NP",
-  functionSummary: "Lipídio que repõe um componente natural da barreira da pele.",
+  description: "Lipídio que repõe um componente natural da barreira da pele.",
   safetySummary: "Sem risco relevante de irritação relatado.",
   biodegradability: 4,
   irritationRiskLevel: 0,
@@ -112,7 +121,7 @@ const ceramida: Ingrediente = {
 const butilenoGlicol: Ingrediente = {
   inciName: "Butylene Glycol",
   commonName: "Butilenoglicol",
-  functionSummary: "Veículo que dissolve ativos e melhora o toque da fórmula.",
+  description: "Veículo que dissolve ativos e melhora o toque da fórmula.",
   safetySummary: "Irritação incomum, concentrada em peles muito sensíveis.",
   biodegradability: 4,
   irritationRiskLevel: 1,
@@ -124,12 +133,12 @@ const butilenoGlicol: Ingrediente = {
 const laurilSulfato: Ingrediente = {
   inciName: "Sodium Lauryl Sulfate",
   commonName: "Lauril sulfato de sódio",
-  functionSummary:
+  description:
     "Tensoativo de limpeza com alto poder de remoção de oleosidade.",
   safetySummary:
     "Resseca e irrita com uso frequente, sobretudo em pele seca ou com eczema.",
   biodegradability: 4,
-  irritationRiskLevel: 3,
+  irritationRiskLevel: 6,
   comedogenicityScore: 1,
   environmentalRiskLevel: 3,
   scientificConfidence: 95,
@@ -138,10 +147,10 @@ const laurilSulfato: Ingrediente = {
 const cocamidopropilBetaina: Ingrediente = {
   inciName: "Cocamidopropyl Betaine",
   commonName: "Cocamidopropil betaína",
-  functionSummary: "Tensoativo suave usado para equilibrar fórmulas de limpeza.",
+  description: "Tensoativo suave usado para equilibrar fórmulas de limpeza.",
   safetySummary: "Alergênico de contato reconhecido, ainda que pouco comum.",
   biodegradability: 4,
-  irritationRiskLevel: 2,
+  irritationRiskLevel: 4,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 87,
@@ -150,11 +159,11 @@ const cocamidopropilBetaina: Ingrediente = {
 const fragrancia: Ingrediente = {
   inciName: "Parfum",
   commonName: "Fragrância",
-  functionSummary: "Mistura aromática que não tem função de cuidado com a pele.",
+  description: "Mistura aromática que não tem função de cuidado com a pele.",
   safetySummary:
     "Causa frequente de dermatite de contato; a composição não é aberta no rótulo.",
   biodegradability: 2,
-  irritationRiskLevel: 3,
+  irritationRiskLevel: 6,
   comedogenicityScore: 0,
   environmentalRiskLevel: 3,
   scientificConfidence: 78,
@@ -163,11 +172,11 @@ const fragrancia: Ingrediente = {
 const alcoolDenaturado: Ingrediente = {
   inciName: "Alcohol Denat.",
   commonName: "Álcool desnaturado",
-  functionSummary: "Solvente volátil que acelera a secagem da fórmula.",
+  description: "Solvente volátil que acelera a secagem da fórmula.",
   safetySummary:
     "Em posição alta na lista, compromete a barreira e agrava pele sensível.",
   biodegradability: 5,
-  irritationRiskLevel: 4,
+  irritationRiskLevel: 7,
   comedogenicityScore: 0,
   environmentalRiskLevel: 2,
   scientificConfidence: 91,
@@ -176,201 +185,84 @@ const alcoolDenaturado: Ingrediente = {
 const retinol: Ingrediente = {
   inciName: "Retinol",
   commonName: "Retinol",
-  functionSummary: "Derivado de vitamina A usado na renovação celular.",
+  description: "Derivado de vitamina A usado na renovação celular.",
   safetySummary:
     "Contraindicado na gestação e irritante no início do uso; exige protetor solar.",
   biodegradability: 3,
-  irritationRiskLevel: 4,
+  irritationRiskLevel: 7,
   comedogenicityScore: 1,
   environmentalRiskLevel: 2,
   scientificConfidence: 93,
 };
 
+function item(
+  id: number,
+  position: number,
+  ingrediente: Ingrediente,
+): IngredienteAvaliado {
+  return {
+    id,
+    inciName: ingrediente.inciName,
+    position,
+    level: nivelDoIngrediente(ingrediente),
+    ingredient: ingrediente,
+  };
+}
+
 export const analisesMock: Record<string, AnaliseExibicao> = {
   [serumCalmanteAveia.slug]: {
     product: serumCalmanteAveia,
+    versionId: 1,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 3,
-        inciName: niacinamida.inciName,
-        position: 3,
-        level: "safe",
-        ingredient: niacinamida,
-      },
-      {
-        id: 4,
-        inciName: aveia.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: aveia,
-      },
-      {
-        id: 5,
-        inciName: pantenol.inciName,
-        position: 5,
-        level: "safe",
-        ingredient: pantenol,
-      },
-      {
-        id: 6,
-        inciName: fenoxietanol.inciName,
-        position: 6,
-        level: "warning",
-        ingredient: fenoxietanol,
-      },
+      item(1, 1, agua),
+      item(2, 2, glicerina),
+      item(3, 3, niacinamida),
+      item(4, 4, aveia),
+      item(5, 5, pantenol),
+      item(6, 6, fenoxietanol),
     ],
-    personalized: null,
   },
 
   [hidratanteCeramidas.slug]: {
     product: hidratanteCeramidas,
+    versionId: 2,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 7,
-        inciName: alcoolCetearilico.inciName,
-        position: 3,
-        level: "safe",
-        ingredient: alcoolCetearilico,
-      },
-      {
-        id: 8,
-        inciName: ceramida.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: ceramida,
-      },
-      {
-        id: 9,
-        inciName: butilenoGlicol.inciName,
-        position: 5,
-        level: "safe",
-        ingredient: butilenoGlicol,
-      },
-      {
-        id: 6,
-        inciName: fenoxietanol.inciName,
-        position: 6,
-        level: "warning",
-        ingredient: fenoxietanol,
-      },
+      item(1, 1, agua),
+      item(2, 2, glicerina),
+      item(7, 3, alcoolCetearilico),
+      item(8, 4, ceramida),
+      item(9, 5, butilenoGlicol),
+      item(6, 6, fenoxietanol),
     ],
-    personalized: null,
   },
 
   [gelLimpezaPurificante.slug]: {
     product: gelLimpezaPurificante,
+    versionId: 3,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 10,
-        inciName: laurilSulfato.inciName,
-        position: 2,
-        level: "warning",
-        ingredient: laurilSulfato,
-      },
-      {
-        id: 11,
-        inciName: cocamidopropilBetaina.inciName,
-        position: 3,
-        level: "warning",
-        ingredient: cocamidopropilBetaina,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 5,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(1, 1, agua),
+      item(10, 2, laurilSulfato),
+      item(11, 3, cocamidopropilBetaina),
+      item(2, 4, glicerina),
+      item(12, 5, fragrancia),
     ],
-    personalized: null,
   },
 
   [locaoClareadoraNoturna.slug]: {
     product: locaoClareadoraNoturna,
+    versionId: 4,
     ingredients: [
-      {
-        id: 1,
-        inciName: agua.inciName,
-        position: 1,
-        level: "safe",
-        ingredient: agua,
-      },
-      {
-        id: 13,
-        inciName: alcoolDenaturado.inciName,
-        position: 2,
-        level: "avoid",
-        ingredient: alcoolDenaturado,
-      },
-      {
-        id: 14,
-        inciName: retinol.inciName,
-        position: 3,
-        level: "avoid",
-        ingredient: retinol,
-      },
-      {
-        id: 2,
-        inciName: glicerina.inciName,
-        position: 4,
-        level: "safe",
-        ingredient: glicerina,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 5,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(1, 1, agua),
+      item(13, 2, alcoolDenaturado),
+      item(14, 3, retinol),
+      item(2, 4, glicerina),
+      item(12, 5, fragrancia),
     ],
-    personalized: null,
   },
 
   [oleoCapilarReparador.slug]: {
     product: oleoCapilarReparador,
+    versionId: 5,
     ingredients: [
       {
         id: 15,
@@ -379,21 +271,72 @@ export const analisesMock: Record<string, AnaliseExibicao> = {
         level: "no-data",
         ingredient: null,
       },
-      {
-        id: 7,
-        inciName: alcoolCetearilico.inciName,
-        position: 2,
-        level: "safe",
-        ingredient: alcoolCetearilico,
-      },
-      {
-        id: 12,
-        inciName: fragrancia.inciName,
-        position: 3,
-        level: "warning",
-        ingredient: fragrancia,
-      },
+      item(7, 2, alcoolCetearilico),
+      item(12, 3, fragrancia),
     ],
-    personalized: null,
+  },
+
+  [serumUniformizador.slug]: {
+    product: serumUniformizador,
+    versionId: 6,
+    ingredients: [
+      item(1, 1, agua),
+      item(3, 2, niacinamida),
+      item(9, 3, butilenoGlicol),
+      item(2, 4, glicerina),
+      item(6, 5, fenoxietanol),
+      item(12, 6, fragrancia),
+    ],
+  },
+
+  [cremeHidratantePerfumado.slug]: {
+    product: cremeHidratantePerfumado,
+    versionId: 7,
+    ingredients: [
+      item(1, 1, agua),
+      item(7, 2, alcoolCetearilico),
+      item(2, 3, glicerina),
+      item(12, 4, fragrancia),
+      item(6, 5, fenoxietanol),
+    ],
+  },
+
+  [gelLimpezaSuave.slug]: {
+    product: gelLimpezaSuave,
+    versionId: 8,
+    ingredients: [
+      item(1, 1, agua),
+      item(11, 2, cocamidopropilBetaina),
+      item(2, 3, glicerina),
+      item(4, 4, aveia),
+      item(5, 5, pantenol),
+      item(6, 6, fenoxietanol),
+    ],
+  },
+
+  [mascaraCalmantePantenol.slug]: {
+    product: mascaraCalmantePantenol,
+    versionId: 9,
+    ingredients: [
+      item(1, 1, agua),
+      item(5, 2, pantenol),
+      item(2, 3, glicerina),
+      item(4, 4, aveia),
+      item(3, 5, niacinamida),
+      item(9, 6, butilenoGlicol),
+    ],
+  },
+
+  [mascaraCapilarNutritiva.slug]: {
+    product: mascaraCapilarNutritiva,
+    versionId: 10,
+    ingredients: [
+      item(1, 1, agua),
+      item(7, 2, alcoolCetearilico),
+      item(2, 3, glicerina),
+      item(5, 4, pantenol),
+      item(8, 5, ceramida),
+      item(6, 6, fenoxietanol),
+    ],
   },
 };
