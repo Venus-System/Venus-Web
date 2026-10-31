@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FocusEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
@@ -55,6 +55,8 @@ const ORDEM_DOS_CAMPOS: (keyof ErrosConta)[] = [
 
 const DESTINO_PADRAO = "/dashboard";
 
+const DESTINO_DEPOIS_DO_CADASTRO = "/perguntas";
+
 const SEGMENTOS = [1, 2, 3, 4];
 
 const TEXTO_FORCA: Record<FaixaSenha, string> = {
@@ -68,6 +70,7 @@ function CriarConta() {
   useTituloDaPagina("Criar conta");
   const { usuario, criarConta, entrarComGoogle } = useAutenticacao();
   const navegar = useNavigate();
+  const destinoRef = useRef(DESTINO_PADRAO);
 
   const [formulario, setFormulario] = useState<EstadoFormulario>({
     envio: { situacao: "parado" },
@@ -77,7 +80,7 @@ function CriarConta() {
 
   useEffect(() => {
     if (usuario !== null) {
-      navegar(DESTINO_PADRAO, { replace: true });
+      navegar(destinoRef.current, { replace: true });
     }
   }, [usuario, navegar]);
 
@@ -180,10 +183,13 @@ function CriarConta() {
       erros: SEM_ERROS,
     }));
 
+    destinoRef.current = DESTINO_DEPOIS_DO_CADASTRO;
+
     try {
       await criarConta(nome, email, senha);
-      navegar(DESTINO_PADRAO, { replace: true });
+      navegar(destinoRef.current, { replace: true });
     } catch {
+      destinoRef.current = DESTINO_PADRAO;
       setFormulario((atual) => ({
         ...atual,
         envio: {
