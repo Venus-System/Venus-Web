@@ -73,6 +73,19 @@ interface CamposDaRevisao {
   aviso: string;
 }
 
+interface EstadoSalvoDaRevisao {
+  nome?: string;
+  marcaId?: string | null;
+  categoriaId?: string | null;
+  escolhas?: Array<{
+    position: number;
+    opcao: string;
+    inciName: string;
+    ingredientId: string;
+  }>;
+  fotosVistas?: Partial<Record<LadoEmbalagem, boolean>>;
+}
+
 const NOME_DO_LADO: Record<LadoEmbalagem, string> = {
   front: "frente",
   back: "verso",
@@ -208,6 +221,28 @@ function avisoDoRodape(faltam: number): string {
   return `Falta decidir ${faltam} ingredientes antes de aprovar.`;
 }
 
+function chaveDaRevisao(id: string): string {
+  return `venus.admin.revisao.${id}`;
+}
+
+function lerEstadoSalvo(id: string): EstadoSalvoDaRevisao | null {
+  try {
+    const bruto = sessionStorage.getItem(chaveDaRevisao(id));
+
+    if (bruto === null) {
+      return null;
+    }
+
+    const valor: unknown = JSON.parse(bruto);
+
+    return typeof valor === "object" && valor !== null
+      ? (valor as EstadoSalvoDaRevisao)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function DetalheCandidato({
   candidato,
   rotuloDaOrigem,
@@ -224,24 +259,44 @@ function DetalheCandidato({
   onSincronizar,
 }: DetalheCandidatoProps) {
   const pendentes = candidato.ingredients.filter(precisaDecidir);
+  const estadoSalvo = lerEstadoSalvo(candidato.id);
   const temFoto = (lado: LadoEmbalagem) =>
     candidato.sources[lado].photoUrl !== null;
+
+  const escolhasSalvas = new Map(
+    (estadoSalvo?.escolhas ?? []).map((escolha) => [escolha.position, escolha]),
+  );
+  const escolhasIniciais = pendentes.map((ingrediente) => {
+    const salva = escolhasSalvas.get(ingrediente.position);
+
+    return salva === undefined
+      ? escolhaInicial(ingrediente)
+      : {
+          ...escolhaInicial(ingrediente),
+          opcao: salva.opcao,
+          inciName: salva.inciName,
+          ingredientId: salva.ingredientId,
+        };
+  });
 
   const [visao, setVisao] = useState<EstadoDaVisao>({
     visao: {
       lado: "front",
       formato: temFoto("front") ? "foto" : "texto",
     },
-    fotosVistas: { front: false, back: false },
+    fotosVistas: {
+      front: estadoSalvo?.fotosVistas?.front === true,
+      back: estadoSalvo?.fotosVistas?.back === true,
+    },
     selecionado: null,
     anuncio: "",
   });
   const [campos, setCampos] = useState<CamposDaRevisao>({
-    nome: candidato.name,
-    marcaId: null,
-    categoriaId: null,
+    nome: estadoSalvo?.nome ?? candidato.name,
+    marcaId: estadoSalvo?.marcaId ?? null,
+    categoriaId: estadoSalvo?.categoriaId ?? null,
     errosDoProduto: SEM_ERROS_DO_PRODUTO,
-    escolhas: pendentes.map(escolhaInicial),
+    escolhas: escolhasIniciais,
     aviso: "",
   });
   const tituloRef = useRef<HTMLHeadingElement>(null);
@@ -249,6 +304,30 @@ function DetalheCandidato({
   useEffect(() => {
     tituloRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        chaveDaRevisao(candidato.id),
+        JSON.stringify({
+          nome: campos.nome,
+          marcaId: campos.marcaId,
+          categoriaId: campos.categoriaId,
+          escolhas: campos.escolhas.map(
+            ({ position, opcao, inciName, ingredientId }) => ({
+              position,
+              opcao,
+              inciName,
+              ingredientId,
+            }),
+          ),
+          fotosVistas: visao.fotosVistas,
+        } satisfies EstadoSalvoDaRevisao),
+      );
+    } catch {
+      return;
+    }
+  }, [candidato.id, campos, visao.fotosVistas]);
 
   const ativo = candidato.ingredients.find(
     (ingrediente) => ingrediente.id === visao.selecionado,
@@ -327,7 +406,15 @@ function DetalheCandidato({
   }, []);
 
   function aprovar() {
-    if (!podeDecidir || enviando) {
+    if (enviando) {
+      return;
+    }
+
+    if (!podeDecidir) {
+      setCampos((atual) => ({
+        ...atual,
+        aviso: "Sua conta pode revisar a fila, mas não pode aprovar este scan.",
+      }));
       return;
     }
 

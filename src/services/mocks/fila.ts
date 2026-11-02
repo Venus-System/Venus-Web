@@ -423,7 +423,7 @@ export function aprovarNoMock(
       item.id === id ? { ...item, status: "semPublicar" } : item,
     );
 
-    return { status: "sincronizacaoFalhou" };
+    return { status: "sincronizacaoFalhou", erro: null };
   }
 
   tirarDaFilaNoMock(id);

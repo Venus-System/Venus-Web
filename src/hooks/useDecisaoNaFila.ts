@@ -188,10 +188,25 @@ export function useDecisaoNaFila({
       const resultado = await aprovarPendente(candidato.id, pedido.aprovacao);
 
       if (resultado.status === "sincronizacaoFalhou") {
+        const tentativaAutomatica = await sincronizarPendente(candidato.id);
+
+        if (tentativaAutomatica.status === "publicado") {
+          await concluirPublicacao(
+            candidato,
+            tentativaAutomatica.productVersionId,
+            `${candidato.name} aprovado e publicado no catálogo.`,
+          );
+          return;
+        }
+
         setDecisao({
           ...SEM_DECISAO,
           idDoCandidato: candidato.id,
           semSincronizar: candidato.id,
+          mensagem:
+            tentativaAutomatica.erro ??
+            resultado.erro ??
+            "A API não informou o motivo da falha.",
           anuncio: `${candidato.name} aprovado, mas ainda não entrou no catálogo.`,
         });
         recarregar();
@@ -249,6 +264,7 @@ export function useDecisaoNaFila({
         ...atual,
         enviando: false,
         mensagem:
+          resultado.erro ??
           "A API ainda não conseguiu publicar. Tente de novo em instantes.",
       }));
     } catch (erro) {
