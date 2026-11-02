@@ -401,7 +401,7 @@ export function aprovarNoMock(
     falhamNaPrimeiraSincronizacao.delete(id);
     aguardandoSincronizacao.add(id);
 
-    return { status: "sincronizacaoFalhou" };
+    return { status: "sincronizacaoFalhou", erro: null };
   }
 
   return publicarNoMock();

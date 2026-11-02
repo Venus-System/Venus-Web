@@ -239,9 +239,24 @@ function FilaAprovacao() {
       const resultado = await aprovarPendente(candidato.id, pedido.aprovacao);
 
       if (resultado.status === "sincronizacaoFalhou") {
+        const tentativaAutomatica = await sincronizarPendente(candidato.id);
+
+        if (tentativaAutomatica.status === "publicado") {
+          await concluirPublicacao(
+            candidato,
+            tentativaAutomatica.productVersionId,
+            `${candidato.name} aprovado e publicado no catálogo.`,
+          );
+          return;
+        }
+
         setDecisao({
           ...SEM_DECISAO,
           semSincronizar: candidato.id,
+          mensagem:
+            tentativaAutomatica.erro ??
+            resultado.erro ??
+            "A API não informou o motivo da falha.",
           anuncio: `${candidato.name} aprovado, mas ainda não entrou no catálogo.`,
         });
         recarregar();
@@ -308,6 +323,7 @@ function FilaAprovacao() {
         ...atual,
         enviando: false,
         mensagem:
+          resultado.erro ??
           "A API ainda não conseguiu publicar. Tente de novo em instantes.",
       }));
     } catch (erro) {
@@ -484,10 +500,19 @@ function FilaAprovacao() {
               podeDecidir={podeDecidir}
               enviando={decisao.enviando}
               semSincronizar={
-                decisao.semSincronizar === estadoCandidato.candidato.id
+                decisao.semSincronizar === estadoCandidato.candidato.id ||
+                estadoCandidato.candidato.syncFailed === true ||
+                estadoCandidato.candidato.syncError !== null &&
+                  estadoCandidato.candidato.syncError !== undefined
               }
               mensagemDeErro={
-                decisao.modal === "nenhum" ? decisao.mensagem : ""
+                decisao.modal === "nenhum"
+                  ? decisao.mensagem ||
+                    estadoCandidato.candidato.syncError ||
+                    (estadoCandidato.candidato.syncFailed
+                      ? "A API marcou este scan como falha de sincronização."
+                      : "")
+                  : ""
               }
               detalhesDoErro={decisao.modal === "nenhum" ? decisao.detalhes : []}
               onTentarCatalogo={recarregarCatalogo}

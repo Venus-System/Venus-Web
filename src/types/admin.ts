@@ -62,6 +62,8 @@ export interface CandidatoResumo {
 export interface Candidato extends CandidatoResumo {
   sources: Record<LadoEmbalagem, FonteDoLado>;
   ingredients: IngredienteInterpretado[];
+  syncFailed?: boolean;
+  syncError?: string | null;
 }
 
 export interface FiltroFila {
@@ -108,4 +110,4 @@ export interface AprovacaoCandidato {
 
 export type ResultadoAprovacao =
   | { status: "publicado"; productVersionId: number | null }
-  | { status: "sincronizacaoFalhou" };
+  | { status: "sincronizacaoFalhou"; erro: string | null };
