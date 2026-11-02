@@ -1,11 +1,14 @@
 import Button from "../../components/Button";
 import MainLayout from "../../components/MainLayout";
 import Veninha from "../../components/Veninha";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 function NaoEncontrado() {
   useTituloDaPagina("Página não encontrada");
+  const { usuario } = useAutenticacao();
+
   return (
     <MainLayout>
       <div className={styles.page}>
@@ -24,9 +27,15 @@ function NaoEncontrado() {
 
         <div className={styles.acoes}>
           <Button to="/pesquisa">Buscar produto</Button>
-          <Button variant="secondary" to="/dashboard">
-            Ir para o dashboard
-          </Button>
+          {usuario === null ? (
+            <Button variant="secondary" to="/">
+              Voltar ao início
+            </Button>
+          ) : (
+            <Button variant="secondary" to="/dashboard">
+              Ir para o dashboard
+            </Button>
+          )}
         </div>
       </div>
     </MainLayout>
