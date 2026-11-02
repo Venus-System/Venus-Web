@@ -31,7 +31,13 @@ function lerAvaliacao(
   const rating = numero(dados.rating);
   const createdAt = texto(dados.createdAt);
 
-  if (id === null || rating === null || createdAt === null) {
+  if (
+    id === null ||
+    rating === null ||
+    rating < 1 ||
+    rating > 5 ||
+    createdAt === null
+  ) {
     return null;
   }
 

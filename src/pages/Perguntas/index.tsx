@@ -32,12 +32,21 @@ import {
   OPCOES_SENSIBILIDADE,
   OPCOES_SITUACAO,
 } from "./opcoes";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type Guia = "cabelo" | "pele" | "fototipo" | null;
 
 function Perguntas() {
+  const { usuario } = useAutenticacao();
+
+  return (
+    <FormularioDePerguntas key={usuario === null ? "sem-conta" : usuario.id} />
+  );
+}
+
+function FormularioDePerguntas() {
   useTituloDaPagina("Questionário de perfil");
   const [guia, setGuia] = useState<Guia>(null);
   const {
