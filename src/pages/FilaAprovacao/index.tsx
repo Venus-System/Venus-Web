@@ -342,8 +342,8 @@ function FilaAprovacao() {
               }
               mensagemDeErro={
                 decisaoDoAberto && decisao.modal === "nenhum"
-                  ? decisao.mensagem
-                  : ""
+                  ? decisao.mensagem || estadoCandidato.candidato.syncError || ""
+                  : estadoCandidato.candidato.syncError || ""
               }
               detalhesDoErro={
                 decisaoDoAberto && decisao.modal === "nenhum"

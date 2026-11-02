@@ -137,6 +137,10 @@ export function validarConfirmacaoSenha(
   return null;
 }
 
+export function validarAceiteDosTermos(aceitou: boolean): string | null {
+  return aceitou ? null : "É preciso aceitar os termos para criar a conta.";
+}
+
 export function validarFaixaEtaria(faixa: FaixaEtaria | ""): string | null {
   if (faixa === "") {
     return "Informe a sua faixa etária.";

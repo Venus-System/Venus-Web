@@ -288,9 +288,15 @@ function paraDecisaoDaApi(decisao: DecisaoIngrediente): Record<string, unknown> 
 
 function lerResultado(valor: unknown): ResultadoAprovacao {
   const dados = comoObjeto(valor);
+  const sincronizacao = comoObjeto(dados.sync);
+  const erro =
+    typeof sincronizacao.lastError === "string" &&
+    sincronizacao.lastError.trim() !== ""
+      ? sincronizacao.lastError.trim()
+      : null;
 
   if (dados.status !== "SYNCED") {
-    return { status: "sincronizacaoFalhou" };
+    return { status: "sincronizacaoFalhou", erro };
   }
 
   const versaoId = comoObjeto(dados.sync).productVersionId;

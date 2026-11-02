@@ -13,6 +13,7 @@ import {
   MAXIMO_DO_EMAIL,
   MAXIMO_DO_NOME,
   forcaDaSenha,
+  validarAceiteDosTermos,
   validarEmail,
   validarNome,
   validarSenha,
@@ -77,6 +78,7 @@ function CriarConta() {
     erros: SEM_ERROS,
     forca: FORCA_INICIAL,
   });
+  const [aceitouTermos, setAceitouTermos] = useState(false);
 
   useEffect(() => {
     if (usuario !== null) {
@@ -117,66 +119,35 @@ function CriarConta() {
     }));
   }
 
-  async function handleGoogle() {
+  function handleChangeTermos(event: ChangeEvent<HTMLInputElement>) {
+    const aceitou = event.target.checked;
+    const mensagem = validarAceiteDosTermos(aceitou);
+
+    setAceitouTermos(aceitou);
     setFormulario((atual) => ({
       ...atual,
-      envio: { situacao: "enviando" },
-      erros: SEM_ERROS,
+      erros: { ...atual.erros, termos: mensagem },
+    }));
+  }
+
+  function mostrarErros(erros: ErrosConta) {
+    setFormulario((atual) => ({
+      ...atual,
+      envio: { situacao: "parado" },
+      erros,
     }));
 
-    try {
-      await entrarComGoogle(false);
-      navegar(DESTINO_PADRAO, { replace: true });
-    } catch {
-      setFormulario((atual) => ({
-        ...atual,
-        envio: {
-          situacao: "erro",
-          mensagem: "Não foi possível criar a conta com o Google.",
-        },
-        erros: SEM_ERROS,
-      }));
+    const primeiro = ORDEM_DOS_CAMPOS.find((campo) => erros[campo] !== null);
+
+    if (primeiro !== undefined) {
+      document.getElementById(primeiro)?.focus();
     }
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const dados = new FormData(event.currentTarget);
-    const nome = String(dados.get("nome") ?? "");
-    const email = String(dados.get("email") ?? "");
-    const senha = String(dados.get("senha") ?? "");
-    const aceitou = dados.get("termos") === "on";
-
-    const erros: ErrosConta = {
-      nome: validarNome(nome),
-      email: validarEmail(email),
-      senha: validarSenha(senha),
-      termos: aceitou
-        ? null
-        : "É preciso aceitar os termos para criar a conta.",
-    };
-
-    const temErro = Object.values(erros).some((mensagem) => mensagem !== null);
-
-    if (temErro) {
-      setFormulario((atual) => ({
-        ...atual,
-        envio: { situacao: "parado" },
-        erros,
-      }));
-
-      const primeiro = ORDEM_DOS_CAMPOS.find(
-        (campo) => erros[campo] !== null,
-      );
-
-      if (primeiro !== undefined) {
-        document.getElementById(primeiro)?.focus();
-      }
-
-      return;
-    }
-
+  async function cadastrar(
+    criar: () => Promise<void>,
+    mensagemDeErro: string,
+  ) {
     setFormulario((atual) => ({
       ...atual,
       envio: { situacao: "enviando" },
@@ -186,19 +157,58 @@ function CriarConta() {
     destinoRef.current = DESTINO_DEPOIS_DO_CADASTRO;
 
     try {
-      await criarConta(nome, email, senha);
+      await criar();
       navegar(destinoRef.current, { replace: true });
     } catch {
       destinoRef.current = DESTINO_PADRAO;
       setFormulario((atual) => ({
         ...atual,
-        envio: {
-          situacao: "erro",
-          mensagem: "Não foi possível criar a conta.",
-        },
+        envio: { situacao: "erro", mensagem: mensagemDeErro },
         erros: SEM_ERROS,
       }));
     }
+  }
+
+  async function handleGoogle() {
+    const termos = validarAceiteDosTermos(aceitouTermos);
+
+    if (termos !== null) {
+      mostrarErros({ ...SEM_ERROS, termos });
+      return;
+    }
+
+    await cadastrar(
+      () => entrarComGoogle(false),
+      "Não foi possível criar a conta com o Google.",
+    );
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const dados = new FormData(event.currentTarget);
+    const nome = String(dados.get("nome") ?? "");
+    const email = String(dados.get("email") ?? "");
+    const senha = String(dados.get("senha") ?? "");
+
+    const erros: ErrosConta = {
+      nome: validarNome(nome),
+      email: validarEmail(email),
+      senha: validarSenha(senha),
+      termos: validarAceiteDosTermos(aceitouTermos),
+    };
+
+    const temErro = Object.values(erros).some((mensagem) => mensagem !== null);
+
+    if (temErro) {
+      mostrarErros(erros);
+      return;
+    }
+
+    await cadastrar(
+      () => criarConta(nome, email, senha),
+      "Não foi possível criar a conta.",
+    );
   }
 
   const desabilitado = formulario.envio.situacao === "enviando";
@@ -309,6 +319,8 @@ function CriarConta() {
               name="termos"
               type="checkbox"
               className={styles.caixa}
+              checked={aceitouTermos}
+              onChange={handleChangeTermos}
               aria-labelledby="rotulo-termos link-termos conector-termos link-privacidade"
               aria-describedby={
                 formulario.erros.termos

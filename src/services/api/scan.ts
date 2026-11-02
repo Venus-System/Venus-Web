@@ -107,6 +107,12 @@ export function lerScan(valor: unknown): Candidato | null {
 
   const ingredients = lerIngredientes(id, dados.ingredients, textos);
   const idDeQuemEnviou = numero(origem.userId);
+  const syncFailed = dados.status === "SYNC_FAILED";
+  const sync = comoObjeto(dados.sync);
+  const syncError =
+    typeof sync.lastError === "string" && sync.lastError.trim() !== ""
+      ? sync.lastError.trim()
+      : null;
 
   return {
     id,
@@ -136,6 +142,8 @@ export function lerScan(valor: unknown): Candidato | null {
       },
     },
     ingredients,
+    syncFailed,
+    syncError,
   };
 }
 
