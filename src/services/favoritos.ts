@@ -6,7 +6,11 @@ import {
   favoritarNaApi,
 } from "./api/favoritos";
 import { garantirIdDoUsuarioNaApi } from "./autenticacao";
-import { ErroDeOrientacao, ErroServicoIndisponivel } from "./erros";
+import {
+  ErroDeOrientacao,
+  ErroServicoIndisponivel,
+  repassarErro,
+} from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import {
   desfavoritarNoMock,
@@ -15,15 +19,19 @@ import {
 } from "./mocks/favoritos";
 
 async function usuarioDaApi(): Promise<number> {
-  const usuarioId = await garantirIdDoUsuarioNaApi();
+  try {
+    const usuarioId = await garantirIdDoUsuarioNaApi();
 
-  if (usuarioId === null) {
-    throw new ErroDeOrientacao(
-      "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
-    );
+    if (usuarioId === null) {
+      throw new ErroDeOrientacao(
+        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+      );
+    }
+
+    return usuarioId;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
   }
-
-  return usuarioId;
 }
 
 function repassarOuTrocar(erro: unknown, mensagem: string): never {

@@ -5,7 +5,7 @@ import type {
   OrigemDoMotivo,
   PersonalRiskLevel,
 } from "../../types/analise";
-import { ErroDeOrientacao } from "../erros";
+import { ErroDeOrientacao, repassarErro } from "../erros";
 import { lerNivel } from "./analises";
 import { comoObjeto, lerTodos, numero, texto } from "./leitura";
 import { pedir, verificarResposta } from "./requisicao";
@@ -13,8 +13,12 @@ import { pedir, verificarResposta } from "./requisicao";
 const RECUSAS = [
   "ANALYSIS_NOT_FOUND",
   "PROFILE_NOT_FOUND",
+  "PRODUCT_NOT_FOUND",
+  "VERSION_NOT_FOUND",
   "VERSION_UNDER_REVIEW",
   "NO_INGREDIENTS",
+  "SCORING_MODEL_NOT_FOUND",
+  "NO_ACTIVE_SCORING_MODEL",
 ] as const;
 
 export type RecusaDaClassificacao = (typeof RECUSAS)[number];
@@ -57,7 +61,14 @@ function nomesDoMotivo(
   source: OrigemDoMotivo,
   text: string,
   ingredientName: string | null,
+  nomesDaApi: unknown,
 ): string[] {
+  const nomes = lerTodos(Array.isArray(nomesDaApi) ? nomesDaApi : [], texto);
+
+  if (nomes.length > 0) {
+    return nomes;
+  }
+
   if (source === "allergy") {
     return nomesNaFraseDeAlergia(text);
   }
@@ -95,7 +106,12 @@ function lerMotivo(
       impacto === 0,
     bonus: !warning && impacto !== null && impacto > 0,
     ingredientName,
-    ingredientNames: nomesDoMotivo(source, text, ingredientName),
+    ingredientNames: nomesDoMotivo(
+      source,
+      text,
+      ingredientName,
+      dados.ingredientNames,
+    ),
     profileTagSlug,
   };
 }
@@ -169,52 +185,64 @@ async function interpretar(
   caminho: string,
   complete: boolean,
 ): Promise<LeituraDaClassificacao> {
-  if (resposta.status === 401 || resposta.status === 403) {
-    throw new ErroDeOrientacao(
-      "Entre de novo para ver a análise feita para o seu perfil.",
-    );
-  }
-
-  if (resposta.status === 404 || resposta.status === 422) {
-    const codigo = comoObjeto(await lerCorpo(resposta)).code;
-    const recusa = RECUSAS.find((item) => item === codigo);
-
-    if (recusa !== undefined) {
-      return { codigo: recusa };
+  try {
+    if (resposta.status === 401 || resposta.status === 403) {
+      throw new ErroDeOrientacao(
+        "Entre de novo para ver a análise feita para o seu perfil.",
+      );
     }
+
+    if (resposta.status === 404 || resposta.status === 422) {
+      const codigo = comoObjeto(await lerCorpo(resposta)).code;
+      const recusa = RECUSAS.find((item) => item === codigo);
+
+      if (recusa !== undefined) {
+        return { codigo: recusa };
+      }
+    }
+
+    verificarResposta(resposta, caminho);
+
+    const analise = lerClassificacao(await lerCorpo(resposta), complete);
+
+    if (analise === null) {
+      throw new Error("A análise não veio no formato esperado.");
+    }
+
+    return { codigo: "OK", analise };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível ler a análise do seu perfil.");
   }
-
-  verificarResposta(resposta, caminho);
-
-  const analise = lerClassificacao(await lerCorpo(resposta), complete);
-
-  if (analise === null) {
-    throw new Error("A análise não veio no formato esperado.");
-  }
-
-  return { codigo: "OK", analise };
 }
 
 export async function buscarUltimaClassificacaoNaApi(
   usuarioId: number,
   versaoId: number,
 ): Promise<LeituraDaClassificacao> {
-  const caminho = `/api/classifications/user/${usuarioId}/product-version/${versaoId}`;
-  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`);
+  try {
+    const caminho = `/api/classifications/user/${usuarioId}/product-version/${versaoId}`;
+    const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`);
 
-  return interpretar(resposta, caminho, false);
+    return await interpretar(resposta, caminho, false);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível buscar a análise do seu perfil.");
+  }
 }
 
 export async function calcularClassificacaoNaApi(
   usuarioId: number,
   versaoId: number,
 ): Promise<LeituraDaClassificacao> {
-  const caminho = "/api/classifications";
-  const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: usuarioId, productVersionId: versaoId }),
-  });
+  try {
+    const caminho = "/api/classifications";
+    const resposta = await pedir(`${URL_CLASSIFICACAO}${caminho}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: usuarioId, productVersionId: versaoId }),
+    });
 
-  return interpretar(resposta, caminho, true);
+    return await interpretar(resposta, caminho, true);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível calcular a análise do seu perfil.");
+  }
 }

@@ -21,6 +21,7 @@ import {
   ErroDeOrientacao,
   ErroProdutoNaoEncontrado,
   ErroServicoIndisponivel,
+  repassarErro,
 } from "./erros";
 import {
   avaliacoesDoMock,
@@ -31,15 +32,19 @@ import {
 import { simularLatencia } from "./mocks/atraso";
 
 async function usuarioDaApi(): Promise<number> {
-  const usuarioId = await garantirIdDoUsuarioNaApi();
+  try {
+    const usuarioId = await garantirIdDoUsuarioNaApi();
 
-  if (usuarioId === null) {
-    throw new ErroDeOrientacao(
-      "Entre na sua conta para avaliar, votar ou denunciar.",
-    );
+    if (usuarioId === null) {
+      throw new ErroDeOrientacao(
+        "Entre na sua conta para avaliar, votar ou denunciar.",
+      );
+    }
+
+    return usuarioId;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível encontrar a sua conta.");
   }
-
-  return usuarioId;
 }
 
 function repassarOuTrocar(erro: unknown, mensagem: string): never {
@@ -58,25 +63,35 @@ function repassarOuTrocar(erro: unknown, mensagem: string): never {
 
 async function avaliacoesLidas(
   slug: string,
+  versaoId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesLidas> {
-  if (USAR_MOCK) {
-    await simularLatencia();
+  try {
+    if (USAR_MOCK) {
+      await simularLatencia();
 
-    return { avaliacoes: avaliacoesDoMock(slug), truncated: false };
+      return { avaliacoes: avaliacoesDoMock(slug), truncated: false };
+    }
+
+    const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
+
+    return await buscarAvaliacoesNaApi(versaoId, usuarioId, sinal);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar as avaliações.");
   }
-
-  const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
-
-  return buscarAvaliacoesNaApi(slug, usuarioId, sinal);
 }
 
 export async function buscarAvaliacoes(
   slug: string,
+  versaoId: number | null,
   sinal?: AbortSignal,
 ): Promise<AvaliacoesDoProduto> {
   try {
-    const { avaliacoes, truncated } = await avaliacoesLidas(slug, sinal);
+    const { avaliacoes, truncated } = await avaliacoesLidas(
+      slug,
+      versaoId,
+      sinal,
+    );
     const recentes = [...avaliacoes].sort(
       (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
     );

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Produto } from "../../types/produto";
 import { tomDoProduto } from "../../utils/tomDoProduto";
-import ScoreBadge from "../ScoreBadge";
 import styles from "./styles.module.css";
 
 interface ProductCardProps {
@@ -32,8 +31,6 @@ function ProductCard({ produto }: ProductCardProps) {
             {produto.brand.name} · {produto.category}
           </span>
         </span>
-
-        <ScoreBadge score={produto.scores.overallScore} level={produto.level} />
       </Link>
     </article>
   );

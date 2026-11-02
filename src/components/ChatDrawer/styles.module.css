@@ -18,6 +18,12 @@
   background-color: var(--sobreposicao);
 }
 
+@media (max-height: 30rem) {
+  .dialog {
+    --faixa-veninha: 5rem;
+  }
+}
+
 .dialog[open] {
   animation: entrar var(--duracao-entrada) ease-out;
 }

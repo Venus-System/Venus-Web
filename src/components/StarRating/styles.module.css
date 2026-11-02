@@ -27,7 +27,7 @@
 }
 
 .vazia {
-  color: var(--lavanda);
+  color: var(--borda-forte);
 }
 
 .cheia {
@@ -40,6 +40,7 @@
 }
 
 .icone {
+  max-width: none;
   color: var(--violeta);
   fill: currentColor;
 }

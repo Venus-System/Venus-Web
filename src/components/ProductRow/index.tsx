@@ -67,11 +67,13 @@ function ProductRow({
         </span>
       </span>
 
-      <ScoreBadge score={nota} level={nivel} />
+      <span className={styles.lado}>
+        <ScoreBadge score={nota} level={nivel} />
 
-      {action === undefined ? null : (
-        <span className={styles.action}>{action}</span>
-      )}
+        {action === undefined ? null : (
+          <span className={styles.action}>{action}</span>
+        )}
+      </span>
     </div>
   );
 }

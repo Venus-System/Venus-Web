@@ -1,5 +1,4 @@
 import { useState } from "react";
-import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import IngredientCard from "../../components/IngredientCard";
 import IngredientsModal from "../../components/IngredientsModal";
@@ -14,6 +13,7 @@ import type { MotivoDaAnalise } from "../../types/analise";
 import type { IngredienteAvaliado } from "../../types/ingrediente";
 import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
 import { ehFragrancia } from "../../utils/selos";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Escolha {
@@ -55,6 +55,7 @@ function notaDoIngrediente(
 }
 
 function Reacao() {
+  useTituloDaPagina("Tive uma reação");
   const [escolha, setEscolha] = useState<Escolha>(SEM_ESCOLHA);
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDeProduto();
@@ -67,7 +68,7 @@ function Reacao() {
     carregada?.versionId ?? null,
   );
 
-  const produtos = opcoes.status === "pronto" ? opcoes.produtos : [];
+  const produtos = opcoes.status === "pronto" ? opcoes.dados : [];
   const marcas = [...new Set(produtos.map((produto) => produto.brand.name))].sort(
     (a, b) => POR_NOME.compare(a, b),
   );
@@ -93,10 +94,6 @@ function Reacao() {
   return (
     <MainLayout>
       <div className={styles.page}>
-        <div className={styles.voltar}>
-          <BackButton fallback="/pesquisa" />
-        </div>
-
         <header className={styles.header}>
           <h1 className={styles.title}>
             Um produto{" "}

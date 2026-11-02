@@ -74,8 +74,6 @@
 }
 
 .rodape {
-  position: sticky;
-  bottom: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -109,6 +107,13 @@
   width: var(--tamanho-base);
   height: var(--tamanho-base);
   flex-shrink: 0;
+}
+
+@media (min-width: 60rem) {
+  .rodape {
+    position: sticky;
+    bottom: 0;
+  }
 }
 
 @media (min-width: 72rem) {

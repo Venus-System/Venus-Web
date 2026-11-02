@@ -1,6 +1,7 @@
 import type { AlergiaApi } from "./tipos";
 import type { AlergiaCatalogo } from "../../types/perfil";
 import { URL_API } from "../../config/ambiente";
+import { repassarErro } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
 function ehAlergiaApi(valor: unknown): valor is AlergiaApi {
@@ -17,23 +18,27 @@ function ehAlergiaApi(valor: unknown): valor is AlergiaApi {
 export async function listarAlergiasDaApi(
   sinal?: AbortSignal,
 ): Promise<AlergiaCatalogo[]> {
-  const resposta = await pedir(`${URL_API}/api/allergies`, { signal: sinal });
+  try {
+    const resposta = await pedir(`${URL_API}/api/allergies`, { signal: sinal });
 
-  verificarResposta(resposta, "/api/allergies");
+    verificarResposta(resposta, "/api/allergies");
 
-  const dados: unknown = await resposta.json();
+    const dados: unknown = await resposta.json();
 
-  if (!Array.isArray(dados)) {
-    throw new Error("A listagem de alergias não veio no formato esperado.");
-  }
-
-  const alergias: AlergiaCatalogo[] = [];
-
-  for (const item of dados) {
-    if (ehAlergiaApi(item)) {
-      alergias.push({ id: String(item.id), name: item.allergyName });
+    if (!Array.isArray(dados)) {
+      throw new Error("A listagem de alergias não veio no formato esperado.");
     }
-  }
 
-  return alergias;
+    const alergias: AlergiaCatalogo[] = [];
+
+    for (const item of dados) {
+      if (ehAlergiaApi(item)) {
+        alergias.push({ id: String(item.id), name: item.allergyName });
+      }
+    }
+
+    return alergias;
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar a lista de alergias.");
+  }
 }

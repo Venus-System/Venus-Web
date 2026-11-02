@@ -1,4 +1,6 @@
-import { AlertTriangle, Check, X } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Check, Equal, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button";
 import ListaSuspensa from "../../components/ListaSuspensa";
@@ -26,16 +28,37 @@ import {
 } from "../../utils/niveis";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import { tomDoProduto } from "../../utils/tomDoProduto";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type Lado = 0 | 1;
 type Parametro = "a" | "b";
+type TomDoVeredito = "melhor" | "nenhum" | "empate";
+
+interface Veredito {
+  tom: TomDoVeredito;
+  texto: string;
+}
+
+const CLASSE_DO_VEREDITO: Record<TomDoVeredito, string> = {
+  melhor: styles.vereditoMelhor,
+  nenhum: styles.vereditoNenhum,
+  empate: styles.vereditoEmpate,
+};
+
+const ICONE_DO_VEREDITO: Record<TomDoVeredito, LucideIcon> = {
+  melhor: Check,
+  nenhum: X,
+  empate: Equal,
+};
 
 interface Coluna {
   parametro: Parametro;
   id: string;
   rotulo: string;
 }
+
+const POR_NOME = new Intl.Collator("pt-BR");
 
 const COLUNAS: Coluna[] = [
   { parametro: "a", id: "produto-a", rotulo: "Primeiro produto" },
@@ -51,6 +74,10 @@ function maiorNota(a: number | null, b: number | null): Lado | null {
 }
 
 function vencedorGeral(a: Produto, b: Produto): Lado | null {
+  if (a.scores.overallScore === null || b.scores.overallScore === null) {
+    return null;
+  }
+
   const evitarA = a.level === "avoid";
   const evitarB = b.level === "avoid";
 
@@ -147,6 +174,22 @@ function vencedorPessoal(
   return maiorNota(a.finalScore, b.finalScore);
 }
 
+function textoDaComparacaoIncompleta(
+  estado: EstadoDaAnalisePessoal,
+  algumaEvitar: boolean,
+  calculando: boolean,
+): string | null {
+  if (estado.status === "pronta" && evitarParaAPessoa(estado.analise)) {
+    return "Não é a escolha recomendada para o seu perfil.";
+  }
+
+  if (algumaEvitar) {
+    return "Sem a nota para o seu perfil deste produto, não dá para dizer se ele combina mais com você.";
+  }
+
+  return calculando ? "Calculando a nota para o seu perfil." : null;
+}
+
 function textoDaEscolhaPessoal(
   analise: AnalisePersonalizada,
   lado: number,
@@ -173,6 +216,62 @@ function textoDaEscolhaPessoal(
   return temAviso
     ? `Fica numa faixa mais alta para o seu perfil (${faixa}), mas confira os alertas.`
     : `Fica numa faixa mais alta para o seu perfil: ${faixa}.`;
+}
+
+function vereditoDaComparacao(
+  produtos: [ProdutoComparado, ProdutoComparado],
+  analises: [AnalisePersonalizada, AnalisePersonalizada] | null,
+  vencedor: Lado | null,
+  calculando: boolean,
+): Veredito | null {
+  if (vencedor !== null) {
+    const nome = produtos[vencedor].product.name;
+
+    return {
+      tom: "melhor",
+      texto:
+        analises === null
+          ? `${nome} é a melhor escolha pela nota geral.`
+          : `${nome} é a melhor escolha para o seu perfil.`,
+    };
+  }
+
+  if (analises !== null) {
+    return analises.every(evitarParaAPessoa)
+      ? {
+          tom: "nenhum",
+          texto:
+            "Nenhum dos dois é recomendado para o seu perfil. Confira os alertas de cada um.",
+        }
+      : {
+          tom: "empate",
+          texto: "Os dois ficam na mesma faixa para o seu perfil.",
+        };
+  }
+
+  const osDoisEvitar = produtos.every(
+    ({ product }) => product.level === "avoid",
+  );
+
+  if (!calculando && osDoisEvitar) {
+    return {
+      tom: "nenhum",
+      texto: "Nenhum dos dois é recomendado pela nota geral.",
+    };
+  }
+
+  return null;
+}
+
+function vereditoNaTela({ tom, texto }: Veredito) {
+  const Icone = ICONE_DO_VEREDITO[tom];
+
+  return (
+    <p className={`${styles.veredito} ${CLASSE_DO_VEREDITO[tom]}`}>
+      <Icone className={styles.icone} aria-hidden="true" />
+      {texto}
+    </p>
+  );
 }
 
 function celulaPessoal(
@@ -294,6 +393,7 @@ function selosEAlertas({ product, ingredients }: ProdutoComparado) {
 }
 
 function Comparar() {
+  useTituloDaPagina("Comparar produtos");
   const [parametros, setParametros] = useSearchParams();
   const slugs: [string | null, string | null] = [
     parametros.get("a"),
@@ -303,6 +403,15 @@ function Comparar() {
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDeProduto();
   const { estado, recarregar } = useComparacao(slugs[0], slugs[1]);
+  const [categoriaEscolhida, setCategoriaEscolhida] = useState<string | null>(
+    null,
+  );
+  const catalogo = opcoes.status === "pronto" ? opcoes.dados : [];
+  const produtoA = catalogo.find((produto) => produto.slug === slugs[0]);
+  const categoria = categoriaEscolhida ?? produtoA?.category ?? "";
+  const categorias = [
+    ...new Set(catalogo.map((produto) => produto.category)),
+  ].sort((a, b) => POR_NOME.compare(a, b));
 
   function escolher(parametro: Parametro, slug: string) {
     setParametros(
@@ -315,16 +424,22 @@ function Comparar() {
     );
   }
 
-  function opcoesPara(outroSlug: string | null): SelectOption<string>[] {
-    if (opcoes.status !== "pronto") {
-      return [];
-    }
-
-    return opcoes.produtos.map((produto) => ({
-      value: produto.slug,
-      label: `${produto.name} · ${produto.brand.name}`,
-      disabled: produto.slug === outroSlug,
-    }));
+  function opcoesPara(
+    meuSlug: string | null,
+    outroSlug: string | null,
+  ): SelectOption<string>[] {
+    return catalogo
+      .filter(
+        (produto) =>
+          categoria === "" ||
+          produto.category === categoria ||
+          produto.slug === meuSlug,
+      )
+      .map((produto) => ({
+        value: produto.slug,
+        label: `${produto.name} · ${produto.brand.name}`,
+        disabled: produto.slug === outroSlug,
+      }));
   }
 
   const produtos = estado.status === "pronta" ? estado.produtos : null;
@@ -348,14 +463,25 @@ function Comparar() {
     pessoalA.estado.status === "calculando" ||
     pessoalB.estado.status === "calculando";
 
+  const algumaEvitar = pessoais.some(
+    ({ estado: pessoal }) =>
+      pessoal.status === "pronta" && evitarParaAPessoa(pessoal.analise),
+  );
+
   let vencedor: Lado | null = null;
 
-  if (produtos !== null) {
-    vencedor =
-      analises === null
-        ? vencedorGeral(produtos[0].product, produtos[1].product)
-        : vencedorPessoal(analises[0], analises[1]);
+  if (produtos !== null && analises !== null) {
+    vencedor = vencedorPessoal(analises[0], analises[1]);
   }
+
+  if (produtos !== null && analises === null && !algumaEvitar && !calculando) {
+    vencedor = vencedorGeral(produtos[0].product, produtos[1].product);
+  }
+
+  const veredito =
+    produtos === null
+      ? null
+      : vereditoDaComparacao(produtos, analises, vencedor, calculando);
 
   return (
     <MainLayout>
@@ -403,6 +529,38 @@ function Comparar() {
         </p>
 
         {opcoes.status === "pronto" ? (
+          <div className={styles.filtro}>
+            <ListaSuspensa
+              id="categoria-comparar"
+              label="Categoria"
+              placeholder="Todas as categorias"
+              options={categorias.map((nome) => ({ value: nome, label: nome }))}
+              value={categoria}
+              onChange={setCategoriaEscolhida}
+              onClear={() => setCategoriaEscolhida("")}
+            />
+
+            {produtos !== null &&
+            produtos[0].product.category !== produtos[1].product.category ? (
+              <p className={styles.avisoCategoria} role="status">
+                <AlertTriangle
+                  className={styles.iconePequeno}
+                  aria-hidden="true"
+                />
+                Estes produtos são de categorias diferentes, então a comparação
+                ajuda menos.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {opcoes.status === "pronto" ? (
+          <div aria-live="polite">
+            {veredito === null ? null : vereditoNaTela(veredito)}
+          </div>
+        ) : null}
+
+        {opcoes.status === "pronto" ? (
           <div
             className={styles.moldura}
             role="region"
@@ -436,7 +594,7 @@ function Comparar() {
                           id={coluna.id}
                           label={coluna.rotulo}
                           placeholder="Escolha um produto"
-                          options={opcoesPara(slugs[lado === 0 ? 1 : 0])}
+                          options={opcoesPara(slug, slugs[lado === 0 ? 1 : 0])}
                           value={slug ?? ""}
                           onChange={(valor) => escolher(coluna.parametro, valor)}
                           hideLabel
@@ -534,10 +692,12 @@ function Comparar() {
                                   : `Nota ${product.scores.overallScore} de 100`}
                               </span>
                             </span>
-                            <RiskBadge
-                              level={product.level}
-                              label={rotuloDaNotaGeral(product)}
-                            />
+                            {analises === null ? (
+                              <RiskBadge
+                                level={product.level}
+                                label={rotuloDaNotaGeral(product)}
+                              />
+                            ) : null}
                           </span>
                         </td>
                       ))}
@@ -654,7 +814,11 @@ function Comparar() {
                             </span>
                           ) : null}
                           {analises === null
-                            ? textoDaEscolha(produtos, lado, vencedor)
+                            ? (textoDaComparacaoIncompleta(
+                                pessoais[lado].estado,
+                                algumaEvitar,
+                                calculando,
+                              ) ?? textoDaEscolha(produtos, lado, vencedor))
                             : textoDaEscolhaPessoal(
                                 analises[lado],
                                 lado,

@@ -41,7 +41,9 @@
   width: var(--tamanho-avatar);
   height: var(--tamanho-avatar);
   flex-shrink: 0;
+  padding: 0;
   overflow: hidden;
+  background: none;
   border: var(--borda-largura) solid transparent;
   border-radius: var(--raio-pilula);
   color: var(--texto-invertido);
@@ -212,6 +214,25 @@
 .grade {
   display: grid;
   gap: var(--espaco-3);
+  align-items: start;
+}
+
+@media (min-width: 48rem) {
+  .grade {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grade label,
+.card legend {
+  margin-bottom: var(--espaco-1);
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  text-transform: uppercase;
 }
 
 .sair {
@@ -230,9 +251,16 @@
   cursor: pointer;
 }
 
-.sair:hover {
+.sair:hover:not([aria-disabled="true"]) {
   background-color: var(--avoid);
   color: var(--texto-invertido);
+}
+
+.sair[aria-disabled="true"] {
+  background-color: var(--prata);
+  border-color: var(--borda-forte);
+  color: var(--texto-suave);
+  cursor: not-allowed;
 }
 
 .sairIcone {
@@ -377,5 +405,15 @@
 @media (min-width: 60rem) {
   .columns {
     grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  .barra {
+    outline: var(--borda-largura) solid CanvasText;
+  }
+
+  .barraPreenchida {
+    background-color: CanvasText;
   }
 }

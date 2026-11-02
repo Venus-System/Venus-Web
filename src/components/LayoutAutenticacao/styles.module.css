@@ -1,10 +1,26 @@
 .pagina {
   display: grid;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 :global(html):has(.pagina) {
   scrollbar-gutter: auto;
+}
+
+.skipLink {
+  position: absolute;
+  left: var(--espaco-3);
+  top: -5rem;
+  z-index: 10;
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--card);
+  border: var(--borda-largura) solid var(--violeta);
+  border-radius: var(--raio-pequeno);
+}
+
+.skipLink:focus {
+  top: var(--espaco-3);
 }
 
 .painelFormulario {
@@ -29,7 +45,7 @@
   display: flex;
   gap: var(--espaco-2);
   align-items: center;
-  align-self: flex-start;
+  align-self: stretch;
   color: var(--texto);
   text-decoration: none;
 }

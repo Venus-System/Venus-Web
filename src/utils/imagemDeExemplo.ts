@@ -1,4 +1,6 @@
-export const TEXTO_DE_EXEMPLO: string[] = [
+import { USAR_MOCK } from "../config/ambiente";
+
+export const TEXTO_DO_MOCK: string[] = [
   "Flora Nativa",
   "Sérum Calmante de Aveia",
   "30 ml",
@@ -6,8 +8,13 @@ export const TEXTO_DE_EXEMPLO: string[] = [
   "AVENA SATIVA KERNEL EXTRACT, PANTHENOL, PHENOXYETHANOL.",
 ];
 
-export const DESCRICAO_DO_EXEMPLO =
-  "Imagem de exemplo com o rótulo do Sérum Calmante de Aveia, da Flora Nativa: a marca, o nome, o volume e a lista de ingredientes.";
+const TEXTO_DO_CATALOGO: string[] = ["CeraVe", "Loção Facial Hidratante Noite"];
+
+const TEXTO_DE_EXEMPLO = USAR_MOCK ? TEXTO_DO_MOCK : TEXTO_DO_CATALOGO;
+
+export const DESCRICAO_DO_EXEMPLO = USAR_MOCK
+  ? "Imagem de exemplo com o rótulo do Sérum Calmante de Aveia, da Flora Nativa: a marca, o nome, o volume e a lista de ingredientes."
+  : "Imagem de exemplo com a marca e o nome da Loção Facial Hidratante Noite, da CeraVe.";
 
 const LARGURA = 1400;
 const ALTURA_DA_LINHA = 64;

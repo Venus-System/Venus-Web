@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import type { ReactNode } from "react";
 import { useAutenticacao } from "../hooks/useAutenticacao";
 import { enviarMensagem } from "../services/chat";
@@ -29,6 +29,28 @@ interface EstadoDoChat {
   envio: EnvioDoChat;
   geracao: string;
 }
+
+type AcaoDoChat =
+  | {
+      tipo: "trocarDeConta";
+      dono: string | null;
+      mensagens: MensagemDoChat[];
+      conversationId: string | null;
+      geracao: string;
+    }
+  | { tipo: "abrir" }
+  | { tipo: "fechar" }
+  | { tipo: "enviar"; mensagem: MensagemDoChat; conversationId: string }
+  | { tipo: "tentarDeNovo"; conversationId: string }
+  | {
+      tipo: "respostaChegou";
+      geracao: string;
+      mensagem: MensagemDoChat;
+      conversationId: string;
+      expression: ExpressaoDaVeninha;
+    }
+  | { tipo: "respostaFalhou"; geracao: string; envio: EnvioDoChat }
+  | { tipo: "novaConversa"; geracao: string };
 
 interface ValorDoChat {
   aberto: boolean;
@@ -94,12 +116,71 @@ function aindaNoLimite(envio: EnvioDoChat): boolean {
   );
 }
 
+function reduzirChat(estado: EstadoDoChat, acao: AcaoDoChat): EstadoDoChat {
+  switch (acao.tipo) {
+    case "trocarDeConta":
+      return {
+        dono: acao.dono,
+        aberto: false,
+        mensagens: acao.mensagens,
+        conversationId: acao.conversationId,
+        expression: "neutra",
+        envio: { status: "ocioso" },
+        geracao: acao.geracao,
+      };
+    case "abrir":
+      return { ...estado, aberto: true };
+    case "fechar":
+      return { ...estado, aberto: false };
+    case "enviar":
+      return {
+        ...estado,
+        mensagens: [...estado.mensagens, acao.mensagem],
+        conversationId: acao.conversationId,
+        envio: { status: "esperando" },
+      };
+    case "tentarDeNovo":
+      return {
+        ...estado,
+        conversationId: acao.conversationId,
+        envio: { status: "esperando" },
+      };
+    case "respostaChegou":
+      if (acao.geracao !== estado.geracao) {
+        return estado;
+      }
+
+      return {
+        ...estado,
+        mensagens: [...estado.mensagens, acao.mensagem],
+        conversationId: acao.conversationId,
+        expression: acao.expression,
+        envio: { status: "ocioso" },
+      };
+    case "respostaFalhou":
+      if (acao.geracao !== estado.geracao) {
+        return estado;
+      }
+
+      return { ...estado, envio: acao.envio };
+    case "novaConversa":
+      return {
+        ...estado,
+        mensagens: [],
+        conversationId: null,
+        expression: "neutra",
+        envio: { status: "ocioso" },
+        geracao: acao.geracao,
+      };
+  }
+}
+
 export const ContextoChat = createContext<ValorDoChat | null>(null);
 
 export function ProvedorChat({ children }: ProvedorChatProps) {
   const { usuario } = useAutenticacao();
   const usuarioId = usuario === null ? null : usuario.id;
-  const [estado, setEstado] = useState<EstadoDoChat>(estadoInicial);
+  const [estado, despachar] = useReducer(reduzirChat, undefined, estadoInicial);
 
   useEffect(() => {
     if (estado.dono === usuarioId) {
@@ -110,18 +191,14 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
       apagarConversa(estado.dono);
     }
 
-    if (usuarioId === null) {
-      setEstado(estadoInicial());
-      return;
-    }
+    const guardada = usuarioId === null ? null : lerConversa(usuarioId);
 
-    const guardada = lerConversa(usuarioId);
-
-    setEstado({
-      ...estadoInicial(),
+    despachar({
+      tipo: "trocarDeConta",
       dono: usuarioId,
       mensagens: guardada === null ? [] : guardada.mensagens,
       conversationId: guardada === null ? null : guardada.conversationId,
+      geracao: crypto.randomUUID(),
     });
   }, [usuarioId, estado.dono]);
 
@@ -143,27 +220,20 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
   ) {
     enviarMensagem(texto, conversationId)
       .then((resposta) => {
-        setEstado((atual) =>
-          atual.geracao !== geracao
-            ? atual
-            : {
-                ...atual,
-                mensagens: [
-                  ...atual.mensagens,
-                  novaMensagem("veninha", resposta.reply),
-                ],
-                conversationId: resposta.conversationId,
-                expression: resposta.expression,
-                envio: { status: "ocioso" },
-              },
-        );
+        despachar({
+          tipo: "respostaChegou",
+          geracao,
+          mensagem: novaMensagem("veninha", resposta.reply),
+          conversationId: resposta.conversationId,
+          expression: resposta.expression,
+        });
       })
       .catch((erro: unknown) => {
-        setEstado((atual) =>
-          atual.geracao !== geracao
-            ? atual
-            : { ...atual, envio: envioComErro(erro) },
-        );
+        despachar({
+          tipo: "respostaFalhou",
+          geracao,
+          envio: envioComErro(erro),
+        });
       });
   }
 
@@ -185,12 +255,11 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
 
     const conversationId = estado.conversationId ?? crypto.randomUUID();
 
-    setEstado((atual) => ({
-      ...atual,
-      mensagens: [...atual.mensagens, novaMensagem("pessoa", limpo)],
+    despachar({
+      tipo: "enviar",
+      mensagem: novaMensagem("pessoa", limpo),
       conversationId,
-      envio: { status: "esperando" },
-    }));
+    });
 
     pedirResposta(limpo, conversationId, estado.geracao);
   }
@@ -204,11 +273,7 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
 
     const conversationId = estado.conversationId ?? crypto.randomUUID();
 
-    setEstado((atual) => ({
-      ...atual,
-      conversationId,
-      envio: { status: "esperando" },
-    }));
+    despachar({ tipo: "tentarDeNovo", conversationId });
 
     pedirResposta(ultima.text, conversationId, estado.geracao);
   }
@@ -218,22 +283,15 @@ export function ProvedorChat({ children }: ProvedorChatProps) {
       return;
     }
 
-    setEstado((atual) => ({
-      ...atual,
-      mensagens: [],
-      conversationId: null,
-      expression: "neutra",
-      envio: { status: "ocioso" },
-      geracao: crypto.randomUUID(),
-    }));
+    despachar({ tipo: "novaConversa", geracao: crypto.randomUUID() });
   }
 
   function abrir() {
-    setEstado((atual) => ({ ...atual, aberto: true }));
+    despachar({ tipo: "abrir" });
   }
 
   function fechar() {
-    setEstado((atual) => ({ ...atual, aberto: false }));
+    despachar({ tipo: "fechar" });
   }
 
   return (

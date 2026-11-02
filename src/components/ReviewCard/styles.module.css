@@ -129,3 +129,22 @@
   font-size: var(--tamanho-pequeno);
   font-weight: var(--peso-forte);
 }
+
+.falhaDoVoto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: center;
+}
+
+.tentar {
+  padding: var(--espaco-1) 0;
+  background: none;
+  border: none;
+  color: var(--roxo);
+  font: inherit;
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  cursor: pointer;
+}

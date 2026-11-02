@@ -17,6 +17,7 @@
 
 .primary {
   background-image: var(--gradiente-primario);
+  background-origin: border-box;
   color: var(--texto-invertido);
 }
 
@@ -64,6 +65,19 @@
 
 .primary:hover:not(:disabled, [aria-disabled="true"]) {
   filter: brightness(0.85);
+}
+
+.primary:hover,
+.violet:hover {
+  color: var(--texto-invertido);
+}
+
+.soft:hover {
+  color: var(--roxo);
+}
+
+.danger:hover {
+  color: var(--avoid);
 }
 
 .secondary:hover:not(:disabled, [aria-disabled="true"]) {

@@ -8,7 +8,7 @@ import {
   TAMANHO_MAXIMO_EM_MB,
   TIPOS_DE_IMAGEM,
   validarFoto,
-} from "../../services/avatar";
+} from "../../utils/validacao";
 import Button from "../Button";
 import Modal from "../Modal";
 import styles from "./styles.module.css";
@@ -56,6 +56,7 @@ function ModalFotoPerfil({
   const [imagem, setImagem] = useState<EstadoDoArquivo>(SEM_ARQUIVO);
   const [arrastando, setArrastando] = useState(false);
   const campoRef = useRef<HTMLInputElement>(null);
+  const enviando = situacao === "enviando";
 
   useEffect(() => {
     if (imagem.previa === "") {
@@ -66,7 +67,7 @@ function ModalFotoPerfil({
   }, [imagem.previa]);
 
   function receber(arquivo: File | undefined) {
-    if (arquivo === undefined) {
+    if (arquivo === undefined || enviando) {
       return;
     }
 
@@ -102,8 +103,6 @@ function ModalFotoPerfil({
 
     onSave({ tipo: "avatar", avatar: escolhido });
   }
-
-  const enviando = situacao === "enviando";
 
   return (
     <Modal open={open} title="Foto de perfil" onClose={onClose}>
@@ -149,7 +148,7 @@ function ModalFotoPerfil({
         className={`${styles.area} ${arrastando ? styles.areaAtiva : ""}`}
         onDragOver={(evento) => {
           evento.preventDefault();
-          setArrastando(true);
+          setArrastando(!enviando);
         }}
         onDragLeave={() => setArrastando(false)}
         onDrop={handleSoltar}
@@ -186,6 +185,8 @@ function ModalFotoPerfil({
           id="foto-do-computador"
           type="file"
           className="texto-oculto"
+          tabIndex={-1}
+          aria-label="Escolher uma foto no computador"
           accept={TIPOS_DE_IMAGEM.join(",")}
           onChange={handleArquivo}
         />
@@ -204,15 +205,15 @@ function ModalFotoPerfil({
       ) : null}
 
       <p className="texto-oculto" aria-live="polite">
-        {enviando ? "Enviando a sua foto." : ""}
+        {enviando ? "Salvando a sua escolha." : ""}
       </p>
 
       <div className={styles.acoes}>
-        <Button onClick={handleSalvar} disabled={enviando}>
-          {enviando ? "Enviando…" : "Salvar"}
+        <Button onClick={handleSalvar} busy={enviando}>
+          {enviando ? "Salvando…" : "Salvar"}
         </Button>
 
-        <Button variant="secondary" onClick={onClose} disabled={enviando}>
+        <Button variant="secondary" onClick={onClose} busy={enviando}>
           Cancelar
         </Button>
       </div>

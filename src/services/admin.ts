@@ -2,8 +2,8 @@ import { USAR_MOCK } from "../config/ambiente";
 import type {
   AprovacaoCandidato,
   Candidato,
-  CandidatoResumo,
   CatalogoDaRevisao,
+  FilaDeCandidatos,
   FiltroFila,
   RecusaCandidato,
   ResultadoAprovacao,
@@ -24,6 +24,7 @@ import {
   recusarNaApi,
   sincronizarNaApi,
 } from "./api/admin";
+import { esquecerNotasDoCatalogo } from "./api/produtos";
 import { lerListaDeScans, lerScan, paraResumo } from "./api/scan";
 import {
   ErroCandidatoNaoEncontrado,
@@ -33,6 +34,7 @@ import {
   ErroSemPermissaoParaDecidir,
   ErroServicoIndisponivel,
   ErroSessaoAdminExpirada,
+  repassarErro,
 } from "./erros";
 import { simularLatencia } from "./mocks/atraso";
 import { entrarComoAdminNoMock } from "./mocks/admin";
@@ -80,7 +82,11 @@ export async function entrarComoAdmin(
 }
 
 export async function sairComoAdmin(): Promise<void> {
-  limparSessaoAdmin();
+  try {
+    limparSessaoAdmin();
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível sair da área administrativa.");
+  }
 }
 
 function ehCancelamento(erro: unknown): boolean {
@@ -117,30 +123,46 @@ function exigirPapelQueDecideNoMock(): void {
   }
 }
 
-async function candidatosPendentes(sinal?: AbortSignal): Promise<Candidato[]> {
-  if (USAR_MOCK) {
-    await simularLatencia();
-    exigirSessaoNoMock();
+interface CandidatosLidos {
+  candidatos: Candidato[];
+  truncated: boolean;
+}
 
-    return listarPendentesDoMock();
+async function candidatosPendentes(
+  sinal?: AbortSignal,
+): Promise<CandidatosLidos> {
+  try {
+    if (USAR_MOCK) {
+      await simularLatencia();
+      exigirSessaoNoMock();
+
+      return { candidatos: listarPendentesDoMock(), truncated: false };
+    }
+
+    const { itens, truncated } = await listarScansNaApi(sinal);
+
+    return { candidatos: lerListaDeScans(itens), truncated };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar a fila.");
   }
-
-  return lerListaDeScans(await listarScansNaApi(sinal));
 }
 
 export async function listarPendentes(
   filtro: FiltroFila,
   sinal?: AbortSignal,
-): Promise<CandidatoResumo[]> {
+): Promise<FilaDeCandidatos> {
   try {
-    const candidatos = await candidatosPendentes(sinal);
+    const { candidatos, truncated } = await candidatosPendentes(sinal);
 
-    return candidatos
-      .filter(
-        (candidato) =>
-          filtro.origin === null || candidato.origin === filtro.origin,
-      )
-      .map(paraResumo);
+    return {
+      itens: candidatos
+        .filter(
+          (candidato) =>
+            filtro.origin === null || candidato.origin === filtro.origin,
+        )
+        .map(paraResumo),
+      truncated,
+    };
   } catch (erro) {
     return repassarOuTraduzir(erro, "Não foi possível carregar a fila.");
   }
@@ -201,7 +223,11 @@ export async function aprovarPendente(
       return aprovarNoMock(id, aprovacao);
     }
 
-    return await aprovarNaApi(id, aprovacao);
+    const resultado = await aprovarNaApi(id, aprovacao);
+
+    esquecerNotasDoCatalogo();
+
+    return resultado;
   } catch (erro) {
     return repassarOuTraduzir(erro, "Não foi possível aprovar este produto.");
   }
@@ -218,7 +244,11 @@ export async function sincronizarPendente(
       return sincronizarNoMock(id);
     }
 
-    return await sincronizarNaApi(id);
+    const resultado = await sincronizarNaApi(id);
+
+    esquecerNotasDoCatalogo();
+
+    return resultado;
   } catch (erro) {
     return repassarOuTraduzir(
       erro,
@@ -236,7 +266,11 @@ export async function calcularNotaBase(versaoId: number): Promise<number> {
       return notaBaseDoMock();
     }
 
-    return await calcularNotaBaseNaApi(versaoId);
+    const nota = await calcularNotaBaseNaApi(versaoId);
+
+    esquecerNotasDoCatalogo();
+
+    return nota;
   } catch {
     throw new Error("A nota base não foi calculada.");
   }

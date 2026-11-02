@@ -1,6 +1,7 @@
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
+  MouseEvent,
   ReactNode,
 } from "react";
 import { Link } from "react-router-dom";
@@ -25,6 +26,7 @@ type ButtonProps =
   | (ButtonBaseProps & {
       to?: undefined;
       href?: undefined;
+      busy?: boolean;
     } & ButtonHTMLAttributes<HTMLButtonElement>)
   | (ButtonBaseProps & { href?: undefined } & Omit<
         LinkProps,
@@ -61,10 +63,32 @@ function Button(props: ButtonProps) {
     );
   }
 
-  const { variant: _variant, className: _className, type = "button", ...rest } = props;
+  const {
+    variant: _variant,
+    className: _className,
+    type = "button",
+    busy = false,
+    onClick,
+    ...rest
+  } = props;
+
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    if (busy) {
+      event.preventDefault();
+      return;
+    }
+
+    onClick?.(event);
+  }
 
   return (
-    <button {...rest} type={type} className={classes}>
+    <button
+      {...rest}
+      type={type}
+      className={classes}
+      aria-disabled={busy ? true : rest["aria-disabled"]}
+      onClick={handleClick}
+    >
       {children}
     </button>
   );

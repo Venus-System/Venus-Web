@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
+import { idDoBlocoDeConsentimento } from "../components/ConsentimentoSaude";
 import type { ErroResumo } from "../components/ResumoErros";
+import { useAutenticacao } from "./useAutenticacao";
 import { buscarCatalogoAlergias } from "../services/alergias";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
@@ -18,11 +20,14 @@ import {
 
 export const TOTAL_PERGUNTAS = 11;
 export const TOTAL_PERGUNTAS_DE_SAUDE = 7;
+export const ID_DO_CONSENTIMENTO = "consentimento-saude";
 
 export type EstadoCatalogo =
   | { status: "loading" }
   | { status: "success"; options: AlergiaCatalogo[] }
   | { status: "error" };
+
+export type EstadoDoPerfil = "carregando" | "pronto" | "erro";
 
 type SituacaoEnvio = "ocioso" | "enviando" | "sucesso" | "erro";
 
@@ -47,11 +52,14 @@ export interface Questionario {
   trocarCondicoes: (marcadas: CondicaoPele[]) => void;
   catalogo: EstadoCatalogo;
   tentarCatalogoDeNovo: () => void;
+  perfil: EstadoDoPerfil;
+  tentarPerfilDeNovo: () => void;
   formulario: EstadoFormulario;
   itensDoResumo: ErroResumo[];
   respostasDeSaude: number;
   resumoRef: RefObject<HTMLDivElement>;
   decisaoRef: RefObject<HTMLDivElement>;
+  conclusaoRef: RefObject<HTMLDivElement>;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   enviar: () => void;
   voltarParaConsentimento: () => void;
@@ -92,10 +100,18 @@ function contarRespostasDeSaude(respostas: RespostasQuestionario): number {
 }
 
 export function useQuestionario(): Questionario {
-  const [respostas, setRespostas] = useState<RespostasQuestionario>(
-    () => lerProgresso() ?? RESPOSTAS_INICIAIS,
+  const { usuario } = useAutenticacao();
+  const usuarioId = usuario === null ? null : usuario.id;
+  const [rascunho] = useState(() =>
+    usuarioId === null ? null : lerProgresso(usuarioId),
   );
-  const [temRascunho] = useState(() => lerProgresso() !== null);
+  const [respostas, setRespostas] = useState<RespostasQuestionario>(
+    rascunho ?? RESPOSTAS_INICIAIS,
+  );
+  const [perfil, setPerfil] = useState<EstadoDoPerfil>(
+    rascunho === null ? "carregando" : "pronto",
+  );
+  const [tentativaPerfil, setTentativaPerfil] = useState(0);
   const [catalogo, setCatalogo] = useState<EstadoCatalogo>({
     status: "loading",
   });
@@ -108,6 +124,8 @@ export function useQuestionario(): Questionario {
   });
   const resumoRef = useRef<HTMLDivElement>(null);
   const decisaoRef = useRef<HTMLDivElement>(null);
+  const conclusaoRef = useRef<HTMLDivElement>(null);
+  const edicoesRef = useRef(0);
 
   useEffect(() => {
     const controle = new AbortController();
@@ -132,7 +150,7 @@ export function useQuestionario(): Questionario {
   }, [tentativaCatalogo]);
 
   useEffect(() => {
-    if (temRascunho) {
+    if (rascunho !== null) {
       return;
     }
 
@@ -140,20 +158,27 @@ export function useQuestionario(): Questionario {
 
     buscarPerfil()
       .then((carregado) => {
-        if (!ativo || carregado === null) {
+        if (!ativo) {
           return;
         }
 
-        setRespostas((atual) =>
-          atual === RESPOSTAS_INICIAIS ? paraRespostas(carregado.perfil) : atual,
+        setRespostas(
+          carregado === null
+            ? RESPOSTAS_INICIAIS
+            : paraRespostas(carregado.perfil),
         );
+        setPerfil("pronto");
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (ativo) {
+          setPerfil("erro");
+        }
+      });
 
     return () => {
       ativo = false;
     };
-  }, [temRascunho]);
+  }, [rascunho, tentativaPerfil]);
 
   useEffect(() => {
     const temErro =
@@ -170,11 +195,25 @@ export function useQuestionario(): Questionario {
     }
   }, [formulario.aguardandoDecisao]);
 
+  useEffect(() => {
+    if (formulario.situacao === "sucesso") {
+      conclusaoRef.current?.focus();
+    }
+  }, [formulario.situacao]);
+
+  function esquecerSucesso() {
+    edicoesRef.current += 1;
+    setFormulario((atual) =>
+      atual.situacao === "sucesso" ? { ...atual, situacao: "ocioso" } : atual,
+    );
+  }
+
   function responder<Campo extends keyof RespostasQuestionario>(
     campo: Campo,
     valor: RespostasQuestionario[Campo],
   ) {
     setRespostas((atual) => ({ ...atual, [campo]: valor }));
+    esquecerSucesso();
   }
 
   function trocarCondicoes(marcadas: CondicaoPele[]) {
@@ -185,6 +224,7 @@ export function useQuestionario(): Questionario {
       ...atual,
       skinConditions: ultima === "none" ? ["none"] : semNenhuma,
     }));
+    esquecerSucesso();
   }
 
   function tentarCatalogoDeNovo() {
@@ -192,31 +232,50 @@ export function useQuestionario(): Questionario {
     setTentativaCatalogo((atual) => atual + 1);
   }
 
+  function tentarPerfilDeNovo() {
+    setPerfil("carregando");
+    setTentativaPerfil((atual) => atual + 1);
+  }
+
   function voltarParaConsentimento() {
     setFormulario((atual) => ({ ...atual, aguardandoDecisao: false }));
 
-    const caixa = document.getElementById("consentimento-saude");
+    const bloco = document.getElementById(
+      idDoBlocoDeConsentimento(ID_DO_CONSENTIMENTO),
+    );
+    const caixa = document.getElementById(ID_DO_CONSENTIMENTO);
 
-    caixa?.scrollIntoView();
+    bloco?.scrollIntoView({ block: "start" });
     caixa?.focus({ preventScroll: true });
   }
 
   function salvarProgresso() {
-    guardarProgresso(respostas);
+    if (usuarioId === null || perfil !== "pronto") {
+      return;
+    }
+
+    guardarProgresso(usuarioId, respostas);
   }
 
   async function enviarRespostas() {
-    setFormulario((atual) => ({
-      ...atual,
-      situacao: "enviando",
-      aguardandoDecisao: false,
-    }));
+    setFormulario((atual) => ({ ...atual, situacao: "enviando" }));
+
+    const edicoesNoEnvio = edicoesRef.current;
 
     try {
       await salvarPerfil(respostas);
-      limparProgresso();
 
-      setFormulario((atual) => ({ ...atual, situacao: "sucesso" }));
+      const editouDepois = edicoesRef.current !== edicoesNoEnvio;
+
+      if (usuarioId !== null && !editouDepois) {
+        limparProgresso(usuarioId);
+      }
+
+      setFormulario((atual) => ({
+        ...atual,
+        situacao: editouDepois ? "ocioso" : "sucesso",
+        aguardandoDecisao: editouDepois ? atual.aguardandoDecisao : false,
+      }));
     } catch (erro) {
       setFormulario((atual) => ({
         ...atual,
@@ -241,7 +300,7 @@ export function useQuestionario(): Questionario {
       ...atual,
       erros,
       situacao: "ocioso",
-      aguardandoDecisao: false,
+      aguardandoDecisao: temErro ? false : atual.aguardandoDecisao,
     }));
 
     if (!temErro) {
@@ -282,13 +341,16 @@ export function useQuestionario(): Questionario {
     trocarCondicoes,
     catalogo,
     tentarCatalogoDeNovo,
+    perfil,
+    tentarPerfilDeNovo,
     formulario,
     itensDoResumo,
     respostasDeSaude: contarRespostasDeSaude(respostas),
     resumoRef,
     decisaoRef,
+    conclusaoRef,
     handleSubmit,
-    enviar: () => void enviarRespostas(),
+    enviar: validarEEnviar,
     voltarParaConsentimento,
     salvarProgresso,
   };

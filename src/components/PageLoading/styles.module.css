@@ -1,0 +1,8 @@
+.carregando {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: var(--espaco-4);
+  color: var(--texto-suave);
+}

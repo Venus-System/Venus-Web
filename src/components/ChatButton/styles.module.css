@@ -25,3 +25,9 @@
   width: 2.25rem;
   height: 2.25rem;
 }
+
+@media (forced-colors: active) {
+  .botao {
+    border: var(--borda-largura) solid ButtonText;
+  }
+}

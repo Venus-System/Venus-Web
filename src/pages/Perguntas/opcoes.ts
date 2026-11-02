@@ -5,14 +5,12 @@ import type {
   FaixaEtaria,
   Fototipo,
   Genero,
+  NivelSensibilidade,
   Preferencia,
   TipoCouroCabeludo,
   TipoPele,
 } from "../../types/perfil";
-import type {
-  CurvaturaCabelo,
-  SensibilidadeQuestionario,
-} from "../../types/questionario";
+import type { CurvaturaCabelo } from "../../types/questionario";
 import { CheckboxOption } from "../../components/GrupoCaixas";
 import { SituacaoAtual, CondicaoPele } from "../../types/usuario";
 
@@ -65,10 +63,11 @@ export const OPCOES_FOTOTIPO: RadioOption<Fototipo>[] = [
   { value: "VI", label: "VI" },
 ];
 
-export const OPCOES_SENSIBILIDADE: RadioOption<SensibilidadeQuestionario>[] = [
+export const OPCOES_SENSIBILIDADE: RadioOption<NivelSensibilidade>[] = [
   { value: "low", label: "Baixa" },
   { value: "medium", label: "Média" },
   { value: "high", label: "Alta" },
+  { value: "very_high", label: "Muito alta" },
 ];
 
 export const OPCOES_COURO: RadioOption<TipoCouroCabeludo>[] = [

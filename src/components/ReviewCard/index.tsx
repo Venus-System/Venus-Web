@@ -27,13 +27,13 @@ function ReviewCard({
   onReport,
 }: ReviewCardProps) {
   const perguntaId = useId();
-  const { estado, escolher } = useVotoDaAvaliacao(
+  const { estado, escolher, tentarLerDeNovo } = useVotoDaAvaliacao(
     review,
     canInteract && !review.isMine,
   );
   const nome = nomeDoAutor(review);
   const data = dataDaAvaliacao(review.createdAt);
-  const ocupado = estado.carregando || estado.enviando;
+  const ocupado = estado.carregando || estado.enviando || estado.falhouLeitura;
 
   function votar(escolha: VotoDeAvaliacao) {
     if (!canInteract) {
@@ -114,6 +114,22 @@ function ReviewCard({
           </button>
         </div>
       )}
+
+      {estado.falhouLeitura ? (
+        <div className={styles.falhaDoVoto}>
+          <p role="alert" className={styles.erro}>
+            Não conseguimos ver o seu voto.
+          </p>
+
+          <button
+            type="button"
+            className={styles.tentar}
+            onClick={tentarLerDeNovo}
+          >
+            Tentar de novo
+          </button>
+        </div>
+      ) : null}
 
       {estado.erro === null ? null : (
         <p role="alert" className={styles.erro}>

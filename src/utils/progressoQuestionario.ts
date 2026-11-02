@@ -2,7 +2,12 @@ import type { RespostasQuestionario } from "../types/questionario";
 import { guardar, ler, limpar } from "./armazenamento";
 import { somentePreferenciasValidas } from "./preferencias";
 
-const CHAVE_PROGRESSO = "venus.questionario";
+const CHAVE_SEM_DONO = "venus.questionario";
+const PREFIXO = "venus.questionario.";
+
+function chaveDe(usuarioId: string): string {
+  return `${PREFIXO}${usuarioId}`;
+}
 
 function ehRespostas(valor: unknown): valor is RespostasQuestionario {
   return (
@@ -33,8 +38,10 @@ function semDadosDeSaude(
   };
 }
 
-export function lerProgresso(): RespostasQuestionario | null {
-  const progresso = ler(CHAVE_PROGRESSO, ehRespostas);
+export function lerProgresso(usuarioId: string): RespostasQuestionario | null {
+  limpar(CHAVE_SEM_DONO);
+
+  const progresso = ler(chaveDe(usuarioId), ehRespostas);
 
   if (progresso === null) {
     return null;
@@ -46,13 +53,16 @@ export function lerProgresso(): RespostasQuestionario | null {
   };
 }
 
-export function guardarProgresso(respostas: RespostasQuestionario): void {
+export function guardarProgresso(
+  usuarioId: string,
+  respostas: RespostasQuestionario,
+): void {
   guardar(
-    CHAVE_PROGRESSO,
+    chaveDe(usuarioId),
     respostas.healthDataConsent ? respostas : semDadosDeSaude(respostas),
   );
 }
 
-export function limparProgresso(): void {
-  limpar(CHAVE_PROGRESSO);
+export function limparProgresso(usuarioId: string): void {
+  limpar(chaveDe(usuarioId));
 }

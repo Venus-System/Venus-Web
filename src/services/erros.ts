@@ -83,6 +83,13 @@ export class ErroAvaliacaoDuplicada extends Error {
   }
 }
 
+export class ErroLinkDeSenhaVencido extends Error {
+  constructor() {
+    super("Este link venceu ou já foi usado.");
+    this.name = "ErroLinkDeSenhaVencido";
+  }
+}
+
 export class ErroMuitasMensagens extends Error {
   segundos: number | null;
 

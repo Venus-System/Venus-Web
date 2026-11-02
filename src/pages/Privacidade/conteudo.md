@@ -1,5 +1,5 @@
 ---
-atualizado: 15 de outubro de 2026
+atualizado: 28 de outubro de 2026
 ---
 
 ## Quem somos
@@ -25,7 +25,8 @@ Tipo de pele, fototipo, sensibilidade, tendência a acne, tipo de cabelo, tipo
 de couro cabeludo, faixa etária e gênero.
 
 **Dados sobre condições de saúde**
-Gestação, hiperpigmentação, melasma, rosácea, eczema e alergias declaradas,
+Gestação, amamentação, hiperpigmentação, melasma, rosácea, eczema e alergias
+declaradas,
 com o grau de severidade de cada uma.
 
 > Estes são **dados pessoais sensíveis** na definição do artigo 5º, inciso II,
@@ -36,7 +37,8 @@ com o grau de severidade de cada uma.
 **Preferências**
 Se você prefere produtos veganos, livres de crueldade, sem parabenos, sem
 sulfatos, sem silicones, sem álcool, livres de óleo, naturais, orgânicos,
-hipoalergênicos, não comedogênicos ou testados por dermatologistas.
+hipoalergênicos, não comedogênicos, testados por dermatologistas ou com
+embalagem reciclável.
 
 **Dados de uso**
 Produtos que você analisou ou favoritou, e a data de cada ação. Avaliações que
@@ -62,6 +64,12 @@ identificadores de instalação e eventos de uso, como telas abertas e tempo de
 sessão. Esses dados são processados pela Google e usados apenas para entender
 como o aplicativo é utilizado. **O site não usa o Google Analytics.**
 
+**Localização aproximada, só no aplicativo e só se você permitir**
+Cidade, estado e coordenadas arredondadas para cerca de 1 km. O aplicativo
+pergunta antes de pedir a permissão ao celular e funciona normalmente se você
+negar. Com a permissão, a localização é atualizada no máximo uma vez por
+semana. **O site não coleta sua localização.**
+
 ## Para que usamos
 
 Os dados de perfil e de saúde existem para uma coisa só: **cruzar a composição
@@ -77,6 +85,10 @@ ingredientes e rotina de cuidados. O acesso à Google Agenda serve só para ela
 achar um horário livre e criar os eventos da sua rotina, e **ela só cria um
 evento depois que você confirma na conversa**.
 
+A localização aproximada serve para entendermos, em conjunto, de quais regiões
+vêm as pessoas que usam o Venus. **Ela não muda a nota de nenhum produto** nem
+a análise feita para você.
+
 **Não usamos seus dados para publicidade, não fazemos perfilamento comercial e
 não vendemos nada a ninguém.**
 
@@ -88,7 +100,10 @@ destacado, como exige o artigo 11, inciso I.
 
 Você pode retirar o consentimento a qualquer momento: desligando a autorização
 de saúde no seu perfil, desconectando a Google Agenda na conversa com a
-Veninha ou pedindo a exclusão da sua conta. Retirar o consentimento não apaga o
+Veninha, tirando a permissão de localização do aplicativo nas configurações do
+celular ou pedindo a exclusão da sua conta. Tirar a permissão de localização
+impede novos envios; para apagar a última localização enviada, escreva para o
+e-mail abaixo. Retirar o consentimento não apaga o
 histórico de análises já realizadas, mas elas deixam de ser cruzadas com o seu
 perfil.
 
@@ -109,6 +124,10 @@ eles processam dados em nosso nome:
 | Langfuse | Acompanhar o funcionamento da IA, quando ativado | Fora do Brasil |
 | Google Agenda | Ver horários livres e criar eventos, só se você conectar | Servidores da Google, fora do Brasil |
 | Vercel | Hospedagem da aplicação web | Fora do Brasil |
+| Google Fonts | Baixar as fontes do site a cada visita. A Google recebe o endereço de IP e o navegador, como em qualquer download | Servidores da Google, fora do Brasil |
+| GitHub | Mostrar as fotos dos integrantes na página Sobre, baixadas do GitHub ao abrir a página | Servidores do GitHub, fora do Brasil |
+| Reconhecimento de voz do navegador (Google no Chrome, Microsoft no Edge) | Transformar em texto o que você ditar no chat, só se você apertar o microfone | Servidores da Google ou da Microsoft, fora do Brasil |
+| VLibras, do Governo Federal | Traduzir para Libras o texto em que você clicar, só se você ativar o tradutor. O programa do tradutor é baixado dos servidores do governo a cada visita | Servidores do governo brasileiro |
 
 ### Conversa com a Veninha
 
@@ -117,6 +136,15 @@ modelos de linguagem de terceiros (Groq, Mistral AI e Google Gemini) para
 gerar as respostas. Esses serviços recebem o texto das mensagens para
 responder. **Não escreva na conversa dados que você não quer compartilhar**,
 como documentos, endereço ou informações de outras pessoas.
+
+### Ditado por voz no chat
+
+Se você apertar o microfone no campo da conversa, quem transforma a sua fala
+em texto é o próprio navegador. No Chrome, o áudio vai para os servidores da
+Google; no Edge, para os da Microsoft. O Venus não recebe nem guarda o áudio:
+recebe só o texto, depois que você revisa e envia, como se tivesse digitado. Na
+primeira vez, o navegador pede permissão para usar o microfone, e você pode
+tirar essa permissão a qualquer momento nas configurações do site.
 
 ### Google Agenda
 
@@ -165,6 +193,7 @@ como recuperar nada. Removemos:
 - as preferências, os favoritos e o histórico de análises
 - as conversas com a Veninha e o resumo que ela guarda
 - o acesso à Google Agenda, se você tiver conectado
+- a localização aproximada, se você tiver permitido no aplicativo
 
 **O que permanece, sem qualquer ligação com você:** avaliações que você tenha
 publicado continuam visíveis, mas deixam de ser associadas à sua pessoa de

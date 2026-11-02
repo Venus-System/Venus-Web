@@ -27,9 +27,15 @@
   border: none;
   color: var(--texto);
   font-family: var(--fonte-corpo);
-  font-size: var(--tamanho-pequeno);
+  font-size: var(--tamanho-base);
   line-height: 1.5;
   resize: none;
+}
+
+@media (max-height: 30rem) {
+  .campo {
+    height: 1.5em;
+  }
 }
 
 .campo::placeholder {
@@ -76,4 +82,32 @@
 .limite {
   color: var(--texto-suave);
   font-size: var(--tamanho-pequeno);
+}
+
+.microfone {
+  composes: enviar;
+}
+
+.ouvindo,
+.ouvindo:hover {
+  background-color: var(--violeta);
+  color: var(--texto-invertido);
+}
+
+.ouvindoTexto {
+  color: var(--violeta);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+.erroDoDitado {
+  color: var(--avoid);
+  font-size: var(--tamanho-pequeno);
+  font-weight: var(--peso-forte);
+}
+
+@media (forced-colors: active) {
+  .ouvindo {
+    outline: var(--borda-largura) solid CanvasText;
+  }
 }

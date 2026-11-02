@@ -1,32 +1,22 @@
-import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { pesquisarProdutos } from "../../services/pesquisa";
-import type { Produto } from "../../types/produto";
 import type { FiltrosDaPesquisa } from "../../types/pesquisa";
 import { useOpcoesDaPesquisa } from "../../hooks/useOpcoesDaPesquisa";
+import { usePesquisaDeProdutos } from "../../hooks/usePesquisaDeProdutos";
+import type {
+  BuscaDaPesquisa,
+  EstadoDaPesquisa,
+} from "../../hooks/usePesquisaDeProdutos";
 import MainLayout from "../../components/MainLayout";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import ListaSuspensa from "../../components/ListaSuspensa";
 import ProductCard from "../../components/ProductCard";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
-
-interface ListaCarregada {
-  lista: Produto[];
-  temMais: boolean;
-  paginasCarregadas: number;
-}
-
-type EstadoBusca =
-  | ({ situacao: "carregando" } & ListaCarregada)
-  | ({ situacao: "sucesso" } & ListaCarregada)
-  | ({ situacao: "erro"; mensagem: string } & ListaCarregada);
-
-interface Busca {
-  filtros: FiltrosDaPesquisa;
-  pagina: number;
-}
 
 type FiltroDeLista = "categoria" | "marca";
 
@@ -60,7 +50,10 @@ function descricaoDosFiltros(filtros: FiltrosDaPesquisa): string {
   return partes.length === 0 ? "no catálogo" : partes.join(", ");
 }
 
-function textoDeStatus(estado: EstadoBusca, busca: Busca): string {
+function textoDeStatus(
+  estado: EstadoDaPesquisa,
+  busca: BuscaDaPesquisa,
+): string {
   const descricao = descricaoDosFiltros(busca.filtros);
 
   if (estado.situacao === "carregando") {
@@ -89,16 +82,14 @@ function textoDeStatus(estado: EstadoBusca, busca: Busca): string {
 }
 
 function Pesquisa() {
-  const [estado, setEstado] = useState<EstadoBusca>({
-    situacao: "carregando",
-    lista: [],
-    temMais: false,
-    paginasCarregadas: 0,
-  });
-  const [busca, setBusca] = useState<Busca>({
-    filtros: FILTROS_VAZIOS,
+  useTituloDaPagina("Buscar produto");
+  const [parametros, setParametros] = useSearchParams();
+  const termoDaUrl = (parametros.get("termo") ?? "").trim();
+  const [busca, setBusca] = useState<BuscaDaPesquisa>(() => ({
+    filtros: { ...FILTROS_VAZIOS, termo: termoDaUrl },
     pagina: 0,
-  });
+  }));
+  const estado = usePesquisaDeProdutos(busca);
   const { estado: opcoes, recarregar: recarregarOpcoes } =
     useOpcoesDaPesquisa();
   const formRef = useRef<HTMLFormElement>(null);
@@ -106,25 +97,46 @@ function Pesquisa() {
   const gridRef = useRef<HTMLUListElement>(null);
   const focarNoIndice = useRef<number | null>(null);
 
+  useEffect(() => {
+    const campo = formRef.current?.elements.namedItem("termo");
+
+    if (campo instanceof HTMLInputElement && campo.value.trim() !== termoDaUrl) {
+      campo.value = termoDaUrl;
+    }
+
+    setBusca((atual) =>
+      atual.filtros.termo === termoDaUrl
+        ? atual
+        : { filtros: { ...atual.filtros, termo: termoDaUrl }, pagina: 0 },
+    );
+  }, [termoDaUrl]);
+
+  function trocarTermo(termo: string) {
+    setParametros(termo === "" ? {} : { termo }, { replace: true });
+  }
+
+  function tentarDeNovo() {
+    setBusca((atual) => ({ ...atual }));
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const valor = new FormData(event.currentTarget).get("termo");
     const termo = typeof valor === "string" ? valor.trim() : "";
 
-    setBusca((atual) => ({ filtros: { ...atual.filtros, termo }, pagina: 0 }));
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.value !== "") {
+    if (termo === termoDaUrl) {
+      setBusca((atual) => ({ ...atual, pagina: 0 }));
       return;
     }
 
-    setBusca((atual) =>
-      atual.filtros.termo === ""
-        ? atual
-        : { filtros: { ...atual.filtros, termo: "" }, pagina: 0 },
-    );
+    trocarTermo(termo);
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.value === "") {
+      trocarTermo("");
+    }
   }
 
   function mudarFiltro(campo: FiltroDeLista, valor: string) {
@@ -157,6 +169,7 @@ function Pesquisa() {
     }
 
     setBusca({ filtros: FILTROS_VAZIOS, pagina: 0 });
+    trocarTermo("");
   }
 
   function mostrarMais() {
@@ -167,72 +180,6 @@ function Pesquisa() {
     focarNoIndice.current = estado.lista.length;
     setBusca((atual) => ({ ...atual, pagina: estado.paginasCarregadas }));
   }
-
-  useEffect(() => {
-    let ativo = true;
-    let expirou = false;
-
-    const controle = new AbortController();
-    const limite = setTimeout(() => {
-      expirou = true;
-      controle.abort();
-    }, 8000);
-
-    async function carregar() {
-      setEstado((atual) => ({
-        situacao: "carregando",
-        lista: atual.lista,
-        temMais: atual.temMais,
-        paginasCarregadas: atual.paginasCarregadas,
-      }));
-
-      try {
-        const resultado = await pesquisarProdutos(
-          busca.filtros,
-          busca.pagina,
-          controle.signal,
-        );
-
-        if (ativo) {
-          setEstado((atual) =>
-            busca.pagina === 0
-              ? {
-                  situacao: "sucesso",
-                  lista: resultado.produtos,
-                  temMais: resultado.temMais,
-                  paginasCarregadas: 1,
-                }
-              : {
-                  situacao: "sucesso",
-                  lista: [...atual.lista, ...resultado.produtos],
-                  temMais: resultado.temMais,
-                  paginasCarregadas: atual.paginasCarregadas + 1,
-                },
-          );
-        }
-      } catch {
-        if (ativo) {
-          setEstado((atual) => ({
-            situacao: "erro",
-            mensagem: expirou
-              ? "A busca demorou demais. Tente novamente."
-              : "Não foi possível carregar os produtos.",
-            lista: atual.lista,
-            temMais: busca.pagina === 0 ? false : atual.temMais,
-            paginasCarregadas: atual.paginasCarregadas,
-          }));
-        }
-      }
-    }
-
-    carregar();
-
-    return () => {
-      ativo = false;
-      clearTimeout(limite);
-      controle.abort();
-    };
-  }, [busca]);
 
   useEffect(() => {
     const indice = focarNoIndice.current;
@@ -277,21 +224,27 @@ function Pesquisa() {
         <form
           className={styles.form}
           role="search"
+          aria-label="Buscar no catálogo"
           onSubmit={handleSubmit}
           ref={formRef}
         >
           <Input
             id="termo-busca"
+            maxLength={MAXIMO_DA_BUSCA}
             name="termo"
             label="Buscar produto"
             hideLabel
             type="search"
             placeholder="Nome do produto"
+            defaultValue={termoDaUrl}
             className={styles.field}
             onChange={handleChange}
           />
 
-          <Button type="submit">Analisar</Button>
+          <Button type="submit">
+            Analisar
+            <ArrowRight className={styles.submitIcone} aria-hidden="true" />
+          </Button>
         </form>
 
         <fieldset className={styles.filters} ref={filtrosRef}>
@@ -319,7 +272,7 @@ function Pesquisa() {
                 id="filtro-categoria"
                 label="Categoria"
                 placeholder="Todas as categorias"
-                options={opcoes.opcoes.categorias.map((nome) => ({
+                options={opcoes.dados.categorias.map((nome) => ({
                   value: nome,
                   label: nome,
                 }))}
@@ -333,7 +286,7 @@ function Pesquisa() {
                 id="filtro-marca"
                 label="Marca"
                 placeholder="Todas as marcas"
-                options={opcoes.opcoes.marcas.map((nome) => ({
+                options={opcoes.dados.marcas.map((nome) => ({
                   value: nome,
                   label: nome,
                 }))}
@@ -362,9 +315,15 @@ function Pesquisa() {
           </p>
 
           {estado.situacao === "erro" ? (
-            <p className={styles.error} role="alert">
-              {estado.mensagem}
-            </p>
+            <div className={styles.erroDaBusca}>
+              <p className={styles.error} role="alert">
+                {estado.mensagem}
+              </p>
+
+              <Button variant="secondary" onClick={tentarDeNovo}>
+                Tentar de novo
+              </Button>
+            </div>
           ) : null}
 
           {estado.situacao === "sucesso" &&

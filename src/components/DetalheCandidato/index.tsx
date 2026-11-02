@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Button from "../Button";
 import CamposProduto, {
@@ -13,7 +13,9 @@ import type { VisaoDaFonte } from "../PainelFonte";
 import RevisaoIngrediente, {
   OPCAO_CRIAR,
   OPCAO_DESCARTAR,
+  OPCAO_LIGAR,
   idDaDecisao,
+  idDoIngredienteCadastrado,
   idDoNomeInci,
 } from "../RevisaoIngrediente";
 import type { EscolhaDoIngrediente } from "../RevisaoIngrediente";
@@ -32,6 +34,7 @@ import { tempoRelativo } from "../../utils/tempoRelativo";
 import {
   validarCategoria,
   validarDecisaoDoIngrediente,
+  validarIngredienteCadastrado,
   validarMarca,
   validarNomeDoProduto,
   validarNomeInci,
@@ -74,7 +77,12 @@ interface EstadoSalvoDaRevisao {
   nome?: string;
   marcaId?: string | null;
   categoriaId?: string | null;
-  escolhas?: Array<{ position: number; opcao: string; inciName: string }>;
+  escolhas?: Array<{
+    position: number;
+    opcao: string;
+    inciName: string;
+    ingredientId: string;
+  }>;
   fotosVistas?: Partial<Record<LadoEmbalagem, boolean>>;
 }
 
@@ -121,8 +129,10 @@ function escolhaInicial(
     position: ingrediente.position,
     opcao: "",
     inciName: ingrediente.rawName,
+    ingredientId: "",
     erro: null,
     erroDoNome: null,
+    erroDoIngrediente: null,
   };
 }
 
@@ -132,6 +142,10 @@ function validarEscolha(escolha: EscolhaDoIngrediente): EscolhaDoIngrediente {
     erro: validarDecisaoDoIngrediente(escolha.opcao),
     erroDoNome:
       escolha.opcao === OPCAO_CRIAR ? validarNomeInci(escolha.inciName) : null,
+    erroDoIngrediente:
+      escolha.opcao === OPCAO_LIGAR
+        ? validarIngredienteCadastrado(escolha.ingredientId)
+        : null,
   };
 }
 
@@ -151,7 +165,9 @@ function paraDecisao(escolha: EscolhaDoIngrediente): DecisaoIngrediente {
   return {
     position: escolha.position,
     action: "link",
-    ingredientId: Number(escolha.opcao),
+    ingredientId: Number(
+      escolha.opcao === OPCAO_LIGAR ? escolha.ingredientId : escolha.opcao,
+    ),
   };
 }
 
@@ -183,6 +199,10 @@ function primeiroInvalido(
 
     if (escolha?.erroDoNome) {
       return idDoNomeInci(ingrediente);
+    }
+
+    if (escolha?.erroDoIngrediente) {
+      return idDoIngredienteCadastrado(ingrediente);
     }
   }
 
@@ -252,13 +272,13 @@ function DetalheCandidato({
     return salva === undefined
       ? escolhaInicial(ingrediente)
       : {
-          position: ingrediente.position,
+          ...escolhaInicial(ingrediente),
           opcao: salva.opcao,
           inciName: salva.inciName,
-          erro: null,
-          erroDoNome: null,
+          ingredientId: salva.ingredientId,
         };
   });
+
   const [visao, setVisao] = useState<EstadoDaVisao>({
     visao: {
       lado: "front",
@@ -293,11 +313,14 @@ function DetalheCandidato({
           nome: campos.nome,
           marcaId: campos.marcaId,
           categoriaId: campos.categoriaId,
-          escolhas: campos.escolhas.map(({ position, opcao, inciName }) => ({
-            position,
-            opcao,
-            inciName,
-          })),
+          escolhas: campos.escolhas.map(
+            ({ position, opcao, inciName, ingredientId }) => ({
+              position,
+              opcao,
+              inciName,
+              ingredientId,
+            }),
+          ),
           fotosVistas: visao.fotosVistas,
         } satisfies EstadoSalvoDaRevisao),
       );
@@ -315,12 +338,12 @@ function DetalheCandidato({
     marcaId:
       campos.marcaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.brands, candidato.brand)
+        ? sugerirDoCatalogo(catalogo.dados.brands, candidato.brand)
         : ""),
     categoriaId:
       campos.categoriaId ??
       (catalogo.status === "pronto"
-        ? sugerirDoCatalogo(catalogo.catalogo.categories, candidato.category)
+        ? sugerirDoCatalogo(catalogo.dados.categories, candidato.category)
         : ""),
   };
 
@@ -373,14 +396,14 @@ function DetalheCandidato({
     }));
   }
 
-  function mudarEscolha(nova: EscolhaDoIngrediente) {
+  const mudarEscolha = useCallback((nova: EscolhaDoIngrediente) => {
     setCampos((atual) => ({
       ...atual,
       escolhas: atual.escolhas.map((escolha) =>
         escolha.position === nova.position ? nova : escolha,
       ),
     }));
-  }
+  }, []);
 
   function aprovar() {
     if (enviando) {
@@ -392,26 +415,6 @@ function DetalheCandidato({
         ...atual,
         aviso: "Sua conta pode revisar a fila, mas não pode aprovar este scan.",
       }));
-      return;
-    }
-
-    if (faltam > 0) {
-      setCampos((atual) => ({
-        ...atual,
-        aviso: avisoDoRodape(faltam),
-      }));
-
-      const primeiraPendente = pendentes.find(
-        (ingrediente) =>
-          campos.escolhas.find(
-            (escolha) => escolha.position === ingrediente.position,
-          )?.opcao === "",
-      );
-
-      if (primeiraPendente !== undefined) {
-        document.getElementById(idDaDecisao(primeiraPendente))?.focus();
-      }
-
       return;
     }
 
@@ -464,9 +467,17 @@ function DetalheCandidato({
     }
   }
 
+  function sincronizar() {
+    if (podeDecidir && !enviando) {
+      onSincronizar();
+    }
+  }
+
   const descricaoDosBotoes = podeDecidir ? undefined : ID_AVISO_DO_PAPEL;
   const bloqueadoPelasFotos = podeDecidir && fotosFaltando.length > 0;
-  const descricaoDoAprovar = descricaoDosBotoes;
+  const descricaoDoAprovar = bloqueadoPelasFotos
+    ? ID_AVISO_DAS_FOTOS
+    : descricaoDosBotoes;
 
   return (
     <article className={styles.detalhe} aria-labelledby="titulo-candidato">
@@ -564,6 +575,11 @@ function DetalheCandidato({
                 key={ingrediente.id}
                 ingrediente={ingrediente}
                 escolha={escolha}
+                ingredientesDoCatalogo={
+                  catalogo.status === "pronto"
+                    ? catalogo.dados.ingredients
+                    : null
+                }
                 onMudar={mudarEscolha}
               />
             );
@@ -582,7 +598,7 @@ function DetalheCandidato({
           {podeDecidir ? null : (
             <p id={ID_AVISO_DO_PAPEL}>
               Como analista, você pode revisar a fila, mas só moderação e
-              administração aprovam ou recusam.
+              administração aprovam, recusam ou publicam.
             </p>
           )}
 
@@ -613,7 +629,12 @@ function DetalheCandidato({
 
         <div className={styles.acoes}>
           {semSincronizar ? (
-            <Button onClick={onSincronizar} disabled={enviando}>
+            <Button
+              onClick={sincronizar}
+              busy={enviando}
+              aria-disabled={podeDecidir ? undefined : true}
+              aria-describedby={descricaoDosBotoes}
+            >
               {enviando ? "Publicando..." : "Tentar de novo"}
             </Button>
           ) : (
@@ -621,7 +642,7 @@ function DetalheCandidato({
               <Button
                 variant="danger"
                 onClick={recusar}
-                disabled={enviando}
+                busy={enviando}
                 aria-disabled={podeDecidir ? undefined : true}
                 aria-describedby={descricaoDosBotoes}
               >
@@ -630,8 +651,10 @@ function DetalheCandidato({
 
               <Button
                 onClick={aprovar}
-                disabled={enviando}
-                aria-disabled={!podeDecidir ? true : undefined}
+                busy={enviando}
+                aria-disabled={
+                  !podeDecidir || bloqueadoPelasFotos ? true : undefined
+                }
                 aria-describedby={descricaoDoAprovar}
               >
                 {enviando ? "Salvando..." : "Aprovar"}

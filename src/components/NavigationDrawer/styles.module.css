@@ -1,0 +1,76 @@
+.gaveta {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(20rem, 85vw);
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--superficie-suave);
+  border: none;
+  color: var(--texto);
+}
+
+.gaveta::backdrop {
+  background-color: var(--sobreposicao);
+}
+
+.gaveta[open] {
+  animation: entrar var(--duracao-entrada) ease-out;
+}
+
+.gaveta[open]::backdrop {
+  animation: escurecer var(--duracao-entrada) ease-out;
+}
+
+@keyframes entrar {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes escurecer {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gaveta[open],
+  .gaveta[open]::backdrop {
+    animation: none;
+  }
+}
+
+.fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-pilula);
+  color: var(--roxo);
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background-color: var(--lavanda-media);
+}
+
+.icone {
+  width: 1.5rem;
+  height: 1.5rem;
+}

@@ -1,4 +1,5 @@
 import { URL_API } from "../../config/ambiente";
+import { repassarErro } from "../erros";
 import { pedir, verificarResposta } from "./requisicao";
 
 function lerUrl(valor: unknown): string | null {
@@ -13,44 +14,56 @@ export async function buscarAvatarNaApi(
   usuarioId: number,
   sinal?: AbortSignal,
 ): Promise<string | null> {
-  const caminho = `/api/users/${usuarioId}/avatar`;
-  const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
+  try {
+    const caminho = `/api/users/${usuarioId}/avatar`;
+    const resposta = await pedir(`${URL_API}${caminho}`, { signal: sinal });
 
-  if (resposta.status === 404) {
-    return null;
+    if (resposta.status === 404) {
+      return null;
+    }
+
+    verificarResposta(resposta, caminho);
+
+    return lerUrl(await resposta.json());
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar a foto de perfil.");
   }
-
-  verificarResposta(resposta, caminho);
-
-  return lerUrl(await resposta.json());
 }
 
 export async function enviarAvatarNaApi(
   usuarioId: number,
   arquivo: File,
 ): Promise<string | null> {
-  const caminho = `/api/users/${usuarioId}/avatar`;
-  const corpo = new FormData();
+  try {
+    const caminho = `/api/users/${usuarioId}/avatar`;
+    const corpo = new FormData();
 
-  corpo.append("file", arquivo);
+    corpo.append("file", arquivo);
 
-  const resposta = await pedir(`${URL_API}${caminho}`, {
-    method: "POST",
-    body: corpo,
-  });
+    const resposta = await pedir(`${URL_API}${caminho}`, {
+      method: "POST",
+      body: corpo,
+    });
 
-  verificarResposta(resposta, caminho);
+    verificarResposta(resposta, caminho);
 
-  return lerUrl(await resposta.json());
+    return lerUrl(await resposta.json());
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível enviar a foto de perfil.");
+  }
 }
 
 export async function apagarAvatarNaApi(usuarioId: number): Promise<void> {
-  const caminho = `/api/users/${usuarioId}/avatar`;
-  const resposta = await pedir(`${URL_API}${caminho}`, { method: "DELETE" });
+  try {
+    const caminho = `/api/users/${usuarioId}/avatar`;
+    const resposta = await pedir(`${URL_API}${caminho}`, { method: "DELETE" });
 
-  if (resposta.status === 404) {
-    return;
+    if (resposta.status === 404) {
+      return;
+    }
+
+    verificarResposta(resposta, caminho);
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível apagar a foto de perfil.");
   }
-
-  verificarResposta(resposta, caminho);
 }

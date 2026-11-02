@@ -1,0 +1,19 @@
+.nota {
+  flex-shrink: 0;
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.valor {
+  color: var(--texto);
+  font-size: var(--tamanho-enorme);
+}
+
+.total {
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  font-size: var(--tamanho-base);
+}

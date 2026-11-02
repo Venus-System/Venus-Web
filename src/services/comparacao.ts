@@ -1,7 +1,11 @@
 import { USAR_MOCK } from "../config/ambiente";
 import type { ProdutoComparado } from "../types/comparacao";
 import { buscarProdutoComVersaoDaApi } from "./api/produtos";
-import { ErroProdutoNaoEncontrado, ErroServicoIndisponivel } from "./erros";
+import {
+  ErroProdutoNaoEncontrado,
+  ErroServicoIndisponivel,
+  repassarErro,
+} from "./erros";
 import { analisesMock } from "./mocks/analises";
 import { simularLatencia } from "./mocks/atraso";
 import { produtosMock } from "./mocks/produtos";
@@ -10,28 +14,32 @@ async function produtoComparado(
   slug: string,
   sinal?: AbortSignal,
 ): Promise<ProdutoComparado> {
-  if (USAR_MOCK) {
-    const produto = produtosMock.find((item) => item.slug === slug);
+  try {
+    if (USAR_MOCK) {
+      const produto = produtosMock.find((item) => item.slug === slug);
 
-    if (produto === undefined) {
-      throw new ErroProdutoNaoEncontrado(slug);
+      if (produto === undefined) {
+        throw new ErroProdutoNaoEncontrado(slug);
+      }
+
+      return {
+        product: produto,
+        versionId: analisesMock[slug]?.versionId ?? null,
+        ingredients: analisesMock[slug]?.ingredients ?? [],
+      };
     }
+
+    const { produto, versaoId, ingredientes } =
+      await buscarProdutoComVersaoDaApi(slug, sinal);
 
     return {
       product: produto,
-      versionId: analisesMock[slug]?.versionId ?? null,
-      ingredients: analisesMock[slug]?.ingredients ?? [],
+      versionId: versaoId,
+      ingredients: ingredientes,
     };
+  } catch (erro) {
+    repassarErro(erro, "Não foi possível carregar um dos produtos.");
   }
-
-  const { produto, versaoId, ingredientes } =
-    await buscarProdutoComVersaoDaApi(slug, sinal);
-
-  return {
-    product: produto,
-    versionId: versaoId,
-    ingredients: ingredientes,
-  };
 }
 
 export async function buscarComparacao(

@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
-import { ErroProdutoNaoEncontrado } from "../../services/erros";
-import { buscarAnalisePublica } from "../../services/analises";
 import { temFragrancia } from "../../utils/selos";
 import { ehAlertaPessoal, ordenarPorDestaque } from "../../utils/alertas";
 import {
@@ -12,12 +10,12 @@ import {
   nivelDaRecomendacao,
   nivelDoRisco,
 } from "../../utils/niveis";
-import type { AnaliseExibicao } from "../../types/analise";
 import type {
   Avaliacao,
   Denuncia,
   NovaAvaliacao,
 } from "../../types/avaliacao";
+import { useAnaliseDoProduto } from "../../hooks/useAnaliseDoProduto";
 import { useAnalisePessoal } from "../../hooks/useAnalisePessoal";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useAvaliacoes } from "../../hooks/useAvaliacoes";
@@ -33,7 +31,7 @@ import ReviewCard from "../../components/ReviewCard";
 import ReportReviewModal from "../../components/ReportReviewModal";
 import ReviewsModal from "../../components/ReviewsModal";
 import WriteReviewModal from "../../components/WriteReviewModal";
-import ScoreBadge from "../../components/ScoreBadge";
+import BigScore from "../../components/BigScore";
 import ScoreBars from "../../components/ScoreBars";
 import ScoreExplanation from "../../components/ScoreExplanation";
 import Chip from "../../components/Chip";
@@ -42,21 +40,18 @@ import IngredientsModal from "../../components/IngredientsModal";
 import PersonalAnalysis from "../../components/PersonalAnalysis";
 import RiskBadge from "../../components/RiskBadge";
 import RiskLegend from "../../components/RiskLegend";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
-
-type EstadoProduto =
-  | { situacao: "carregando" }
-  | { situacao: "sucesso"; analise: AnaliseExibicao }
-  | { situacao: "nao-encontrado" }
-  | { situacao: "erro"; mensagem: string };
 
 type AcaoDeAvaliacao =
   | { tipo: "escrever" }
   | { tipo: "denunciar"; avaliacao: Avaliacao };
 
+type SituacaoDasTodas = "fechado" | "abrindo" | "aberto" | "erro";
+
 interface ModaisDoProduto {
   ingredientes: boolean;
-  todas: boolean;
+  todas: SituacaoDasTodas;
   acao: AcaoDeAvaliacao | null;
 }
 
@@ -65,20 +60,26 @@ const INGREDIENTES_NA_PAGINA = 3;
 
 function Produto() {
   const { slug } = useParams<{ slug: string }>();
-  const [estado, setEstado] = useState<EstadoProduto>({
-    situacao: "carregando",
-  });
+  const estado = useAnaliseDoProduto(slug);
+  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
+  const titulo =
+    carregado?.product.name ??
+    (estado.situacao === "nao-encontrado" ? "Produto não encontrado" : "Produto");
   const { usuario, carregando: carregandoConta } = useAutenticacao();
   const navegar = useNavigate();
   const localizacao = useLocation();
+  useTituloDaPagina(titulo);
   const {
     estado: avaliacoes,
     recarregar: recarregarAvaliacoes,
     atualizar: atualizarAvaliacoes,
-  } = useAvaliacoes(slug ?? null);
+  } = useAvaliacoes(
+    carregado?.product.slug ?? null,
+    carregado?.versionId ?? null,
+  );
   const [modais, setModais] = useState<ModaisDoProduto>({
     ingredientes: false,
-    todas: false,
+    todas: "fechado",
     acao: null,
   });
   const {
@@ -92,7 +93,6 @@ function Produto() {
     limpar: limparDenuncia,
   } = useDenunciarAvaliacao();
   const logado = usuario !== null;
-  const carregado = estado.situacao === "sucesso" ? estado.analise : null;
   const {
     estado: analisePessoal,
     tentarDeNovo: tentarAnaliseDeNovo,
@@ -129,7 +129,7 @@ function Produto() {
 
     if (publicou) {
       fecharAcao();
-      atualizarAvaliacoes();
+      void atualizarAvaliacoes();
     }
   }
 
@@ -157,63 +157,22 @@ function Produto() {
     setModais((atual) => ({ ...atual, ingredientes: false }));
   }
 
-  function abrirTodas() {
-    setModais((atual) => ({ ...atual, todas: true }));
+  async function abrirTodas() {
+    setModais((atual) => ({ ...atual, todas: "abrindo" }));
+
+    const atualizou = await atualizarAvaliacoes();
+
+    setModais((atual) =>
+      atual.todas !== "abrindo"
+        ? atual
+        : { ...atual, todas: atualizou ? "aberto" : "erro" },
+    );
   }
 
   function fecharTodas() {
-    setModais((atual) => ({ ...atual, todas: false }));
-    atualizarAvaliacoes();
+    setModais((atual) => ({ ...atual, todas: "fechado" }));
+    void atualizarAvaliacoes();
   }
-
-  useEffect(() => {
-    if (!slug) {
-      return;
-    }
-
-    const controle = new AbortController();
-    let expirou = false;
-    const limite = setTimeout(() => {
-      expirou = true;
-      controle.abort();
-    }, 8000);
-
-    async function carregar(slugAtual: string) {
-      setEstado({ situacao: "carregando" });
-
-      try {
-        const analise = await buscarAnalisePublica(slugAtual, controle.signal);
-        setEstado({ situacao: "sucesso", analise });
-      } catch (erro) {
-        if (erro instanceof ErroProdutoNaoEncontrado) {
-          setEstado({ situacao: "nao-encontrado" });
-          return;
-        }
-
-        if (erro instanceof DOMException && erro.name === "AbortError") {
-          if (expirou) {
-            setEstado({
-              situacao: "erro",
-              mensagem: "A busca demorou demais. Tente novamente",
-            });
-          }
-
-          return;
-        }
-
-        setEstado({
-          situacao: "erro",
-          mensagem: "Não foi possível carregar este produto.",
-        });
-      }
-    }
-
-    carregar(slug);
-    return () => {
-      clearTimeout(limite);
-      controle.abort();
-    };
-  }, [slug]);
 
   if (!slug) {
     return (
@@ -314,10 +273,7 @@ function Produto() {
 
             {pessoal === null ? (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={product.scores.overallScore}
-                  level={product.level}
-                />
+                <BigScore score={product.scores.overallScore} />
                 <p className={styles.scoreCaption}>
                   Avaliação geral da Venus, de 0 a 100. É a mesma para todo
                   mundo.
@@ -325,10 +281,7 @@ function Produto() {
               </div>
             ) : (
               <div className={styles.scoreRow}>
-                <ScoreBadge
-                  score={pessoal.finalScore}
-                  level={nivelDaRecomendacao(pessoal.recommendationLevel)}
-                />
+                <BigScore score={pessoal.finalScore} />
 
                 <div className={styles.veredito}>
                   <div className={styles.chips}>
@@ -554,14 +507,23 @@ function Produto() {
                   variant="secondary"
                   className={styles.seeAll}
                   onClick={abrirTodas}
+                  busy={modais.todas === "abrindo"}
                 >
-                  Ver todas as {avaliacoes.avaliacoes.reviews.length}{" "}
-                  avaliações
+                  {modais.todas === "abrindo"
+                    ? "Carregando as avaliações..."
+                    : `Ver todas as ${avaliacoes.avaliacoes.reviews.length} avaliações`}
                 </Button>
               ) : null}
 
+              {modais.todas === "erro" ? (
+                <p className={styles.erroDasTodas} role="alert">
+                  Não foi possível atualizar as avaliações. Tente abrir de
+                  novo.
+                </p>
+              ) : null}
+
               <ReviewsModal
-                open={modais.todas}
+                open={modais.todas === "aberto"}
                 onClose={fecharTodas}
                 data={avaliacoes.avaliacoes}
                 canInteract={logado}

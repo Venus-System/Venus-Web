@@ -16,6 +16,7 @@ import QuestionCard from "../../components/QuestionCard";
 import ResumoErros from "../../components/ResumoErros";
 import {
   TOTAL_PERGUNTAS,
+  ID_DO_CONSENTIMENTO,
   TOTAL_PERGUNTAS_DE_SAUDE,
   useQuestionario,
 } from "../../hooks/useQuestionario";
@@ -31,11 +32,22 @@ import {
   OPCOES_SENSIBILIDADE,
   OPCOES_SITUACAO,
 } from "./opcoes";
+import { useAutenticacao } from "../../hooks/useAutenticacao";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 type Guia = "cabelo" | "pele" | "fototipo" | null;
 
 function Perguntas() {
+  const { usuario } = useAutenticacao();
+
+  return (
+    <FormularioDePerguntas key={usuario === null ? "sem-conta" : usuario.id} />
+  );
+}
+
+function FormularioDePerguntas() {
+  useTituloDaPagina("Questionário de perfil");
   const [guia, setGuia] = useState<Guia>(null);
   const {
     respostas,
@@ -43,11 +55,14 @@ function Perguntas() {
     trocarCondicoes,
     catalogo,
     tentarCatalogoDeNovo,
+    perfil,
+    tentarPerfilDeNovo,
     formulario,
     itensDoResumo,
     respostasDeSaude,
     resumoRef,
     decisaoRef,
+    conclusaoRef,
     handleSubmit,
     enviar,
     voltarParaConsentimento,
@@ -81,7 +96,28 @@ function Perguntas() {
         </div>
       </section>
 
-      <form className={styles.form} noValidate onSubmit={handleSubmit}>
+      <p className={styles.catalogStatus} aria-live="polite">
+        {perfil === "carregando" ? "Carregando as suas respostas..." : ""}
+      </p>
+
+      {perfil === "erro" ? (
+        <div className={styles.catalogError} role="alert">
+          <p>
+            Não foi possível carregar as suas respostas. Tente de novo antes de
+            continuar, para não apagar o que você já respondeu.
+          </p>
+          <Button variant="secondary" onClick={tentarPerfilDeNovo}>
+            Tentar novamente
+          </Button>
+        </div>
+      ) : null}
+
+      <form
+        className={styles.form}
+        noValidate
+        onSubmit={handleSubmit}
+        hidden={perfil !== "pronto"}
+      >
         <ResumoErros ref={resumoRef} items={itensDoResumo} />
 
         <QuestionCard number={1} total={TOTAL_PERGUNTAS}>
@@ -115,7 +151,7 @@ function Perguntas() {
         </QuestionCard>
 
         <ConsentimentoSaude
-          id="consentimento-saude"
+          id={ID_DO_CONSENTIMENTO}
           checked={respostas.healthDataConsent}
           onChange={(autorizado) => responder("healthDataConsent", autorizado)}
         />
@@ -270,7 +306,11 @@ function Perguntas() {
             </p>
 
             <div className={styles.decisaoAcoes}>
-              <Button type="button" onClick={enviar}>
+              <Button
+                type="button"
+                onClick={enviar}
+                busy={formulario.situacao === "enviando"}
+              >
                 Continuar sem essas respostas
               </Button>
 
@@ -296,7 +336,7 @@ function Perguntas() {
         ) : null}
 
         {formulario.situacao === "sucesso" ? (
-          <div className={styles.conclusao}>
+          <div ref={conclusaoRef} className={styles.conclusao} tabIndex={-1}>
             <p role="status">Perfil salvo.</p>
             <Button to="/perfil">Ver meu perfil</Button>
           </div>
@@ -304,7 +344,7 @@ function Perguntas() {
           <Button
             type="submit"
             className={styles.submit}
-            disabled={formulario.situacao === "enviando"}
+            busy={formulario.situacao === "enviando"}
           >
             {formulario.situacao === "enviando"
               ? "Salvando…"

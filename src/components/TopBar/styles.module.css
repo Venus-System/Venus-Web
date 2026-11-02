@@ -1,0 +1,47 @@
+.barra {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-3);
+  background-color: var(--superficie-suave);
+  border-bottom: var(--borda-largura) solid var(--borda);
+}
+
+.menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-pilula);
+  color: var(--roxo);
+  cursor: pointer;
+}
+
+.menu:hover {
+  background-color: var(--lavanda-media);
+}
+
+.icone {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.logo {
+  width: 2rem;
+  height: 2rem;
+}
+
+.nome {
+  color: var(--roxo);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-medio);
+  font-weight: var(--peso-forte);
+}

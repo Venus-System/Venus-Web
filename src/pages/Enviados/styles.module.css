@@ -36,6 +36,11 @@
   color: var(--texto-suave);
 }
 
+.limite {
+  color: var(--texto-suave);
+  font-size: var(--tamanho-pequeno);
+}
+
 .erro {
   display: flex;
   flex-direction: column;

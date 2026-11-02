@@ -294,7 +294,7 @@ function ChatDrawer({ productName }: ChatDrawerProps) {
                 variant="text"
                 className={styles.desconectar}
                 onClick={agenda.desconectar}
-                disabled={agenda.desconexao.status === "desconectando"}
+                busy={agenda.desconexao.status === "desconectando"}
               >
                 Desconectar
               </Button>

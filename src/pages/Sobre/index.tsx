@@ -6,6 +6,8 @@ import Button from "../../components/Button";
 import { NOTAS_DE_QUALIDADE } from "../../utils/notas";
 import fotoDaEquipeUm from "../../assets/equipe-1.jpg";
 import fotoDaEquipeDois from "../../assets/equipe-2.jpg";
+import { useMovimentoReduzido } from "../../hooks/useMovimentoReduzido";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Integrante {
@@ -65,7 +67,9 @@ const TRADUCAO = [
 ];
 
 function Sobre() {
+  useTituloDaPagina("Sobre");
   const trilhaRef = useRef<HTMLUListElement>(null);
+  const movimentoReduzido = useMovimentoReduzido();
 
   function rolar(direcao: number) {
     const trilha = trilhaRef.current;
@@ -76,7 +80,7 @@ function Sobre() {
 
     trilha.scrollBy({
       left: trilha.clientWidth * 0.8 * direcao,
-      behavior: "smooth",
+      behavior: movimentoReduzido ? "auto" : "smooth",
     });
   }
 
@@ -191,7 +195,9 @@ function Sobre() {
 
           <p className={styles.text}>
             A Venus nasceu como projeto interdisciplinar do Instituto J&amp;F e
-            é feita por onze estudantes. Cada nome leva ao perfil da pessoa no
+            é feita por onze estudantes. O projeto segue a ODS 12 da ONU,
+            Consumo e produção responsáveis: informação clara para cada pessoa
+            escolher melhor o que compra. Cada nome leva ao perfil da pessoa no
             GitHub.
           </p>
 

@@ -5,10 +5,6 @@
   padding-block: var(--espaco-4);
 }
 
-.voltar {
-  margin-bottom: calc(var(--espaco-2) - var(--espaco-4));
-}
-
 .header {
   display: flex;
   flex-direction: column;

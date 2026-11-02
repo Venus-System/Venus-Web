@@ -6,6 +6,8 @@ import MySpaceNav from "../../components/MySpaceNav";
 import ProductRow from "../../components/ProductRow";
 import { useFavoritos } from "../../hooks/useFavoritos";
 import type { EstadoFavoritos } from "../../hooks/useFavoritos";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { LIMITE_DAS_LISTAS } from "../../utils/listas";
 import styles from "./styles.module.css";
 
 function avisoDoFavorito(estado: EstadoFavoritos): string {
@@ -21,6 +23,7 @@ function avisoDoFavorito(estado: EstadoFavoritos): string {
 }
 
 function Favoritos() {
+  useTituloDaPagina("Favoritos");
   const { estado, recarregar, alternar } = useFavoritos();
 
   return (
@@ -32,7 +35,8 @@ function Favoritos() {
             <span className={styles.destaque}>favoritos.</span>
           </h1>
           <p className={styles.subtitle}>
-            Os produtos que você marcou para não perder de vista.
+            Os produtos que você marcou para não perder de vista. A nota ao
+            lado de cada um é a nota geral do produto.
           </p>
         </header>
 
@@ -100,6 +104,12 @@ function Favoritos() {
               </li>
             ))}
           </ul>
+        ) : null}
+
+        {estado.status === "pronto" && estado.produtos.length > 0 ? (
+          <p className={styles.limite}>
+            A lista mostra até os {LIMITE_DAS_LISTAS} favoritos mais recentes.
+          </p>
         ) : null}
       </div>
     </MainLayout>

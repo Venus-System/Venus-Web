@@ -93,7 +93,7 @@
 }
 
 .stepNumber {
-  color: var(--lavanda);
+  color: var(--violeta);
   font-family: var(--fonte-titulo);
   font-size: var(--tamanho-grande);
   font-weight: var(--peso-forte);
@@ -235,7 +235,7 @@
   gap: var(--espaco-2);
   align-items: center;
   padding: var(--espaco-5) var(--espaco-4);
-  background-color: var(--card);
+  background-color: var(--lavanda-clara);
   border: var(--borda-largura) solid var(--borda);
   border-radius: var(--raio-grande);
   text-align: center;

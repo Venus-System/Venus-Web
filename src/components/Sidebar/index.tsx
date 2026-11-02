@@ -10,17 +10,15 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { FormEvent } from "react";
-import { Link, NavLink } from "react-router-dom";
+import type { FormEvent, ReactNode } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import logo from "../../assets/Logo.svg";
 import Button from "../Button";
+import ContrastToggle from "../ContrastToggle";
 import Input from "../Input";
+import { MAXIMO_DA_BUSCA } from "../../utils/validacao";
 import styles from "./styles.module.css";
-
-interface SidebarProps {
-  onSearch?: (term: string) => void;
-}
 
 interface NavLinkItem {
   to: string;
@@ -61,30 +59,52 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function Sidebar({ onSearch }: SidebarProps) {
+interface SidebarProps {
+  headerAction?: ReactNode;
+}
+
+function Sidebar({ headerAction }: SidebarProps) {
   const { usuario, fotoUrl } = useAutenticacao();
+  const navegar = useNavigate();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!onSearch) {
-      return;
-    }
+    const valor = new FormData(event.currentTarget).get("term");
+    const termo = typeof valor === "string" ? valor.trim() : "";
 
-    const term = new FormData(event.currentTarget).get("term");
-    onSearch(typeof term === "string" ? term : "");
+    navegar(
+      termo === "" ? "/pesquisa" : `/pesquisa?termo=${encodeURIComponent(termo)}`,
+    );
   }
 
   return (
-    <nav className={styles.sidebar} aria-label="Navegação principal">
-      <Link to="/" className={styles.brand}>
+    <nav
+      id="navegacao-principal"
+      tabIndex={-1}
+      className={
+        headerAction === undefined
+          ? styles.sidebar
+          : `${styles.sidebar} ${styles.comAcao}`
+      }
+      aria-label="Navegação principal"
+    >
+      <div className={styles.brand}>
+        {headerAction}
         <img src={logo} alt="" className={styles.logo} />
         <span className={styles.brandName}>Venus</span>
-      </Link>
+        <ContrastToggle />
+      </div>
 
-      <form role="search" onSubmit={handleSubmit} className={styles.search}>
+      <form
+        role="search"
+        aria-label="Busca rápida"
+        onSubmit={handleSubmit}
+        className={styles.search}
+      >
         <Input
           id="sidebar-search"
+          maxLength={MAXIMO_DA_BUSCA}
           name="term"
           type="search"
           label="Buscar produto"

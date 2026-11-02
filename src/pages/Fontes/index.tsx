@@ -3,6 +3,7 @@ import MainLayout from "../../components/MainLayout";
 import SectionNav from "../../components/SectionNav";
 import Button from "../../components/Button";
 import Chip from "../../components/Chip";
+import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
 import styles from "./styles.module.css";
 
 interface Fonte {
@@ -90,6 +91,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 function Fontes() {
+  useTituloDaPagina("Fontes");
   return (
     <MainLayout>
       <div className={styles.page}>

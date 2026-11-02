@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarHistorico } from "../services/historico";
+import { useAutenticacao } from "./useAutenticacao";
 import type { AnaliseRecente } from "../types/painel";
 import { umaPorDia } from "../utils/umaPorDia";
 
@@ -31,6 +32,8 @@ function mensagemDoErro(erro: unknown): string {
 }
 
 export function useHistorico() {
+  const { usuario } = useAutenticacao();
+  const dono = usuario === null ? null : usuario.id;
   const [estado, setEstado] = useState<EstadoHistorico>({
     status: "carregando",
   });
@@ -66,7 +69,7 @@ export function useHistorico() {
       ativo = false;
       controle.abort();
     };
-  }, [tentativa]);
+  }, [tentativa, dono]);
 
   const recarregar = useCallback(() => {
     setTentativa((atual) => atual + 1);

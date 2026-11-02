@@ -46,8 +46,11 @@ export interface IngredienteInterpretado {
   match: TrechoNoTexto | null;
 }
 
+export type SituacaoDoCandidato = "pendente" | "semPublicar";
+
 export interface CandidatoResumo {
   id: string;
+  status: SituacaoDoCandidato;
   name: string;
   brand: string;
   category: string;
@@ -70,6 +73,11 @@ export interface FiltroFila {
   origin: OrigemCandidato | null;
 }
 
+export interface FilaDeCandidatos {
+  itens: CandidatoResumo[];
+  truncated: boolean;
+}
+
 export type MotivoRecusa =
   | "ocr_misread"
   | "illegible_photo"
@@ -90,6 +98,7 @@ export interface OpcaoDoCatalogo {
 export interface CatalogoDaRevisao {
   brands: OpcaoDoCatalogo[];
   categories: OpcaoDoCatalogo[];
+  ingredients: OpcaoDoCatalogo[];
 }
 
 export interface ProdutoParaAprovar {

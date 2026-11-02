@@ -2,8 +2,6 @@
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  grid-auto-flow: column;
-  grid-auto-columns: auto;
   align-items: center;
   gap: var(--espaco-3);
   padding: var(--espaco-2) var(--espaco-1);
@@ -71,9 +69,26 @@
   text-decoration: underline;
 }
 
+.lado {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
 .action {
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 30rem) {
+  .row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .lado {
+    grid-column: auto;
+  }
 }
 
 .safe {
