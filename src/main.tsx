@@ -2,9 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { ProvedorAutenticacao } from "./contexts/autenticacao";
 import { ProvedorAutenticacaoAdmin } from "./contexts/autenticacaoAdmin";
 import { ProvedorChat } from "./contexts/chat";
+import ErroAoCarregar from "./pages/ErroAoCarregar";
 import { aplicarAltoContraste, lerAltoContraste } from "./utils/altoContraste";
 import "./styles/tokens.css";
 import "./styles/global.css";
@@ -23,7 +25,9 @@ ReactDOM.createRoot(raiz).render(
       <ProvedorAutenticacao>
         <ProvedorAutenticacaoAdmin>
           <ProvedorChat>
-            <App />
+            <ErrorBoundary fallback={<ErroAoCarregar />}>
+              <App />
+            </ErrorBoundary>
           </ProvedorChat>
         </ProvedorAutenticacaoAdmin>
       </ProvedorAutenticacao>
