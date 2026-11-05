@@ -4,6 +4,7 @@ import {
   garantirIdDoUsuarioNaApi,
   renovarIdDoUsuarioNaApi,
 } from "./autenticacao";
+import { comFallbackDeMock, gravarComFallbackDeMock } from "./exposicao";
 import { esquecerAnalisesPessoais } from "./classificacao";
 import {
   ErroDeOrientacao,
@@ -186,17 +187,22 @@ export async function salvarPerfil(
       return perfil;
     }
 
-    try {
-      await salvarPerfilNaApi(await buscarIdNumerico(), perfil);
-    } catch (erro) {
-      if (!(erro instanceof ErroUsuarioInexistente)) {
-        throw erro;
-      }
+    await gravarComFallbackDeMock(
+      async () => {
+        try {
+          await salvarPerfilNaApi(await buscarIdNumerico(), perfil);
+        } catch (erro) {
+          if (!(erro instanceof ErroUsuarioInexistente)) {
+            throw erro;
+          }
 
-      await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
-    } finally {
-      esquecerAnalisesPessoais();
-    }
+          await salvarPerfilNaApi(await renovarIdNumerico(), perfil);
+        } finally {
+          esquecerAnalisesPessoais();
+        }
+      },
+      () => guardarPerfilFalso(perfil),
+    );
 
     return perfil;
   } catch (erro) {
@@ -252,15 +258,21 @@ export async function buscarPerfil(): Promise<PerfilCarregado | null> {
       return lerPerfilFalso();
     }
 
-    try {
-      return await buscarPerfilNaApi(await buscarIdNumerico());
-    } catch (erro) {
-      if (!(erro instanceof ErroUsuarioInexistente)) {
-        throw erro;
-      }
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        try {
+          return await buscarPerfilNaApi(await buscarIdNumerico());
+        } catch (erro) {
+          if (!(erro instanceof ErroUsuarioInexistente)) {
+            throw erro;
+          }
 
-      return await buscarPerfilNaApi(await renovarIdNumerico());
-    }
+          return await buscarPerfilNaApi(await renovarIdNumerico());
+        }
+      },
+      lerPerfilFalso,
+    );
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||

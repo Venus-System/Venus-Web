@@ -7,6 +7,7 @@ import {
   ErroServicoIndisponivel,
   repassarErro,
 } from "./erros";
+import { comFallbackDeMock } from "./exposicao";
 import { simularLatencia } from "./mocks/atraso";
 import { historicoDoMock } from "./mocks/historico";
 
@@ -23,19 +24,25 @@ async function paginaDoHistorico(
       return historicoDoMock(pagina, TAMANHO_DA_PAGINA);
     }
 
-    const usuarioId = await garantirIdDoUsuarioNaApi();
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        const usuarioId = await garantirIdDoUsuarioNaApi();
 
-    if (usuarioId === null) {
-      throw new ErroDeOrientacao(
-        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
-      );
-    }
+        if (usuarioId === null) {
+          throw new ErroDeOrientacao(
+            "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+          );
+        }
 
-    return await buscarHistoricoNaApi(
-      usuarioId,
-      pagina,
-      TAMANHO_DA_PAGINA,
-      sinal,
+        return await buscarHistoricoNaApi(
+          usuarioId,
+          pagina,
+          TAMANHO_DA_PAGINA,
+          sinal,
+        );
+      },
+      () => historicoDoMock(pagina, TAMANHO_DA_PAGINA),
     );
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar o seu histórico.");

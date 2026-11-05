@@ -5,6 +5,7 @@ import type {
   ResultadoDaPesquisa,
 } from "../types/pesquisa";
 import { USAR_MOCK } from "../config/ambiente";
+import { comFallbackDeMock } from "./exposicao";
 import { simularLatencia } from "./mocks/atraso";
 import { produtosMock } from "./mocks/produtos";
 import {
@@ -33,6 +34,29 @@ function semRepeticao(nomes: string[]): string[] {
   return [...new Set(nomes)].sort((a, b) => POR_NOME.compare(a, b));
 }
 
+function pesquisaNoMock(
+  filtros: FiltrosDaPesquisa,
+  pagina: number,
+): ResultadoDaPesquisa {
+  const encontrados = produtosMock
+    .filter((produto) => atendeAosFiltros(produto, filtros))
+    .sort((a, b) => POR_NOME.compare(a.name, b.name));
+  const inicio = pagina * PRODUTOS_POR_PAGINA;
+  const fim = inicio + PRODUTOS_POR_PAGINA;
+
+  return {
+    produtos: encontrados.slice(inicio, fim),
+    temMais: encontrados.length > fim,
+  };
+}
+
+function opcoesNoMock(): OpcoesDaPesquisa {
+  return {
+    categorias: semRepeticao(produtosMock.map((produto) => produto.category)),
+    marcas: semRepeticao(produtosMock.map((produto) => produto.brand.name)),
+  };
+}
+
 export async function pesquisarProdutos(
   filtros: FiltrosDaPesquisa,
   pagina: number,
@@ -42,23 +66,14 @@ export async function pesquisarProdutos(
     if (USAR_MOCK) {
       await simularLatencia();
 
-      const encontrados = produtosMock
-        .filter((produto) => atendeAosFiltros(produto, filtros))
-        .sort((a, b) => POR_NOME.compare(a.name, b.name));
-      const inicio = pagina * PRODUTOS_POR_PAGINA;
-      const fim = inicio + PRODUTOS_POR_PAGINA;
-
-      return {
-        produtos: encontrados.slice(inicio, fim),
-        temMais: encontrados.length > fim,
-      };
+      return pesquisaNoMock(filtros, pagina);
     }
 
-    return await pesquisarProdutosNaApi(
-      filtros,
-      pagina,
-      PRODUTOS_POR_PAGINA,
-      sinal,
+    return await comFallbackDeMock(
+      "api",
+      () =>
+        pesquisarProdutosNaApi(filtros, pagina, PRODUTOS_POR_PAGINA, sinal),
+      () => pesquisaNoMock(filtros, pagina),
     );
   } catch (erro) {
     if (erro instanceof DOMException && erro.name === "AbortError") {
@@ -74,13 +89,14 @@ export async function buscarOpcoesDaPesquisa(): Promise<OpcoesDaPesquisa> {
     if (USAR_MOCK) {
       await simularLatencia();
 
-      return {
-        categorias: semRepeticao(produtosMock.map((produto) => produto.category)),
-        marcas: semRepeticao(produtosMock.map((produto) => produto.brand.name)),
-      };
+      return opcoesNoMock();
     }
 
-    return await listarOpcoesDaPesquisaNaApi();
+    return await comFallbackDeMock(
+      "api",
+      () => listarOpcoesDaPesquisaNaApi(),
+      opcoesNoMock,
+    );
   } catch {
     throw new Error("Não foi possível carregar as categorias e as marcas.");
   }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import {
   buscarFavoritos,
   desfavoritar,
@@ -28,10 +29,6 @@ export type EstadoFavoritos =
       erroAoAlternar: string | null;
       ultimaAcao: AcaoDeFavorito | null;
     };
-
-function mensagemDoErro(erro: unknown, padrao: string): string {
-  return erro instanceof Error ? erro.message : padrao;
-}
 
 export function useFavoritos() {
   const { usuario } = useAutenticacao();

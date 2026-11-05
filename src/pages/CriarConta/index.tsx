@@ -7,6 +7,7 @@ import LayoutAutenticacao from "../../components/LayoutAutenticacao";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import type { FaixaSenha, ForcaSenha } from "../../utils/validacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { mensagemVisivel } from "../../utils/mensagemDeErro";
 import styles from "./styles.module.css";
 import {
   MAXIMO_DA_SENHA,
@@ -163,7 +164,7 @@ function CriarConta() {
       destinoRef.current = DESTINO_PADRAO;
       setFormulario((atual) => ({
         ...atual,
-        envio: { situacao: "erro", mensagem: mensagemDeErro },
+        envio: { situacao: "erro", mensagem: mensagemVisivel(mensagemDeErro) },
         erros: SEM_ERROS,
       }));
     }

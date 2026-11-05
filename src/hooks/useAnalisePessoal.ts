@@ -4,6 +4,7 @@ import {
   recalcularAnalisePessoal,
 } from "../services/classificacao";
 import type { AnalisePersonalizada, AnalisePessoal } from "../types/analise";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import { useAutenticacao } from "./useAutenticacao";
 
 type Recalculo = "ocioso" | "calculando" | "erro";
@@ -80,7 +81,7 @@ export function useAnalisePessoal(slug: string | null, versaoId: number | null) 
             chave,
             estado: {
               status: "erro",
-              mensagem: erro instanceof Error ? erro.message : FALHA,
+              mensagem: mensagemDoErro(erro, FALHA),
             },
           });
         }

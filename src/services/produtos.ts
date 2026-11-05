@@ -3,6 +3,7 @@ import { simularLatencia } from "./mocks/atraso";
 import { produtosMock } from "./mocks/produtos";
 import { USAR_MOCK } from "../config/ambiente";
 import { listarProdutosDaApi } from "./api/produtos";
+import { comFallbackDeMock } from "./exposicao";
 
 function filtrarPorTermo(produtos: Produto[], termo?: string): Produto[] {
   if (!termo) {
@@ -33,7 +34,11 @@ export async function buscarProdutos(
       return filtrarPorTermo(produtosMock, termo);
     }
 
-    const produtos = await listarProdutosDaApi(sinal);
+    const produtos = await comFallbackDeMock(
+      "api",
+      () => listarProdutosDaApi(sinal),
+      () => produtosMock,
+    );
     return filtrarPorTermo(produtos, termo);
   } catch (erro) {
     if (erro instanceof DOMException && erro.name === "AbortError") {

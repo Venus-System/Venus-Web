@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarMeuVoto, votar } from "../services/avaliacoes";
 import type { Avaliacao, VotoDeAvaliacao } from "../types/avaliacao";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import { useAutenticacao } from "./useAutenticacao";
 
 export interface EstadoDoVoto {
@@ -99,10 +100,7 @@ export function useVotoDaAvaliacao(avaliacao: Avaliacao, podeVotar: boolean) {
           setEstado((atual) => ({
             ...atual,
             enviando: false,
-            erro:
-              erro instanceof Error
-                ? erro.message
-                : "Não foi possível registrar o seu voto.",
+            erro: mensagemDoErro(erro, "Não foi possível registrar o seu voto."),
           }));
         });
     },

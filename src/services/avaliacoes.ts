@@ -6,6 +6,7 @@ import type {
   NovaAvaliacao,
   VotoDeAvaliacao,
 } from "../types/avaliacao";
+import { comFallbackDeMock, gravarComFallbackDeMock } from "./exposicao";
 import { resumirAvaliacoes } from "../utils/resumoDasAvaliacoes";
 import {
   buscarAvaliacoesNaApi,
@@ -73,9 +74,15 @@ async function avaliacoesLidas(
       return { avaliacoes: avaliacoesDoMock(slug), truncated: false };
     }
 
-    const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        const usuarioId = await garantirIdDoUsuarioNaApi().catch(() => null);
 
-    return await buscarAvaliacoesNaApi(versaoId, usuarioId, sinal);
+        return await buscarAvaliacoesNaApi(versaoId, usuarioId, sinal);
+      },
+      () => ({ avaliacoes: avaliacoesDoMock(slug), truncated: false }),
+    );
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar as avaliações.");
   }
@@ -119,7 +126,10 @@ export async function publicarAvaliacao(
       return publicarNoMock(slug, nova);
     }
 
-    return await publicarAvaliacaoNaApi(await usuarioDaApi(), slug, nova);
+    return await gravarComFallbackDeMock(
+      async () => publicarAvaliacaoNaApi(await usuarioDaApi(), slug, nova),
+      () => publicarNoMock(slug, nova),
+    );
   } catch (erro) {
     return repassarOuTrocar(erro, "Não foi possível publicar a avaliação.");
   }
@@ -134,11 +144,17 @@ export async function buscarMeuVoto(
       return meuVotoDoMock(avaliacaoId);
     }
 
-    const usuarioId = await garantirIdDoUsuarioNaApi();
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        const usuarioId = await garantirIdDoUsuarioNaApi();
 
-    return usuarioId === null
-      ? null
-      : await buscarMeuVotoNaApi(avaliacaoId, usuarioId, sinal);
+        return usuarioId === null
+          ? null
+          : await buscarMeuVotoNaApi(avaliacaoId, usuarioId, sinal);
+      },
+      () => meuVotoDoMock(avaliacaoId),
+    );
   } catch (erro) {
     return repassarOuTrocar(erro, "Não foi possível carregar o seu voto.");
   }
@@ -157,7 +173,11 @@ export async function votar(
       return;
     }
 
-    await votarNaApi(avaliacaoId, await usuarioDaApi(), novo, anterior);
+    await gravarComFallbackDeMock(
+      async () =>
+        votarNaApi(avaliacaoId, await usuarioDaApi(), novo, anterior),
+      () => votarNoMock(avaliacaoId, novo),
+    );
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível registrar o seu voto.");
   }
@@ -174,7 +194,10 @@ export async function denunciarAvaliacao(
       return;
     }
 
-    await denunciarNaApi(await usuarioDaApi(), avaliacaoId, denuncia);
+    await gravarComFallbackDeMock(
+      async () => denunciarNaApi(await usuarioDaApi(), avaliacaoId, denuncia),
+      () => undefined,
+    );
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível enviar a denúncia.");
   }

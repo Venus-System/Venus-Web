@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import {
   agendaDisponivel,
   desconectarAgenda,
@@ -28,7 +29,7 @@ const INICIAL: EstadoDaAgenda = {
 };
 
 function mensagemDe(erro: unknown, padrao: string): string {
-  return erro instanceof Error ? erro.message : padrao;
+  return mensagemDoErro(erro, padrao);
 }
 
 export function useAgendaGoogle(usuarioId: string | null, ativa: boolean) {

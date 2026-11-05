@@ -1,4 +1,4 @@
-import { URL_IA, USAR_MOCK } from "../config/ambiente";
+import { MODO_EXPOSICAO, URL_IA, USAR_MOCK } from "../config/ambiente";
 import type { RespostaDoChat } from "../types/chat";
 import { enviarMensagemNaApi } from "./api/chat";
 import {
@@ -6,7 +6,12 @@ import {
   ErroMuitasMensagens,
   ErroServicoIndisponivel,
 } from "./erros";
-import { respostaDoMock } from "./mocks/chat";
+import { comFallbackDeMock } from "./exposicao";
+import {
+  CONVERSA_DE_EXEMPLO,
+  respostaDoMock,
+  respostaDoRoteiro,
+} from "./mocks/chat";
 
 export async function enviarMensagem(
   mensagem: string,
@@ -14,17 +19,35 @@ export async function enviarMensagem(
   sinal?: AbortSignal,
 ): Promise<RespostaDoChat> {
   try {
+    const roteiro = MODO_EXPOSICAO
+      ? respostaDoRoteiro(mensagem, conversationId)
+      : null;
+
+    if (roteiro !== null) {
+      return roteiro;
+    }
+
     if (USAR_MOCK) {
       return await respostaDoMock(mensagem, conversationId);
     }
 
-    if (URL_IA === "") {
-      throw new ErroDeOrientacao(
-        "A conversa com a Veninha não está disponível agora.",
-      );
-    }
+    return await comFallbackDeMock(
+      "ia",
+      async () => {
+        if (URL_IA === "") {
+          throw new ErroDeOrientacao(
+            "A conversa com a Veninha não está disponível agora.",
+          );
+        }
 
-    return await enviarMensagemNaApi(mensagem, conversationId, sinal);
+        return await enviarMensagemNaApi(
+          mensagem,
+          conversationId === CONVERSA_DE_EXEMPLO ? null : conversationId,
+          sinal,
+        );
+      },
+      () => respostaDoMock(mensagem, conversationId),
+    );
   } catch (erro) {
     if (
       (erro instanceof DOMException && erro.name === "AbortError") ||

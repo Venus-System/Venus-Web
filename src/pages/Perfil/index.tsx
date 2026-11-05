@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, RotateCcw } from "lucide-react";
+import { mensagemDoErro } from "../../utils/mensagemDeErro";
 import AllergyPicker from "../../components/AllergyPicker";
 import BuscaComChips from "../../components/BuscaComChips";
 import Button from "../../components/Button";
@@ -133,10 +134,7 @@ function Perfil() {
       setConta((atual) => ({
         ...atual,
         situacao: "erro",
-        mensagem:
-          erro instanceof Error
-            ? erro.message
-            : "Não foi possível salvar o seu nome.",
+        mensagem: mensagemDoErro(erro, "Não foi possível salvar o seu nome."),
       }));
     }
   }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { conectarAgenda } from "../services/agenda";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import {
   enderecoDeVolta,
   lerPedido,
@@ -99,10 +100,10 @@ export function useVoltaDaAgenda(usuarioId: string | null): EstadoDaVolta {
         setEstado({
           volta: {
             status: "erro",
-            mensagem:
-              erro instanceof Error
-                ? erro.message
-                : "Não foi possível conectar a sua agenda.",
+            mensagem: mensagemDoErro(
+              erro,
+              "Não foi possível conectar a sua agenda.",
+            ),
           },
           returnTo,
         });

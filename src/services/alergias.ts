@@ -4,6 +4,7 @@ import { alergiasMock } from "./mocks/alergias";
 import { USAR_MOCK } from "../config/ambiente";
 import { listarAlergiasDaApi } from "./api/alergias";
 import { ErroServicoIndisponivel } from "./erros";
+import { comFallbackDeMock } from "./exposicao";
 
 function ordenarPorNome(alergias: AlergiaCatalogo[]): AlergiaCatalogo[] {
   return [...alergias].sort((uma, outra) =>
@@ -20,7 +21,13 @@ export async function buscarCatalogoAlergias(
       return ordenarPorNome(alergiasMock);
     }
 
-    return ordenarPorNome(await listarAlergiasDaApi(sinal));
+    return ordenarPorNome(
+      await comFallbackDeMock(
+        "api",
+        () => listarAlergiasDaApi(sinal),
+        () => alergiasMock,
+      ),
+    );
   } catch (erro) {
     if (
       erro instanceof DOMException ||

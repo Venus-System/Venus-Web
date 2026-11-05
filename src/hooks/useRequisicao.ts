@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 
 export type EstadoDaRequisicao<T> =
   | { status: "carregando" }
@@ -31,7 +32,7 @@ export function useRequisicao<T>(
         if (ativo) {
           setEstado({
             status: "erro",
-            mensagem: erro instanceof Error ? erro.message : mensagemDeErro,
+            mensagem: mensagemDoErro(erro, mensagemDeErro),
           });
         }
       });

@@ -3,6 +3,7 @@ import { lerTextoDaImagem } from "../services/ocr";
 import { buscarProdutos } from "../services/produtos";
 import type { TextoLido } from "../types/escanear";
 import type { Produto } from "../types/produto";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import {
   procurarPeloTexto,
   temTextoLegivel,
@@ -81,10 +82,10 @@ export function useProcuraPorFoto() {
       } catch (erro) {
         mostrar({
           situacao: "erro",
-          mensagem:
-            erro instanceof Error
-              ? erro.message
-              : "Não foi possível procurar o produto agora.",
+          mensagem: mensagemDoErro(
+            erro,
+            "Não foi possível procurar o produto agora.",
+          ),
           imagem: lida,
         });
       }

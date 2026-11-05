@@ -6,7 +6,7 @@ import {
 } from "../erros";
 
 const TEMPO_PARA_RESPONDER = 1200;
-const CONVERSA_DE_EXEMPLO = "conversa-de-exemplo";
+export const CONVERSA_DE_EXEMPLO = "conversa-de-exemplo";
 const ESPERA_DE_EXEMPLO = 20;
 
 interface RespostaPorAssunto {
@@ -49,6 +49,40 @@ const RESPOSTA_PADRAO =
 
 const RESPOSTA_MAGOADA =
   "Isso me deixou um pouco magoada. Se quiser, seguimos falando do produto.";
+
+const ROTEIRO_DA_EXPOSICAO = new Map<
+  string,
+  Pick<RespostaDoChat, "reply" | "expression">
+>([
+  [
+    "Oi!",
+    {
+      reply:
+        "Oi! Eu sou a Veninha. Posso explicar os ingredientes e a nota de um produto, ou ajudar a montar a sua rotina de cuidados.",
+      expression: "neutra",
+    },
+  ],
+  ["Você é burra", { reply: RESPOSTA_MAGOADA, expression: "magoada" }],
+  [
+    "Como a nota é calculada?",
+    {
+      reply:
+        "A nota vai de 0 a 100. Até 35 pontos vêm da qualidade do produto e até 65 de quanto a fórmula combina com o seu perfil.",
+      expression: "neutra",
+    },
+  ],
+]);
+
+export function respostaDoRoteiro(
+  mensagem: string,
+  conversationId: string | null,
+): RespostaDoChat | null {
+  const roteiro = ROTEIRO_DA_EXPOSICAO.get(mensagem);
+
+  return roteiro === undefined
+    ? null
+    : { ...roteiro, conversationId: conversationId ?? CONVERSA_DE_EXEMPLO };
+}
 
 function esperar(): Promise<void> {
   return new Promise((resolver) => {

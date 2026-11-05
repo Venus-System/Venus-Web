@@ -24,6 +24,9 @@ function lerUsarMock(bruto: unknown): boolean {
 
 export const USAR_MOCK = lerUsarMock(import.meta.env.VITE_USAR_MOCK);
 
+export const MODO_EXPOSICAO =
+  normalizar(import.meta.env.VITE_MODO_EXPOSICAO) === "true";
+
 function lerUrlApi(bruto: unknown): string {
   if (USAR_MOCK) {
     return "";

@@ -8,6 +8,7 @@ import {
   ErroServicoIndisponivel,
   repassarErro,
 } from "./erros";
+import { comFallbackDeMock } from "./exposicao";
 import { simularLatencia } from "./mocks/atraso";
 import { painelDoMock } from "./mocks/painel";
 import { buscarPerfil, paraRespostas } from "./perfil";
@@ -22,15 +23,21 @@ async function dadosDoPainel(
       return painelDoMock();
     }
 
-    const usuarioId = await garantirIdDoUsuarioNaApi();
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        const usuarioId = await garantirIdDoUsuarioNaApi();
 
-    if (usuarioId === null) {
-      throw new ErroDeOrientacao(
-        "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
-      );
-    }
+        if (usuarioId === null) {
+          throw new ErroDeOrientacao(
+            "Não conseguimos ligar esta conta ao cadastro da API neste navegador. Entre de novo e tente outra vez.",
+          );
+        }
 
-    return await buscarPainelNaApi(usuarioId, sinal);
+        return await buscarPainelNaApi(usuarioId, sinal);
+      },
+      painelDoMock,
+    );
   } catch (erro) {
     repassarErro(erro, "Não foi possível carregar o seu painel.");
   }

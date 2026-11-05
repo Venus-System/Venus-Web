@@ -1,5 +1,6 @@
 import { autenticacaoFirebase } from "../../config/firebase";
 import { ErroServicoIndisponivel } from "../erros";
+import { registrarFalhaDoServico } from "../exposicao";
 
 async function tokenDoUsuario(): Promise<string | null> {
   const conta = autenticacaoFirebase?.currentUser ?? null;
@@ -45,12 +46,19 @@ export async function pedir(
   try {
     const opcoes = enviarTokenDoUsuario ? await comToken(init) : init;
 
-    return await fetch(url, opcoes);
+    const resposta = await fetch(url, opcoes);
+
+    if (resposta.status >= 500) {
+      registrarFalhaDoServico(url);
+    }
+
+    return resposta;
   } catch (erro) {
     if (erro instanceof DOMException && erro.name === "AbortError") {
       throw erro;
     }
 
+    registrarFalhaDoServico(url);
     throw new ErroServicoIndisponivel();
   }
 }

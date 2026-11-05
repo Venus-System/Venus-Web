@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { publicarAvaliacao } from "../services/avaliacoes";
 import type { NovaAvaliacao } from "../types/avaliacao";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 
 export interface EstadoDaPublicacao {
   enviando: boolean;
@@ -29,10 +30,7 @@ export function usePublicarAvaliacao() {
       } catch (erro) {
         setEstado({
           enviando: false,
-          erro:
-            erro instanceof Error
-              ? erro.message
-              : "Não foi possível publicar a avaliação.",
+          erro: mensagemDoErro(erro, "Não foi possível publicar a avaliação."),
           publicada: false,
         });
 

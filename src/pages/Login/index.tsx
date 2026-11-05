@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useAutenticacao } from "../../hooks/useAutenticacao";
 import { useTituloDaPagina } from "../../hooks/useTituloDaPagina";
+import { mensagemVisivel } from "../../utils/mensagemDeErro";
 import styles from "./styles.module.css";
 import {
   MAXIMO_DA_SENHA,
@@ -119,7 +120,7 @@ function Login() {
       setFormulario({
         envio: {
           situacao: "erro",
-          mensagem: "Não foi possível entrar com o Google",
+          mensagem: mensagemVisivel("Não foi possível entrar com o Google"),
         },
         erros: SEM_ERROS,
       });

@@ -14,6 +14,7 @@ import {
 import { simularLatencia } from "./mocks/atraso";
 import { analisesPessoaisMock } from "./mocks/classificacao";
 import { lerPerfilFalso } from "./mocks/perfil";
+import { comFallbackDeMock } from "./exposicao";
 
 const SEM_FORMULA =
   "Este produto ainda não tem a lista de ingredientes, então não dá para dar a nota.";
@@ -182,15 +183,21 @@ export async function buscarAnalisePessoal(
       return doMock(slug);
     }
 
-    if (URL_CLASSIFICACAO === "") {
-      return { situacao: "indisponivel", mensagem: FORA_DO_AR };
-    }
+    return await comFallbackDeMock(
+      "classificacao",
+      async () => {
+        if (URL_CLASSIFICACAO === "") {
+          return { situacao: "indisponivel", mensagem: FORA_DO_AR };
+        }
 
-    if (versaoId === null) {
-      return { situacao: "indisponivel", mensagem: SEM_FORMULA };
-    }
+        if (versaoId === null) {
+          return { situacao: "indisponivel", mensagem: SEM_FORMULA };
+        }
 
-    return await calcularUmaVez(await usuarioDaApi(), versaoId);
+        return await calcularUmaVez(await usuarioDaApi(), versaoId);
+      },
+      () => doMock(slug),
+    );
   } catch (erro) {
     return repassarOuTrocar(erro);
   }
@@ -207,19 +214,25 @@ export async function recalcularAnalisePessoal(
       return doMock(slug, new Date().toISOString());
     }
 
-    if (URL_CLASSIFICACAO === "") {
-      return { situacao: "indisponivel", mensagem: FORA_DO_AR };
-    }
+    return await comFallbackDeMock(
+      "classificacao",
+      async () => {
+        if (URL_CLASSIFICACAO === "") {
+          return { situacao: "indisponivel", mensagem: FORA_DO_AR };
+        }
 
-    if (versaoId === null) {
-      return { situacao: "indisponivel", mensagem: SEM_FORMULA };
-    }
+        if (versaoId === null) {
+          return { situacao: "indisponivel", mensagem: SEM_FORMULA };
+        }
 
-    const usuarioId = await usuarioDaApi();
+        const usuarioId = await usuarioDaApi();
 
-    calculos.delete(chaveDoCalculo(usuarioId, versaoId));
+        calculos.delete(chaveDoCalculo(usuarioId, versaoId));
 
-    return await calcularUmaVez(usuarioId, versaoId);
+        return await calcularUmaVez(usuarioId, versaoId);
+      },
+      () => doMock(slug, new Date().toISOString()),
+    );
   } catch (erro) {
     return repassarOuTrocar(erro);
   }

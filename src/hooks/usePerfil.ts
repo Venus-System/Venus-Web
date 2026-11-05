@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import type { ErroResumo } from "../components/ResumoErros";
 import { buscarCatalogoAlergias } from "../services/alergias";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import { apagarFotoDePerfil, enviarFotoDePerfil } from "../services/avatar";
 import { useAutenticacao } from "./useAutenticacao";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
@@ -149,10 +150,10 @@ export function usePerfil(): Perfil {
         if (ativo) {
           setCarregamento({
             status: "erro",
-            mensagem:
-              erro instanceof Error
-                ? erro.message
-                : "Não foi possível carregar o seu perfil.",
+            mensagem: mensagemDoErro(
+              erro,
+              "Não foi possível carregar o seu perfil.",
+            ),
           });
         }
       });
@@ -256,8 +257,7 @@ export function usePerfil(): Perfil {
         setEnvio((atual) => ({
           ...atual,
           situacao: "erro",
-          mensagem:
-            erro instanceof Error ? erro.message : "Não foi possível salvar.",
+          mensagem: mensagemDoErro(erro, "Não foi possível salvar."),
         }));
       }
     }
@@ -301,10 +301,10 @@ export function usePerfil(): Perfil {
     } catch (erro) {
       setEnvioDaFoto({
         situacao: "erro",
-        mensagem:
-          erro instanceof Error
-            ? erro.message
-            : "Não foi possível salvar a sua foto de perfil.",
+        mensagem: mensagemDoErro(
+          erro,
+          "Não foi possível salvar a sua foto de perfil.",
+        ),
       });
 
       return false;
@@ -324,10 +324,10 @@ export function usePerfil(): Perfil {
     } catch (erro) {
       setEnvioDaFoto({
         situacao: "erro",
-        mensagem:
-          erro instanceof Error
-            ? erro.message
-            : "Não foi possível tirar a sua foto de perfil.",
+        mensagem: mensagemDoErro(
+          erro,
+          "Não foi possível tirar a sua foto de perfil.",
+        ),
       });
 
       return false;

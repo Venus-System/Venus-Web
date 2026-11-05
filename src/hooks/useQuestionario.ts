@@ -4,6 +4,7 @@ import { idDoBlocoDeConsentimento } from "../components/ConsentimentoSaude";
 import type { ErroResumo } from "../components/ResumoErros";
 import { useAutenticacao } from "./useAutenticacao";
 import { buscarCatalogoAlergias } from "../services/alergias";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import { buscarPerfil, paraRespostas, salvarPerfil } from "../services/perfil";
 import type { AlergiaCatalogo } from "../types/perfil";
 import type { RespostasQuestionario } from "../types/questionario";
@@ -280,8 +281,7 @@ export function useQuestionario(): Questionario {
       setFormulario((atual) => ({
         ...atual,
         situacao: "erro",
-        mensagem:
-          erro instanceof Error ? erro.message : "Não foi possível salvar.",
+        mensagem: mensagemDoErro(erro, "Não foi possível salvar."),
       }));
     }
   }

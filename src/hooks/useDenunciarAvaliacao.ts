@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { denunciarAvaliacao } from "../services/avaliacoes";
 import type { Denuncia } from "../types/avaliacao";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 
 export interface EstadoDaDenuncia {
   enviando: boolean;
@@ -29,10 +30,7 @@ export function useDenunciarAvaliacao() {
       } catch (erro) {
         setEstado({
           enviando: false,
-          erro:
-            erro instanceof Error
-              ? erro.message
-              : "Não foi possível enviar a denúncia.",
+          erro: mensagemDoErro(erro, "Não foi possível enviar a denúncia."),
           enviada: false,
         });
 

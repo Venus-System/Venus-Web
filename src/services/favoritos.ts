@@ -5,6 +5,7 @@ import {
   desfavoritarNaApi,
   favoritarNaApi,
 } from "./api/favoritos";
+import { comFallbackDeMock, gravarComFallbackDeMock } from "./exposicao";
 import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import {
   ErroDeOrientacao,
@@ -54,7 +55,11 @@ export async function buscarFavoritos(sinal?: AbortSignal): Promise<Produto[]> {
       return favoritosDoMock();
     }
 
-    return await buscarFavoritosNaApi(await usuarioDaApi(), sinal);
+    return await comFallbackDeMock(
+      "api",
+      async () => buscarFavoritosNaApi(await usuarioDaApi(), sinal),
+      favoritosDoMock,
+    );
   } catch (erro) {
     return repassarOuTrocar(
       erro,
@@ -72,7 +77,10 @@ export async function favoritar(slug: string): Promise<void> {
       return;
     }
 
-    await favoritarNaApi(await usuarioDaApi(), slug);
+    await gravarComFallbackDeMock(
+      async () => favoritarNaApi(await usuarioDaApi(), slug),
+      () => favoritarNoMock(slug),
+    );
   } catch (erro) {
     repassarOuTrocar(erro, "Não foi possível favoritar este produto.");
   }
@@ -87,7 +95,10 @@ export async function desfavoritar(slug: string): Promise<void> {
       return;
     }
 
-    await desfavoritarNaApi(await usuarioDaApi(), slug);
+    await gravarComFallbackDeMock(
+      async () => desfavoritarNaApi(await usuarioDaApi(), slug),
+      () => desfavoritarNoMock(slug),
+    );
   } catch (erro) {
     repassarOuTrocar(
       erro,

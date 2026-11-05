@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useAutenticacao } from "../hooks/useAutenticacao";
 import { enviarMensagem } from "../services/chat";
 import { ErroMuitasMensagens } from "../services/erros";
+import { mensagemDoErro } from "../utils/mensagemDeErro";
 import type {
   AutorDaMensagem,
   ExpressaoDaVeninha,
@@ -104,7 +105,7 @@ function envioComErro(erro: unknown): EnvioDoChat {
 
   return {
     status: "erro",
-    mensagem: erro instanceof Error ? erro.message : FALHA,
+    mensagem: mensagemDoErro(erro, FALHA),
   };
 }
 

@@ -4,6 +4,7 @@ import {
   buscarAvatarNaApi,
   enviarAvatarNaApi,
 } from "./api/avatar";
+import { comFallbackDeMock, gravarComFallbackDeMock } from "./exposicao";
 import { garantirIdDoUsuarioNaApi } from "./autenticacao";
 import {
   ErroDeOrientacao,
@@ -65,7 +66,16 @@ export async function enviarFotoDePerfil(arquivo: File): Promise<string | null> 
       return conteudo;
     }
 
-    return await enviarAvatarNaApi(await idNumerico(), foto);
+    return await gravarComFallbackDeMock(
+      async () => enviarAvatarNaApi(await idNumerico(), foto),
+      async () => {
+        const conteudo = await comoTexto(foto);
+
+        guardarFotoFalsa(conteudo);
+
+        return conteudo;
+      },
+    );
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||
@@ -87,7 +97,10 @@ export async function apagarFotoDePerfil(): Promise<void> {
       return;
     }
 
-    await apagarAvatarNaApi(await idNumerico());
+    await gravarComFallbackDeMock(
+      async () => apagarAvatarNaApi(await idNumerico()),
+      limparFotoFalsa,
+    );
   } catch (erro) {
     if (
       erro instanceof ErroDeOrientacao ||
@@ -108,9 +121,15 @@ export async function buscarFotoDePerfil(
       return lerFotoFalsa();
     }
 
-    const id = await garantirIdDoUsuarioNaApi().catch(() => null);
+    return await comFallbackDeMock(
+      "api",
+      async () => {
+        const id = await garantirIdDoUsuarioNaApi().catch(() => null);
 
-    return id === null ? null : await buscarAvatarNaApi(id, sinal);
+        return id === null ? null : await buscarAvatarNaApi(id, sinal);
+      },
+      lerFotoFalsa,
+    );
   } catch (erro) {
     if (erro instanceof DOMException && erro.name === "AbortError") {
       throw erro;

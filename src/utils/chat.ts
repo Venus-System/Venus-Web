@@ -1,3 +1,5 @@
+import { MODO_EXPOSICAO } from "../config/ambiente";
+
 export const TAMANHO_MAXIMO_DA_MENSAGEM = 4000;
 
 export const SUGESTOES_DO_PRODUTO = [
@@ -7,6 +9,7 @@ export const SUGESTOES_DO_PRODUTO = [
 ];
 
 export const SUGESTOES_GERAIS = [
+  ...(MODO_EXPOSICAO ? ["Oi!", "Você é burra"] : []),
   "Como a nota é calculada?",
   "Me ajuda a montar uma rotina de cuidados?",
   "O que evitar na pele sensível?",
